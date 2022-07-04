@@ -17,42 +17,58 @@ import {Input} from '../../Components/Input/Input';
 import {firebaseServices} from '../../services/firebase.services';
 import {storageServices} from '../../services/storage.services';
 import {commonServices} from '../../services/commonServices';
+import {
+  getFirestore,
+  getDocs,
+  collection,
+  onSnapshot,
+  doc,
+  setDoc,
+  serverTimestamp,
+  query
+} from "firebase/firestore";
+import { getApp } from "firebase/app";
 import RenderMessages from '../../Components/renderMethods/renderMessage';
 const Convo = props => {
+    let scrollRef = React.useRef(null)
   const [mod, setMod] = useState(false);
   const [obj, setObj] = useState(props.route.params.obj);
   const [myid, setmyid] = useState('');
   const [allMessages, setallMessages] = useState();
   const [message, setmessage] = useState('');
-  useEffect(() => {
-    // firestore()
-    //   .collection('chatRoom')
-    //   .doc(obj.convoId)
-    //   .collection('messages')
-    //   .onSnapshot(onResult, onError);
-  }, []);
+  const app = getApp();
+    const fireStore = getFirestore(app);
   async function onResult(QuerySnapshot) {
     let changes = QuerySnapshot.docChanges();
     changes.forEach(async element => {
-      await getMessages();
+     
     });
   }
   function onError(error) {
     console.error(error);
   }
   useEffect(() => {
+    
     getMessages();
   }, []);
   const sendMessage = async () => {
     // console.warn('send');
     await firebaseServices.sendMessage(obj, message.trim());
     setmessage('');
+    // getMessages();
   };
   const getMessages = async () => {
     let id = await storageServices.fetchKey('id');
+   
     setmyid(id);
-    let list = await firebaseServices.GetMessages(obj.convoId);
-    setallMessages([...list]);
+   await firebaseServices.GetMessages(obj.convoId,(Res=>{
+    console.log("Res=====>",Res)
+    setallMessages([...Res]);
+   }))
+       
+     
+
+    
   };
   return (
     <SafeAreaView style={{...Styles.container}}>
@@ -80,10 +96,17 @@ const Convo = props => {
           </View>
         </View>
       </View>
-      <View style={Styles.flatlistContainer}>
+      <View style={[Styles.flatlistContainer]}>
+      <View >
+
         <FlatList
+       ref={scrollRef}
+  onContentSizeChange={() => scrollRef.current.scrollToEnd() }
+  onLayout={() => scrollRef.current.scrollToEnd() }
           keyExtractor={(item, index) => index.toString()}
-          data={allMessages}
+          data={allMessages || []}
+        
+         style={{height:HP(73)}}
           renderItem={({item}) => {
             return (
               <>
@@ -92,11 +115,11 @@ const Convo = props => {
             );
           }}
         />
-      </View>
-      <View
+        </View>
+        <View
         style={{
           position: 'absolute',
-          bottom: 15,
+          bottom: 30,
           width: '100%',
           ...GlobalStyles.row,
           justifyContent: 'center',
@@ -118,6 +141,8 @@ const Convo = props => {
           <Ionicons name={'send'} color={'rgb(37, 150, 190)'} size={25} />
         </TouchableOpacity>
       </View>
+      </View>
+      
     </SafeAreaView>
   );
 };

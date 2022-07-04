@@ -10,6 +10,6 @@ export const MsgNavigator = () => (
     initialRouteName="Messages"
     screenOptions={{headerShown: false}}>
     <Stack.Screen name="Messages" component={Messages} />
-    {/* <Stack.Screen name="Convo" component={Convo} /> */}
+    <Stack.Screen name="Convo" component={Convo} />
   </Stack.Navigator>
 );

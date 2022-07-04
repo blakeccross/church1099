@@ -10,24 +10,50 @@ import {
   collection,
   onSnapshot,
   doc,
+  getDoc,
+  setDoc,
+  serverTimestamp,
+  query,
+  orderBy,
 } from "firebase/firestore";
 const getUserInfo = async () => {
-  let id = await storageServices.getKey("@user_id");
-  const user = await firestore().collection("Users").doc(id).get();
-  return user.data();
+  // let id = await storageServices.getKey("@user_id");
+  // const user = await firestore().collection("Users").doc(id).get();
+  // return user.data();
 };
 const createChatID = (userId, otherUserId) => {
   let id = [userId, otherUserId].sort().join("_");
   return "chat_room_" + id;
 };
 const createConversation = async (item) => {
-  // let token = await storageServices.fetchKey('id');
-  // let obj = {};
-  // // let chatId = `chat_room_${token}_${item.id}`;
-  // let chatId = createChatID(token, item._id);
-  // obj = {
-  //   convoId: chatId,
-  // };
+  const app = getApp();
+  const fireStore = getFirestore(app);
+  let token = await storageServices.fetchKey('id');
+  let obj = {};
+  // let chatId = `chat_room_${token}_${item.id}`;
+  let chatId = createChatID(token, item._id);
+  obj = {
+    convoId: chatId,
+  };
+  const profileRef = await doc(fireStore, 'chatRoom', chatId);
+    await setDoc(profileRef, {
+    chatContainIDs: [token, item._id],
+          lastMessage: '',
+          users: [
+            {
+              isCreator: true,
+              thumb: '',
+              userId: token,
+            },
+            {
+              isCreator: false,
+              thumb: item['Profile Photo'],
+              userId: item._id      ,
+              username: item.Name,
+            },
+          ],
+        }), { merge: true };
+         return obj;
   // await firestore()
   //   .collection('chatRoom')
   //   .doc(chatId)
@@ -58,8 +84,6 @@ const getConversationList = async () => {
     let list = [];
     const querySnapshot = await getDocs(collection(fireStore, "chatRoom"));
     querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-
       let data = doc.data();
       let ids = [];
       let curUserinfo;
@@ -77,9 +101,9 @@ const getConversationList = async () => {
         lastMessage: doc.data().lastMessage,
         name: curUserinfo?.username,
       };
-      // if (ids.includes(id)) {
-      list.push(obj);
-      // }
+      if (ids.includes(id)) {
+        list.push(obj);
+      }
     });
 
     resolve(list);
@@ -103,44 +127,67 @@ const updateLastMesaage = async (id, msg, timestamp) => {
   //   lastMessage: msg,
   //   lastMessageTime: timestamp,
   // });
+  const app = getApp();
+  const fireStore = getFirestore(app);
+  const profileRef = doc(fireStore, 'chatRoom', id);
+  await updateDoc(profileRef, {
+      lastMessage: msg,
+      lastMessageTime: timestamp,
+    });
 };
 const sendMessage = async (item, mymsg) => {
-  // let token = await storageServices.fetchKey('id');
-  // let timestamp = firestore.FieldValue.serverTimestamp();
-  // firestore()
-  //   .collection('chatRoom')
-  //   .doc(item.convoId)
-  //   .collection('messages')
-  //   .add({
-  //     mymsg: mymsg,
-  //     createdBy: token,
-  //     createdAt: timestamp,
-  //   });
-  // await updateLastMesaage(item.convoId, mymsg, timestamp);
+  const app = getApp();
+  const fireStore = getFirestore(app);
+  let token = await storageServices.fetchKey("id");
+  let timestamp = serverTimestamp();
+  var chatData = {
+    mymsg: mymsg,
+    createdBy: token,
+    createdAt: timestamp,
+  };
+  const profileRef = doc(
+    collection(fireStore, "chatRoom", item.convoId, "messages")
+  );
+  await setDoc(profileRef, chatData), { merge: true };
 };
-const GetMessages = async (id) => {
-  // let list = [];
-  // let querySnapshot = await firestore()
-  //   .collection('chatRoom')
-  //   .doc(id)
-  //   .collection('messages')
-  //   .orderBy('createdAt', 'desc')
-  //   .get();
-  // querySnapshot.docs.map(doc => {
-  //   list.push(doc.data());
-  // });
-  // list = list.sort((a, b) => {
-  //   return (
-  //     moment(b.createdAt).format('YYYYMMDDHHmmss') -
-  //     moment(a.createdAt).format('YYYYMMDDHHmmss')
-  //   );
-  // });
-  // return list.reverse();
+const GetMessages = async (id, callback) => {
+  const app = getApp();
+  const fireStore = getFirestore(app);
+  const profileRef = await query(
+    collection(fireStore, "chatRoom", id, "messages") , orderBy('createdAt','desc')
+  );
+  const unsubscribe = onSnapshot(profileRef, (snapshot) => {
+    let list = [];
+    snapshot.forEach((userSnapshot) => {
+      list.push(userSnapshot.data());
+      list.sort((a, b) => {
+        return (
+          moment(b.createdAt).format("YYYYMMDDHHmmss") -
+          moment(a.createdAt).format("YYYYMMDDHHmmss")
+        );
+      });
+    });
+
+    callback(list.reverse());
+  });
+  return unsubscribe;
 };
 const checkuserMessagesCollection = async (item) => {
-  // let myId = await storageServices.fetchKey('id');
-  // let id = createChatID(myId, item._id);
-  // let obj = {};
+  const app = getApp();
+  const fireStore = getFirestore(app);
+  let myId = await storageServices.fetchKey('id');
+  let id = createChatID(myId, item._id);
+  let obj = {};
+  const snap = await getDoc(doc(fireStore, 'chatRoom', id))
+  if (snap.exists()) {
+    obj = {
+          convoId:snap.id,
+        };
+  }
+  else {
+    obj = await createConversation(item);
+  }
+  return obj;
   // let data = await firestore().collection('chatRoom').doc(id).get();
   // if (data.exists) {
   //   obj = {

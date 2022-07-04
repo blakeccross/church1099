@@ -39,6 +39,7 @@ export const ConvoStyle = StyleSheet.create({
   },
   flatlistContainer: {
     flex: 1,
+   
     // backgroundColor: 'red',
     marginBottom: HP(8),
   },

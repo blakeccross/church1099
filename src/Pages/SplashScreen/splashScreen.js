@@ -14,7 +14,7 @@ const Splash = props => {
         props.navigation.replace('TabNavigator')
       }
       else {
-        props.navigation.replace('MsgNavigator');
+        props.navigation.replace('Login');
       }
     });
     // if (user != null) {
