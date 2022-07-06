@@ -18,12 +18,9 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import IconCam from "react-native-vector-icons/SimpleLineIcons";
 import fontFamily from "../../Assets/config/fontFamily";
 import { Button } from "../../Components/Button/Button";
-//import { launchImageLibrary, launchCamera } from "react-native-image-picker";
-//import {DocumentPickerOptions} from 'react-native-document-picker';
 import { API } from "../../services/api.services";
 import AlertService from "../../services/alertService";
-//import DropDownPicker from "react-native-dropdown-picker";
-//import PhoneInput from 'react-native-phone-input'
+import PhoneInput from 'react-native-phone-input'
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import * as ImagePicker from 'expo-image-picker';
 
@@ -86,10 +83,6 @@ const Signup = (props) => {
       setFormStep((cur) => cur + 1);
     }
   };
-  const validateLocation = () => {
-    setFormStep((cur) => cur + 1);
-    //setLocation(data);
-  };
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     
@@ -97,7 +90,7 @@ const Signup = (props) => {
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 1,
+      quality: .5,
       //base64: true
     });
 
@@ -105,7 +98,6 @@ const Signup = (props) => {
       setImg(result.uri);
     }
   };
-  
   
   const [isEnabled, setIsEnabled] = useState(true);
   
@@ -175,7 +167,7 @@ const Signup = (props) => {
               value={name}
               setValue={setName}
               placeTxt={"Enter your full name"}
-              onSubmit={(name) => validateTextInput(setLocation(name))}
+              onSubmit={(name) => completeFormStep(setLocation(name))}
               returnKeyLabel={"done"}
             />
           </View>
@@ -229,10 +221,10 @@ const Signup = (props) => {
                   fontSize: 16,
                 },
               }}
-              value={location}
-              setValue={setLocation}
+              //value={location}
+              //setValue={setLocation}
               placeholder="Search"
-              onPress={(data, details = null) => {validateLocation(data)}}
+              onPress={(data, details = null) => {completeFormStep(setLocation(data.description))}}
               query={{
                 key: "AIzaSyCqfZsYioXmmp-FpCdAEZjnw8uJ4dwsYFo",
                 language: "en",
@@ -251,13 +243,16 @@ const Signup = (props) => {
             textCol={'black'}
             btnStyle={{backgroundColor: "rgba(247,247,247,1)",}}
             btnTxt={'Male'}
-            onPress={() => {completeFormStep(setGender("Male"))}}/>
-                        <Button
+            onPress={() => {setFormStep((cur) => cur + 1), setGender('Male')}}
+            />
+            <Button
             btnCol={'white'}
             textCol={'black'}
             btnTxt={'Female'}
+            setGender={"Female"}
             btnStyle={{marginTop: 10, backgroundColor: "rgba(247,247,247,1)",}}
-            onPress={completeFormStep(setGender("Female"))}/>
+            onPress={() => {setFormStep((cur) => cur + 1), setGender('Female')}}
+            />
           </View>
         )}
         {formStep === 6 && (
