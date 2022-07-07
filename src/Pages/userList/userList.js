@@ -22,7 +22,9 @@ import Feather from 'react-native-vector-icons/Feather';
 const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 const UserList = props => {
   const [search, setsearch] = useState('');
+  const [searchValue, setValue] = useState('');
   const [userlist, setUserlist] = useState([]);
+  const [copyuserlist, setCopyUserlist] = useState([]);
   const [Loading, setLoading] = useState(true);
   const [filterData, setFilterData] = React.useState([]);
   useEffect(() => {
@@ -33,18 +35,36 @@ const UserList = props => {
       `https://church1099.com/api/1.1/obj/user`,
     );
     setUserlist(data);
+    setCopyUserlist(data)
     setLoading(false)
   };
   const onSearch = text => {
-    setsearch(text);
-    if (text.length > 0) {
-      text = text.toLowerCase();
-      const filtered = userlist.filter(ele =>
-        ele.Name?.toLowerCase().includes(text),
-      );
-      setFilterData(filtered);
-    }
+    // setsearch(text);
+    // if (text.length > 0) {
+    //   text = text.toLowerCase();
+    //   const filtered = userlist.filter(ele =>
+    //     ele.Name?.toLowerCase().includes(text),
+    //   );
+    //   setFilterData(filtered);
+    // }
   };
+  useEffect(()=>{
+   if(searchValue != ''){
+     const data = copyuserlist
+     console.log("Data======>",data)
+     const filteredData =data.filter(
+      project =>
+        project.Name
+          .toLowerCase()
+          .includes(searchValue.trim().toLowerCase())
+    );
+    console.log("Data======>",filteredData)
+    setUserlist(filteredData)
+   }
+   else {
+    setUserlist(copyuserlist)
+   }
+  },[searchValue])
   const checkConversation = async item => {
     console.log("Data=======>",item)
     let obj = await firebaseServices.checkuserMessagesCollection(item);
@@ -94,6 +114,7 @@ const UserList = props => {
             placeholderTextColor="#666666"
             returnKeyType={"search"}
             placeholder="Search"
+            value={searchValue}
             onChangeText={(e) => setValue(e)}
             onSubmitEditing={() => onSearch()}
           />
@@ -113,7 +134,7 @@ const UserList = props => {
       ) :
       <FlatList
       showsVerticalScrollIndicator={false}
-        data={search.length > 0 ? filterData : userlist}
+        data={ userlist}
         renderItem={({item}) => renderItem(item)}
         keyExtractor={(item, index) => index.toString()}
       />

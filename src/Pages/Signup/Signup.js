@@ -26,7 +26,7 @@ import DropDownPicker from "react-native-dropdown-picker";
 import PhoneInput from 'react-native-phone-input'
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import * as ImagePicker from 'expo-image-picker';
-
+import { firebaseServices } from "../../services/firebase.services";
 const Signup = (props) => {
   const [img, setImg] = useState("");
   const [name, setName] = useState("");
@@ -106,7 +106,13 @@ const Signup = (props) => {
   const onApply = async () => {
     // console.log(email, password, name, phone, img, cv, gender, bio, location);
     if (isEnabled) {
-      if (
+
+      let imageName =  Date.now().toString()
+        
+       
+            
+      await firebaseServices.updateProfileImage(imageName,img,(async (ImageProfile)=>{
+              if (
         email != "" &&
         password != "" &&
         name != "" &&
@@ -121,7 +127,7 @@ const Signup = (props) => {
         if (reg.test(email)) {
           setloading(true);
           let res = await API.userSignup(
-            `https://church1099.com/api/1.1/wf/signup?email=${email}&password=${password}&profilephoto=${img}&bio=${bio}&resume=${cv}&location&gender=${gender}&phone=${phone}&name=${name}&employer?=no`,
+            `https://church1099.com/api/1.1/wf/signup?email=${email}&password=${password}&profilephoto=${ImageProfile}&bio=${bio}&resume=${cv}&location&gender=${gender}&phone=${phone}&name=${name}&employer?=no`,
             props
           );
           console.log(res);
@@ -133,6 +139,9 @@ const Signup = (props) => {
         AlertService.show("Missing", "Please provide all required data");
         // console.log("mail::"+email,"pa::"+password, name, phone, img, cv, gender, bio, location);
       }
+      }))
+    
+
     } else {
       AlertService.show(
         "Terms and Condition",

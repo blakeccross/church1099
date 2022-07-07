@@ -86,7 +86,7 @@ const Messages = (props) => {
     // await firebaseServices.createConversation(item);
   };
   const renderItem = (item) => {
-    // console.log("Item-----<>", item);
+    // console.log("Item-----<>", item?.lastMessageTime);
     return (
       <TouchableOpacity
         onPress={() => createConversation(item)}
@@ -118,7 +118,8 @@ const Messages = (props) => {
               {item?.lastMessage}
             </Text>
             <Text style={styles.time}>
-              {moment(item?.lastMessageTime).format("LT")}
+              {item?.lastMessageTime && (moment(item?.lastMessageTime.toDate().toISOString()).fromNow())}
+
             </Text>
           </View>
         </View>
