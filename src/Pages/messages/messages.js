@@ -1,36 +1,41 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   Text,
   Image,
   View,
-  TouchableOpacity,
-  TextInput,
-  StatusBar,
-  FlatList,
-
-} from 'react-native';
-import {MessageStyle as styles} from './messages.style';
-import FastImage from 'react-native-fast-image';
+  Pressable,
+  TouchableOpacity
+} from "react-native";
+import { MessageStyle as styles } from "./messages.style";
+import FastImage from "react-native-fast-image";
+import { LinearGradient } from "expo-linear-gradient";
+import { createShimmerPlaceholder } from "react-native-shimmer-placeholder";
 //import Toast from 'react-native-tiny-toast';
 //import firestore from '@react-native-firebase/firestore';
-import {API} from '../../services/api.services';
-import moment from 'moment';
-import Entypo from 'react-native-vector-icons/Entypo';
-import SearchBar from '../../Components/searchBar/searchBar';
-import SearchList from '../../Components/modals/searchList/searchList';
-//import {firebaseServices} from '../../services/firebase.services';
-
-const Messages = props => {
+import { API } from "../../services/api.services";
+import Icon from 'react-native-vector-icons/Ionicons';
+import {GlobalStyles} from '../../global/global.styles';
+import moment from "moment";
+import Material from 'react-native-vector-icons/MaterialCommunityIcons';
+import Entypo from "react-native-vector-icons/Entypo";
+import SearchBar from "../../Components/searchBar/searchBar";
+import SearchList from "../../Components/modals/searchList/searchList";
+import { firebaseServices } from "../../services/firebase.services";
+import { WP, HP } from "../../Assets/config/screen-ratio";
+import SwipeableFlatList from 'react-native-swipeable-list';
+const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
+const Messages = (props) => {
   const [messagesList, setmessagesList] = useState([]);
-  const [search, setsearch] = useState('');
+  const [search, setsearch] = useState("");
   const [showModal, setshowModal] = useState(false);
+  const [Loading, setLoading] = useState(true);
   const [userlist, setUserlist] = useState([]);
   const [filterData, setFilterData] = React.useState([]);
- 
+
   async function onResult(QuerySnapshot) {
     let changes = QuerySnapshot.docChanges();
-    changes.forEach(async element => {
+    changes.forEach(async (element) => {
       await getConversationList();
     });
   }
@@ -62,94 +67,127 @@ const Messages = props => {
     setUserlist(list);
   };
   const getConversationList = async () => {
-     firebaseServices.getConversationList().then(Res=>{
-      console.log("Res======>",Res)
-      setmessagesList(...messagesList ,Res);
+    firebaseServices.getConversationList().then((Res) => {
+       console.log("Res======>",Res)
+      setmessagesList(Res);
+      setLoading(false);
     });
-    
-    
   };
-  const onSearch = text => {
+  const QuickActions = item => {
+    return (
+      <View>
+        <View style={styles.swipeAbleButtonContainer}>
+          <TouchableOpacity
+            style={styles.swipeAbleButton}
+            onPress={() => deleteItem(item)}>
+            <Material name={'trash-can-outline'} color="white" size={26} />
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+  const onSearch = (text) => {
     setsearch(text);
     if (text.length > 0) {
       text = text.toLowerCase();
-      const filtered = messagesList.filter(ele =>
-        ele.name?.toLowerCase().includes(text),
+      const filtered = messagesList.filter((ele) =>
+        ele.name?.toLowerCase().includes(text)
       );
       setFilterData(filtered);
     }
   };
-  const createConversation = async item => {
+  const createConversation = async (item) => {
     // await firebaseServices.sendMessage(item);
-    props.navigation.navigate('Convo', {obj: item});
+    props.navigation.navigate("Convo", { obj: item });
     // await firebaseServices.createConversation(item);
   };
-  const renderItem = item => {
+  const renderItem = (item) => {
+    //console.log("Item-----<>", item.lastMessageTime);
     return (
-      <TouchableOpacity
+      <Pressable
         onPress={() => createConversation(item)}
-        style={styles.item}>
-        {/* {item ? (
-          <FastImage
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed
+              ? 'rgb(210, 230, 255)'
+              : 'white'
+          },
+          styles.item
+        ]}>
+        {item ? (
+          <Image
             source={{
               uri: 'https:' + item.thumbnail,
-              priority: 'low',
+              //priority: 'low',
             }}
             resizeMode="cover"
             style={styles.image}
           />
         ) : (
-          <FastImage
+          <Image
             style={styles.image}
             source={require('../../Assets/Imgs/dp.jpeg')}
           />
-        )} */}
-        <View style={styles.infoContainer}>
+        )}
+        <View key={item.key} style={styles.infoContainer}>
           <Text style={styles.userName}>{item.name}</Text>
           <View style={styles.lastMessageTime}>
             <Text
               numberOfLines={1}
               ellipsizeMode="tail"
-              style={styles.lastMessage}>
+              style={styles.lastMessage}
+            >
               {item?.lastMessage}
             </Text>
             <Text style={styles.time}>
-              {moment(item?.lastMessageTime).format('LT')}
+              {moment(item?.lastMessageTime).format("LT")}
             </Text>
           </View>
         </View>
-      </TouchableOpacity>
+      </Pressable>
     );
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={'white'} />
-      <SearchBar
-        onpress={() => props.navigation.navigate('UserList')}
-        val={search}
-        search={onSearch}
-      />
-      <View style={{flex: 1}}>
-        <FlatList
-          data={search.length > 0 ? filterData : messagesList}
-          renderItem={({item}) => renderItem(item)}
-          keyExtractor={(item, index) => index.toString()}
-        />
+<>
+    <SafeAreaView style={{ flex: 0, backgroundColor: '#2b47fc'}} />
+            <View
+            style={{
+              ...GlobalStyles.row,
+              paddingHorizontal: WP(4),
+              paddingTop: HP(2),
+              paddingBottom: HP(1),
+              backgroundColor: '#2b47fc'
+            }}>
+      <Text style={{...GlobalStyles.H1, color: 'white'}}>Messages</Text>
+      <TouchableOpacity 
+      style={{position: 'absolute', right: 20}}
+      onPress={() => props.navigation.navigate('UserList')}
+      >
+      <Entypo name="plus" size={30} color="white"/>
+      </TouchableOpacity>
       </View>
-      {/* <SearchList
-        props={props}
-        show={showModal}
-        setshow={setshowModal}
-        data={userlist}
-        onpress={item => checkConversation(item)}
-      /> */}
-      {/* <TouchableOpacity
-        onPress={() => setshowModal(true)}
-        style={styles.addbutton}>
-        <Entypo color={'black'} name="plus" size={25} />
-      </TouchableOpacity> */}
-    </SafeAreaView>
+      <View style={{ flex: 1 ,backgroundColor: "white"}}>
+        {Loading ? (
+          <>
+            {Array.apply(null, { length: 8 }).map((e, i) => (
+              <View style={styles.item}>
+                <ShimmerPlaceHolder LinearGradient={LinearGradient} />
+              </View>
+            ))}
+          </>
+        ) : (
+          <SwipeableFlatList
+          maxSwipeDistance={90}
+          renderQuickActions={({item}) => QuickActions(item)}
+          style={styles.msgList}
+            data={search.length > 0 ? filterData : messagesList}
+            renderItem={({ item }) => renderItem(item)}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        )}
+      </View>
+    </>
   );
 };
 export default Messages;
