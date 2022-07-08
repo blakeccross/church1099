@@ -65,6 +65,7 @@ const Messages = (props) => {
   };
   const getConversationList = async () => {
     firebaseServices.getConversationList(res=>{
+     
       setmessagesList(res);
       setLoading(false);
     })
@@ -125,7 +126,6 @@ const Messages = (props) => {
       </TouchableOpacity>
     );
   };
-
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={"white"} />
@@ -145,6 +145,7 @@ const Messages = (props) => {
           </>
         ) : (
           <FlatList
+            contentContainerStyle={{ paddingBottom: 100 }}
             data={search.length > 0 ? filterData : messagesList}
             renderItem={({ item }) => renderItem(item)}
             keyExtractor={(item, index) => index.toString()}
