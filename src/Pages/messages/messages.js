@@ -64,11 +64,10 @@ const Messages = (props) => {
     setUserlist(list);
   };
   const getConversationList = async () => {
-    firebaseServices.getConversationList().then((Res) => {
-      // console.log("Res======>",Res)
-      setmessagesList(Res);
+    firebaseServices.getConversationList(res=>{
+      setmessagesList(res);
       setLoading(false);
-    });
+    })
   };
   const onSearch = (text) => {
     setsearch(text);
