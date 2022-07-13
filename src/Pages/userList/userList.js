@@ -14,12 +14,16 @@ import { MaterialIcons } from "@expo/vector-icons";
 import {GlobalStyles} from '../../global/global.styles';
 import {HP, WP} from '../../Assets/config/screen-ratio';
 import {API} from '../../services/api.services';
-//import {firebaseServices} from '../../services/firebase.services';
+import {firebaseServices} from '../../services/firebase.services';
 import styles from './userList.styles';
+import { LinearGradient } from "expo-linear-gradient";
+import { createShimmerPlaceholder } from "react-native-shimmer-placeholder";
 import Feather from 'react-native-vector-icons/Feather';
+const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 const UserList = props => {
   const [search, setsearch] = useState('');
   const [userlist, setUserlist] = useState([]);
+  const [Loading, setLoading] = useState(true);
   const [filterData, setFilterData] = React.useState([]);
   useEffect(() => {
     getUsersList();
@@ -29,6 +33,8 @@ const UserList = props => {
       `https://church1099.com/api/1.1/obj/user`,
     );
     setUserlist(data);
+    //console.log(UserList)
+    setLoading(false)
   };
   const onSearch = text => {
     setsearch(text);
@@ -41,6 +47,7 @@ const UserList = props => {
     }
   };
   const checkConversation = async item => {
+    //console.log("Data=======>",item)
     let obj = await firebaseServices.checkuserMessagesCollection(item);
     props.navigation.replace('Convo', {obj: obj});
   };
@@ -51,11 +58,12 @@ const UserList = props => {
         onPress={() => checkConversation(item)}
         style={{
           ...GlobalStyles.row,
+         width:WP(80),
           justifyContent: 'space-between',
           paddingVertical: HP(1),
           marginHorizontal: WP(8),
         }}>
-        <TouchableOpacity style={{...GlobalStyles.row}}>
+        <View style={{...GlobalStyles.row}}>
           {url?.includes('http') ? (
             <Image source={{uri: url}} style={{...styles.userdp}} />
           ) : (
@@ -64,7 +72,7 @@ const UserList = props => {
           <View style={{paddingLeft: WP(5)}}>
             <Text style={styles.nameTxt}>{item.Name}</Text>
           </View>
-        </TouchableOpacity>
+        </View>
       </TouchableOpacity>
     );
   };
@@ -92,12 +100,25 @@ const UserList = props => {
           />
         </View>
       </View>
+      {Loading ? (
+        <>
+            {Array.apply(null, { length: 8 }).map((e, i) => (
+             
+              <View style={{flexDirection:'row',alignItems:'center',margin:15,backgroundColor:'#fff'}}>
+                <ShimmerPlaceHolder LinearGradient={LinearGradient}  style={{...styles.userdp}}/>
+                <ShimmerPlaceHolder LinearGradient={LinearGradient}  style={{marginHorizontal:10}}/>
+              </View>
+             
+            ))}
+          </>
+      ) :
       <FlatList
       showsVerticalScrollIndicator={false}
         data={search.length > 0 ? filterData : userlist}
         renderItem={({item}) => renderItem(item)}
         keyExtractor={(item, index) => index.toString()}
       />
+      }
     </SafeAreaView>
     </>
   );

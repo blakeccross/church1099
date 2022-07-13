@@ -9,7 +9,7 @@ import {
   FlatList,
 } from 'react-native';
 import {ConvoStyle as Styles} from './conservation.style';
-import { API } from '../../services/api.services';
+//import firestore from '@react-native-firebase/firestore';
 import {GlobalStyles} from '../../global/global.styles';
 import {HP, WP} from '../../Assets/config/screen-ratio';
 import IconBack from 'react-native-vector-icons/Ionicons';
@@ -31,19 +31,25 @@ import {
 import { getApp } from "firebase/app";
 import RenderMessages from '../../Components/renderMethods/renderMessage';
 const Convo = props => {
-  let data = props?.route?.params?.data;
-  //console.log(data)
-  let scrollRef = React.useRef(null)
+    let scrollRef = React.useRef(null)
   const [mod, setMod] = useState(false);
   const [obj, setObj] = useState(props.route.params.obj);
   const [myid, setmyid] = useState('');
   const [allMessages, setallMessages] = useState();
   const [message, setmessage] = useState('');
-
+  const app = getApp();
+    const fireStore = getFirestore(app);
+  async function onResult(QuerySnapshot) {
+    let changes = QuerySnapshot.docChanges();
+    changes.forEach(async element => {
+     
+    });
+  }
   function onError(error) {
     console.error(error);
   }
   useEffect(() => {
+    
     getMessages();
   }, []);
   const sendMessage = async () => {
@@ -52,16 +58,16 @@ const Convo = props => {
     setmessage('');
     // getMessages();
   };
-
   const getMessages = async () => {
     let id = await storageServices.fetchKey('id');
+   
     setmyid(id);
-    let res = await API.getMessages(
-      `${(data._id)}`,
-    );
-    setallMessages(res);
+   await firebaseServices.GetMessages(obj.convoId,(Res=>{
+    //console.log("Res=====>",Res)
+    setallMessages([...Res]);
+   }))
+    
   };
-
   return (
     <>
     <SafeAreaView style={{ flex: 0, backgroundColor: 'white' }} />

@@ -25,12 +25,27 @@ export const MessageStyle = StyleSheet.create({
     color: 'black',
     fontSize: 22,
   },
+  msgList: {
+    marginBottom: 50,
+  },
   nameTxt: {
     fontFamily: fontFamily.medium,
     fontSize: 16,
     color: 'black',
   },
-
+  swipeAbleButton: {
+    width: WP(20),
+    height: HP(10),
+    backgroundColor: '#ff0000',
+    alignSelf: 'center',
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  swipeAbleButtonContainer: {
+    marginLeft: WP(7),
+    //marginRight: WP(4),
+  },
   userName: {
     fontFamily: fontFamily.light,
     fontSize: 18,
@@ -38,10 +53,11 @@ export const MessageStyle = StyleSheet.create({
     fontWeight: '600',
   },
   item: {
+    //backgroundColor: 'white',
     width: '100%',
     height: HP(10),
-    paddingVertical: 10,
-    borderBottomWidth: 0.5,
+    paddingVertical: 5,
+    //borderBottomWidth: 0.5,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,

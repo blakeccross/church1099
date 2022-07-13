@@ -9,12 +9,19 @@ const Splash = props => {
     }, 2000);
   }, []);
   const changeScreen = async () => {
-    let user = await AsyncStorage.getItem('id');
-    if (user != null) {
-      props.navigation.replace('TabNavigator');
-    } else {
-      props.navigation.replace('Home');
-    }
+     await AsyncStorage.getItem('id').then(res=>{
+      if(res != null){
+        props.navigation.replace('TabNavigator')
+      }
+      else {
+        props.navigation.replace('Login');
+      }
+    });
+    // if (user != null) {
+     ;
+    // } else {
+      // props.navigation.replace('Home');
+    // }
   };
   return (
     <SafeAreaView

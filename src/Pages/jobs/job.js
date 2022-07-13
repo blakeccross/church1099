@@ -159,7 +159,7 @@ const Job = (props) => {
             >
               <View style={Styles.item}>
               <Image source={{uri: item?.Photo}} style={{...Styles.dp}} />
-              <View style={{marginHorizontal: WP(4), width: WP(75)}}>
+              <View style={{marginHorizontal: WP(4)}}>
               <Text style={{ ...Styles.keyTxt }}>{item["Job Title"]}</Text>
               <Text
                 style={{ ...Styles.conTxt, color: "#666666", fontSize: 16, paddingHorizontal: 0, fontSize: 14, marginTop: 2 }}

@@ -18,14 +18,14 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import IconCam from "react-native-vector-icons/SimpleLineIcons";
 import fontFamily from "../../Assets/config/fontFamily";
 import { Button } from "../../Components/Button/Button";
-//import { launchImageLibrary, launchCamera } from "react-native-image-picker";
-//import {DocumentPickerOptions} from 'react-native-document-picker';
 import { API } from "../../services/api.services";
 import AlertService from "../../services/alertService";
-//import DropDownPicker from "react-native-dropdown-picker";
-//import PhoneInput from 'react-native-phone-input'
+import PhoneInput from 'react-native-phone-input'
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import * as ImagePicker from 'expo-image-picker';
+import { storageServices } from "../../services/storage.services";
+import { getApp } from "firebase/app";
+import { firebaseServices } from "../../services/firebase.services";
 
 const Signup = (props) => {
   const [img, setImg] = useState("");
@@ -86,18 +86,13 @@ const Signup = (props) => {
       setFormStep((cur) => cur + 1);
     }
   };
-  const validateLocation = () => {
-    setFormStep((cur) => cur + 1);
-    //setLocation(data);
-  };
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
-    
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 1,
+      quality: .2
       //base64: true
     });
 
@@ -105,14 +100,16 @@ const Signup = (props) => {
       setImg(result.uri);
     }
   };
-  
-  
+
   const [isEnabled, setIsEnabled] = useState(true);
   
   const onApply = async () => {
-     //console.log(email, password, name, phone, img, cv, gender, bio, location);
+    // console.log(email, password, name, phone, img, cv, gender, bio, location);
     if (isEnabled) {
-      if (
+
+      let imageName =  Date.now().toString()
+      await firebaseServices.updateProfileImage(imageName,img,(async (ImageProfile)=>{
+              if (
         email != "" &&
         password != "" &&
         name != "" &&
@@ -127,8 +124,9 @@ const Signup = (props) => {
         if (reg.test(email)) {
           setloading(true);
           let res = await API.userSignup(
-            `https://church1099.com/api/1.1/wf/signup?email=${email}&password=${password}&profilephoto=${img}&bio=${bio}&resume=${cv}&location=${location}&gender=${gender}&phone=${phone}&name=${name}&employer?=no`,
-            props
+            `https://church1099.com/api/1.1/wf/signup?email=${email}&password=${password}&profilephoto=${ImageProfile}&bio=${bio}&resume=${cv}&location=${location}&gender=${gender}&phone=${phone}&name=${name}&employer?=no`,
+            props,
+            ImageProfile
           );
           console.log(res);
           setloading(false);
@@ -137,8 +135,11 @@ const Signup = (props) => {
         }
       } else {
         AlertService.show("Missing", "Please provide all required data");
-         console.log("mail::"+email,"pa::"+password, name, phone, img, cv, gender, bio, location);
+        console.log("mail::"+email,"pa::"+password, name, phone, ImageProfile, cv, gender, bio, location);
       }
+      }))
+    
+
     } else {
       AlertService.show(
         "Terms and Condition",
@@ -175,7 +176,7 @@ const Signup = (props) => {
               value={name}
               setValue={setName}
               placeTxt={"Enter your full name"}
-              onSubmit={(name) => validateTextInput(setLocation(name))}
+              onSubmit={completeFormStep}
               returnKeyLabel={"done"}
             />
           </View>
@@ -229,10 +230,10 @@ const Signup = (props) => {
                   fontSize: 16,
                 },
               }}
-              value={location}
-              setValue={setLocation}
+              //value={location}
+              //setValue={setLocation}
               placeholder="Search"
-              onPress={(data, details = null) => {validateLocation(data)}}
+              onPress={(data, details = null) => {completeFormStep(setLocation(data.description))}}
               query={{
                 key: "AIzaSyCqfZsYioXmmp-FpCdAEZjnw8uJ4dwsYFo",
                 language: "en",
@@ -251,13 +252,16 @@ const Signup = (props) => {
             textCol={'black'}
             btnStyle={{backgroundColor: "rgba(247,247,247,1)",}}
             btnTxt={'Male'}
-            onPress={() => {completeFormStep(setGender("Male"))}}/>
-                        <Button
+            onPress={() => {setFormStep((cur) => cur + 1), setGender('Male')}}
+            />
+            <Button
             btnCol={'white'}
             textCol={'black'}
             btnTxt={'Female'}
+            setGender={"Female"}
             btnStyle={{marginTop: 10, backgroundColor: "rgba(247,247,247,1)",}}
-            onPress={completeFormStep(setGender("Female"))}/>
+            onPress={() => {setFormStep((cur) => cur + 1), setGender('Female')}}
+            />
           </View>
         )}
         {formStep === 6 && (

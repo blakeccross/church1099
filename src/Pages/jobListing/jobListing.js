@@ -74,15 +74,6 @@ const JobListing = props => {
                 <Text style={{...Styles.titleTxt}}>
                   {item['Job Title']}
                 </Text>
-                {/*
-                <TouchableOpacity
-                onPress={() =>
-                  //console.log({item: item})
-                    props.navigation.navigate('EditJob', {item: item})
-                }>
-                  <Icon name={'chevron-back'} size={23} color={'black'} />
-                </TouchableOpacity>
-              */}
               </View>
               <View style={Styles.applicantViewContainer}>
                 <Text
@@ -93,22 +84,6 @@ const JobListing = props => {
                   }}>
                   {item?.Category}
                 </Text>
-                {/*
-                <TouchableOpacity
-                  onPress={() =>
-                    //props.navigation.navigate('JobApplicant', {data: item})
-                    console.log({data: item})
-                  }>
-                  <Text
-                    style={{
-                      ...Styles.createTxt,
-                      fontSize: 14,
-                      color: '#000',
-                    }}>
-                    View Applicants
-                  </Text>
-                </TouchableOpacity>
-                  */}
               </View>
               <Text
                 numberOfLines={4}

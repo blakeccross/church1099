@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  FlatList,
   SafeAreaView,
   Text,
   Image,
@@ -20,38 +19,67 @@ import {GlobalStyles} from '../../global/global.styles';
 import moment from "moment";
 import Material from 'react-native-vector-icons/MaterialCommunityIcons';
 import Entypo from "react-native-vector-icons/Entypo";
+import SearchBar from "../../Components/searchBar/searchBar";
+import SearchList from "../../Components/modals/searchList/searchList";
 import { firebaseServices } from "../../services/firebase.services";
 import { WP, HP } from "../../Assets/config/screen-ratio";
 import SwipeableFlatList from 'react-native-swipeable-list';
 const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 const Messages = (props) => {
   const [messagesList, setmessagesList] = useState([]);
-  const [messagesListDetails, setmessagesListDetails] = useState([]);
-  const [messagesListFull, setmessagesListFull] = useState([]);
-  const [selectedMessage, setSelectedMessage] = useState([]);
-  const [Loading, setLoading] = useState(false);
+  const [search, setsearch] = useState("");
+  const [showModal, setshowModal] = useState(false);
+  const [userData, setuserData] = useState('');
+  const [Loading, setLoading] = useState(true);
+  const [userlist, setUserlist] = useState([]);
+  const [filterData, setFilterData] = React.useState([]);
 
+  async function onResult(QuerySnapshot) {
+    let changes = QuerySnapshot.docChanges();
+    changes.forEach(async (element) => {
+      await getConversationList();
+    });
+  }
   function onError(error) {
     console.error(error);
   }
   useEffect(() => {
-    getConvoList();
-    getConvoListDetails();
+    getConversationList();
+    getUsersList();
+    getData();
   }, []);
-
-  const getConvoList = async () => {
-    let data = await API.getConversationList(
-      `https://church1099.com/api/1.1/wf/conversations?UserID=1599771467039x820731645948684800`,
-    );
-    setmessagesList(data);
+  const getData = async () => {
+    let res = await API.getUser();
+    setuserData(res);
+    console.log(userData)
   };
-  const getConvoListDetails = async () => {
-    let data = await API.getConversationListDetails(
-      `https://church1099.com/api/1.1/wf/convo_details?UserID=1599771467039x820731645948684800`,
-    );
-    setmessagesListDetails(data);
+  const getUsersList = async () => {
+    let ids = [];
+    let name = [];
+    let image = [];
+    let list = [];
+    let url = `https://church1099.com/api/1.1/wf/conversations?UserID=1599771467039x820731645948684800`;
+    const data = await API.getUserList(url);
+    ids = data?.response?.ID;
+    name = data?.response?.Name;
+    image = data?.response?.ProfilePhoto;
+    for (let index = 0; index < ids.length; index++) {
+      let item = {
+        name: name[index],
+        id: ids[index],
+        image: image[index],
+      };
+      list.push(item);
+    }
+    setUserlist(list);
   };
-
+  const getConversationList = async () => {
+    firebaseServices.getConversationList(res=>{
+     
+      setmessagesList(res);
+      setLoading(false);
+    })
+  };
   const QuickActions = item => {
     return (
       <View>
@@ -65,17 +93,26 @@ const Messages = (props) => {
       </View>
     );
   };
-
-  const Conversation = async (item) => {
-    setSelectedMessage(item)
-    //console.log({data: selectedMessage})
-    props.navigation.navigate("Convo", {data: selectedMessage});
+  const onSearch = (text) => {
+    setsearch(text);
+    if (text.length > 0) {
+      text = text.toLowerCase();
+      const filtered = messagesList.filter((ele) =>
+        ele.name?.toLowerCase().includes(text)
+      );
+      setFilterData(filtered);
+    }
   };
-  const renderItem = item => {
-    //console.log("Item-----<>", item);
+  const createConversation = async (item) => {
+    // await firebaseServices.sendMessage(item);
+    props.navigation.navigate("Convo", { obj: item });
+    // await firebaseServices.createConversation(item);
+  };
+  const renderItem = (item) => {
+    //console.log("Item-----<>", item.lastMessageTime);
     return (
       <Pressable
-        onPress={() => Conversation(item)}
+        onPress={() => createConversation(item)}
         style={({ pressed }) => [
           {
             backgroundColor: pressed
@@ -87,7 +124,7 @@ const Messages = (props) => {
         {item ? (
           <Image
             source={{
-              uri: 'https:' + item['Profile Photo'],
+              uri: 'https:' + item.thumbnail,
               //priority: 'low',
             }}
             resizeMode="cover"
@@ -100,7 +137,7 @@ const Messages = (props) => {
           />
         )}
         <View key={item.key} style={styles.infoContainer}>
-          <Text style={styles.userName}>{item.Name}</Text>
+          <Text style={styles.userName}>{item.name}</Text>
           <View style={styles.lastMessageTime}>
             <Text
               numberOfLines={1}
@@ -147,10 +184,12 @@ const Messages = (props) => {
             ))}
           </>
         ) : (
-          <FlatList
-          showsVerticalScrollIndicator={false}
-            data={finalObject}
-            renderItem={({item}) => renderItem(item)}
+          <SwipeableFlatList
+          maxSwipeDistance={90}
+          renderQuickActions={({item}) => QuickActions(item)}
+          style={styles.msgList}
+            data={search.length > 0 ? filterData : messagesList}
+            renderItem={({ item }) => renderItem(item)}
             keyExtractor={(item, index) => index.toString()}
           />
         )}

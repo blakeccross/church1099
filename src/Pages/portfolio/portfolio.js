@@ -13,12 +13,9 @@ import {CONST} from '../../Assets/config/constants';
 import fontFamily from '../../Assets/config/fontFamily';
 import {HP, WP} from '../../Assets/config/screen-ratio';
 import { Ionicons } from '@expo/vector-icons'; 
-import Material from 'react-native-vector-icons/MaterialCommunityIcons';
 import {GlobalStyles} from '../../global/global.styles';
 import {NotiStyle as Styles} from './port.style';
 import {API} from '../../services/api.services';
-import SwipeableFlatList from 'react-native-swipeable-list';
-import moment from 'moment';
 const Portfolio = props => {
   const [ports, setallNotification] = useState([]);
   useEffect(() => {

@@ -14,10 +14,10 @@ async function getHeaderConfig() {
 }
 
 const getUrl = rel => `${base_url}${rel}`;
-const signup = (url, props) => {
+const signup = (url, props, ImageProfile) => {
   axios
     .post(
-      `${base_url}signup?email=${email}&password=${password}&profilephoto=${img}&bio=${bio}&gender=${gender}&resume=${cv}&location=${location}&phone=${phone}&name=${name}&employer=${employer}`,
+      `${base_url}signup?email=${email}&password=${password}&profilephoto=${ImageProfile}&bio=${bio}&gender=${gender}&resume=${cv}&location=${location}&phone=${phone}&name=${name}&employer=${employer}`,
     )
     .then(async res => {
       // console.log(res);
@@ -32,7 +32,7 @@ const signup = (url, props) => {
       );
     })
     .catch(err => {
-       console.log('error', err);
+      // console.log('error', err);
       AlertService.show('Error', 'Again signup & provide required data!');
     });
 };
@@ -46,7 +46,6 @@ const userSignup = async (url, props) => {
       'Content-Type': 'application/json',
     },
   };
-  console.log(url)
   await axios(config)
     .then(async res => {
       response = res?.data;
@@ -273,11 +272,11 @@ const updateJobInfo = async (
       AlertService.show('Error', 'Enter Valid Data!');
     });
 };
-const GetMessageList = async relativeUrl => {
+const getMessages = async relativeUrl => {
   const token = await AsyncStorage.getItem('token');
-  const url = getUrl(relativeUrl);
+  const url = `${base_url}messages?convoID=${relativeUrl}`;
   let response = '';
-  // console.log('url :', url, 'token', token);
+  console.log('url :', url, 'token', token);
   const config = {
     method: 'POST',
     url: url,
@@ -290,17 +289,11 @@ const GetMessageList = async relativeUrl => {
   };
   await axios(config)
     .then(res => {
-      // console.log('res', res.data);
-      response = res;
+      //console.log('res', res.data.response.messages);
+      response = res.data.response.messages;
     })
     .catch(error => {
-      // console.log('error', error);
-      if (error?.response?.status == 400) {
-        // AlertService.show(
-        //   'Wrong Old Password',
-        //   'Kindly write correct old password!',
-        // );
-      }
+      console.log('error', error);
     });
   return response;
 };
@@ -347,7 +340,7 @@ const userListForChat = async relativeUrl => {
   };
   await axios(config)
     .then(res => {
-      //console.log('res', res.data);
+      console.log('res', res.data);
       response = res.data.response.results;
     })
     .catch(error => {
@@ -361,9 +354,9 @@ const getConversationList = async relativeUrl => {
   const token = await AsyncStorage.getItem('token');
   // const url = getUrl(relativeUrl);
   let response = '';
-  // console.log('url :', relativeUrl, 'token', token);
+  //console.log('url :', relativeUrl, 'token', token);
   const config = {
-    method: 'GET',
+    method: 'POST',
     url: relativeUrl,
     headers: {
       Accept: 'application/json',
@@ -374,8 +367,35 @@ const getConversationList = async relativeUrl => {
   };
   await axios(config)
     .then(res => {
-      // console.log('res', res.data);
-      response = res;
+      //console.log('res', res.data.response.convos);
+      response = res.data.response.convos;
+    })
+    .catch(error => {
+      // console.log('error', error);
+      if (error?.response?.status == 400) {
+      }
+    });
+  return response;
+};
+const getConversationListDetails = async relativeUrl => {
+  const token = await AsyncStorage.getItem('token');
+  // const url = getUrl(relativeUrl);
+  let response = '';
+  //console.log('url :', relativeUrl, 'token', token);
+  const config = {
+    method: 'POST',
+    url: relativeUrl,
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    data: {},
+  };
+  await axios(config)
+    .then(res => {
+      //console.log('res', res.data.response.convos);
+      response = res.data.response.convos;
     })
     .catch(error => {
       // console.log('error', error);
@@ -447,7 +467,7 @@ const getAllSkills = async () => {
 };
 const addExperience = async data => {
   const token = await AsyncStorage.getItem('token');
-  console.log(token);
+  //console.log(token);
   let response = '';
   // let url =
   //   'https://church1099.com/api/1.1/wf/create_experience?title=Testing&company=delete Me&photo&type=Full-Time&start=01/02/2020&end=01/03/2020&description=Test description';
@@ -595,8 +615,9 @@ export const API = {
   getNotifications,
   searchJob,
   updateJobInfo,
-  GetMessageList,
+  getMessages,
   getConversationList,
+  getConversationListDetails,
   getUserList,
   getExperienceList,
   getSkillSet,

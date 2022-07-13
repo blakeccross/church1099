@@ -8,20 +8,32 @@ const RenderMessages = ({item, myid}) => {
     <View
       style={{
         ...styles.container,
-        alignSelf: item.createdBy == myid ? 'flex-end' : 'flex-start',
+        alignSelf: item['Created By'] == myid ? 'flex-end' : 'flex-start',
       }}>
-      {item.createdBy == myid ? (
+      {item['Created By'] == myid ? (
+        <View style={{borderRadius: 17, borderTopRightRadius: 0, backgroundColor: '#2b47fc', marginVertical: 2, marginRight: 10, maxWidth: WP(80)}}>
         <Text
           style={{
-            ...styles.text,
+            fontSize: 16,
+            paddingHorizontal: 15,
+            paddingVertical: 10,
             textAlign: 'left',
-            backgroundColor: '#EDEFF3',
+            color: 'white',
+          }}>
+          {item.content}
+        </Text>
+        </View>
+      ) : (
+        <View style={{borderRadius: 17, borderTopLeftRadius: 0,backgroundColor: 'rgba(247,247,247,1)', marginVertical: 2, marginLeft: 10, maxWidth: WP(80)}}>
+        <Text           style={{
+          fontSize: 16,
+            paddingHorizontal: 15,
+            paddingVertical: 10,
+            textAlign: 'left',
             color: 'black',
           }}>
-          {item.mymsg}
-        </Text>
-      ) : (
-        <Text style={styles.text}>{item.mymsg}</Text>
+            {item.content}</Text>
+        </View>
       )}
     </View>
   );
@@ -31,13 +43,12 @@ const RenderMessages = ({item, myid}) => {
 const styles = StyleSheet.create({
   container: {},
   text: {
-    color: 'white',
+    color: 'black',
     textAlign: 'left',
     textAlignVertical: 'center',
     paddingHorizontal: 15,
-    backgroundColor: 'dodgerblue',
+    backgroundColor: '#EDEFF3',
     minHeight: HP(7),
-    backgroundColor: 'dodgerblue',
     borderRadius: 15,
     maxWidth: WP(70),
     fontSize: 14,
