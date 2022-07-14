@@ -49,7 +49,8 @@ const Messages = (props) => {
     let data = await API.getConversationListDetails(
       `https://church1099.com/api/1.1/wf/convo_details?UserID=1599771467039x820731645948684800`,
     );
-    setmessagesListDetails(data);
+    let showMessages = data.map((item, i) => Object.assign({}, item, messagesList[i]));
+    setmessagesListDetails(showMessages);
   };
 
   const QuickActions = item => {
@@ -67,12 +68,13 @@ const Messages = (props) => {
   };
 
   const Conversation = async (item) => {
+    console.log("Data========>",item)
     setSelectedMessage(item)
     //console.log({data: selectedMessage})
     props.navigation.navigate("Convo", {data: selectedMessage});
   };
   const renderItem = item => {
-    //console.log("Item-----<>", item);
+    console.log("Item-----<>", item);
     return (
       <Pressable
         onPress={() => Conversation(item)}
@@ -149,7 +151,7 @@ const Messages = (props) => {
         ) : (
           <FlatList
           showsVerticalScrollIndicator={false}
-            data={finalObject}
+            data={messagesListDetails}
             renderItem={({item}) => renderItem(item)}
             keyExtractor={(item, index) => index.toString()}
           />
