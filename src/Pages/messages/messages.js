@@ -36,22 +36,25 @@ const Messages = (props) => {
   }
   useEffect(() => {
     getConvoList();
-    getConvoListDetails();
+    // getConvoListDetails();
   }, []);
 
   const getConvoList = async () => {
     let data = await API.getConversationList(
       `https://church1099.com/api/1.1/wf/conversations?UserID=1599771467039x820731645948684800`,
     );
-    setmessagesList(data);
-  };
-  const getConvoListDetails = async () => {
-    let data = await API.getConversationListDetails(
+    let dataDetail = await API.getConversationListDetails(
       `https://church1099.com/api/1.1/wf/convo_details?UserID=1599771467039x820731645948684800`,
     );
-    let showMessages = data.map((item, i) => Object.assign({}, item, messagesList[i]));
+   const showMessages  = dataDetail.map(x => x).map((x, i) => {
+      let { _id, ...rest } = x
+      return { ...rest, user_id: _id, ...data[i] }
+    })
     setmessagesListDetails(showMessages);
   };
+  // const getConvoListDetails = async () => {
+    
+  // };
 
   const QuickActions = item => {
     return (
@@ -68,13 +71,13 @@ const Messages = (props) => {
   };
 
   const Conversation = async (item) => {
-    console.log("Data========>",item)
+    // console.log("Data========>",item)
     setSelectedMessage(item)
     //console.log({data: selectedMessage})
     props.navigation.navigate("Convo", {data: selectedMessage});
   };
   const renderItem = item => {
-    console.log("Item-----<>", item);
+    // console.log("Item-----<>", item);
     return (
       <Pressable
         onPress={() => Conversation(item)}
