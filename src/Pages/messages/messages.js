@@ -72,9 +72,9 @@ const Messages = (props) => {
 
   const Conversation = async (item) => {
     // console.log("Data========>",item)
-    setSelectedMessage(item)
+    // setSelectedMessage(item)
     //console.log({data: selectedMessage})
-    props.navigation.navigate("Convo", {data: selectedMessage});
+    props.navigation.navigate("Convo", {data: item});
   };
   const renderItem = item => {
     // console.log("Item-----<>", item);
