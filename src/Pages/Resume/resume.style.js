@@ -4,7 +4,7 @@ import fontFamily from "../../Assets/config/fontFamily";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { GlobalStyles } from "../../global/global.styles";
 
-export const SettingStyle = StyleSheet.create({
+export const ResumeStyle = StyleSheet.create({
   container: {
     ...GlobalStyles.container,
     //backgroundColor: 'rgb(244,244,245)',

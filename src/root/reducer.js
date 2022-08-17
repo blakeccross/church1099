@@ -1,25 +1,23 @@
 const initialState = {
-    backgroundColor: 'red',
-    user: {},
-    mode: "start",
+  backgroundColor: "red",
+  user: {},
+  mode: "start",
 };
 
 export const reducer = (state = initialState, action) => {
-    switch (action.type) {
+  switch (action.type) {
+    case "CHANGE_BACKGROUND_COLOR":
+      return {
+        ...state,
+        backgroundColor: action.payload,
+      };
+    case "user":
+      return {
+        ...state,
+        user: action.payload,
+      };
 
-        case 'CHANGE_BACKGROUND_COLOR':
-            return {
-                ...state,
-                backgroundColor: action.payload
-            }
-        case 'user':
-            return {
-                ...state,
-                user: action.payload
-            }
-        // break;
-
-        default:
-            return state;
-    }
-}
+    default:
+      return state;
+  }
+};

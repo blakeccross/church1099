@@ -5,15 +5,20 @@ import fontFamily from "../../Assets/config/fontFamily";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { GlobalStyles } from "../../global/global.styles";
 
-export const SearchStyle = StyleSheet.create({
+export const MyJobsStyle = StyleSheet.create({
   container: {
     ...GlobalStyles.container,
     backgroundColor: "white",
   },
   createTxt: {
+    color: "#333333",
+    fontSize: 20,
+    fontFamily: fontFamily.light,
+  },
+  titleTxt: {
+    color: "#333333",
+    fontSize: 18,
     fontFamily: fontFamily.bold,
-    fontSize: 25,
-    color: "#000000",
   },
   nothingTxt: {
     fontFamily: fontFamily.light,
@@ -27,31 +32,16 @@ export const SearchStyle = StyleSheet.create({
     color: "rgb(0,0,0)",
     padding: 10,
   },
-  jobTxt: {
-    color: "#333333",
-    fontSize: 30,
-    fontFamily: fontFamily.bold,
-  },
-  conTxt: {
-    color: "#333333",
-    fontSize: 25,
-    fontFamily: fontFamily.light,
-    paddingHorizontal: WP(20),
+  applicantViewContainer: {
+    justifyContent: "space-between",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexDirection: "row",
+    paddingVertical: HP(0.5),
   },
   keyTxt: {
     color: "#333333",
     fontSize: 20,
     fontFamily: fontFamily.bold,
-  },
-  searchSection: {
-    flexDirection: "row",
-    width: WP(80),
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    marginRight: WP(3),
-    marginTop: 10,
-    backgroundColor: "white",
-    borderRadius: 10,
   },
 });

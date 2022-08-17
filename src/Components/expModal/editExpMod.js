@@ -9,41 +9,38 @@ import {
   Switch,
   ScrollView,
 } from "react-native";
-//import ReactNativeModal from 'react-native-modal';
+import { API } from "../../services/api.services";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import fontFamily from "../../Assets/config/fontFamily";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { GlobalStyles } from "../../global/global.styles";
 import { Button } from "../Button/Button";
 import { Input } from "../Input/Input";
-import Icon from "react-native-vector-icons/Entypo";
-import { SVGS } from "../../Assets/Svgs";
+import { Ionicons } from "@expo/vector-icons";
 import moment from "moment";
-export const ExpModal = ({
-  show,
-  setShow,
-  onPress,
-  title,
-  setTitle,
-  empType,
-  setEmpType,
-  cmpName,
-  setCmpName,
-  location,
-  setLocation,
-  isworking,
-  setIsworking,
-  startDate,
-  setStart,
-  endDate,
-  setEndDate,
-  description,
-  setDescription,
-  pressSave,
-}) => {
-  const toggleSwitch = () => setIsworking(!isworking);
+
+export const EditExpModal = ({ exp, show, setShow, onPress, pressSave }) => {
+  const [title, setTitle] = useState("");
+  const [empType, setEmpType] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [isEmployee, setisEmployee] = useState(true);
+  const [isWorking, setIsWorking] = useState("");
+  const [location, setLocation] = useState("");
+  const [description, setDescription] = useState("");
+  const toggleSwitch = () => setIsWorking(!isWorking);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [dateType, setdateType] = useState("");
+
+  useEffect(() => {
+    setTitle(exp.Title);
+    setEmpType(exp["Employment Type"]);
+    setCompanyName(exp.Company);
+    setLocation(exp.Location);
+    setStartDate(exp["Start Date"]);
+    setDescription(exp.Description);
+  }, [exp]);
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -54,35 +51,60 @@ export const ExpModal = ({
   };
 
   const handleConfirm = (date) => {
-    console.log(date);
     if (dateType == "start") {
-      setStart(moment(date).format("YYYY-MM-DD"));
+      setStartDate(moment(date).format("YYYY-MM-DD"));
     } else {
       setEndDate(moment(date).format("YYYY-MM-DD"));
     }
     setDatePickerVisibility(false);
   };
+  const editExperience = async () => {
+    setShow(false);
+    let obj = {
+      Company: companyName,
+      Title: title,
+      ["Employment Type"]: empType,
+      ["Current Position"]: isEmployee,
+      Location: location,
+      ["Start Date"]: startDate,
+      ...(endDate.length > 0 && { ["End Date"]: endDate }),
+      Description: description,
+    };
+    let id = exp._id;
+
+    await API.editExperience(obj, id);
+  };
+
   return (
     <Modal
       animationType={"slide"}
       visible={show}
-      //transparent={true}
-      presentationStyle={"pageSheet"}
-      //selectedJob={selectedJob}
-      //style={{margin: 0}}
+      presentationStyle={"FullScreen"}
       onRequestClose={() => setShow(false)}
       onBackButtonPress={() => setShow(false)}
       onBackdropPress={() => setShow(false)}
     >
       <View
         style={{
-          paddingHorizontal: WP(6),
-          paddingTop: HP(3),
+          paddingTop: HP(7),
+          paddingBottom: HP(2),
+          ...GlobalStyles.row,
+          justifyContent: "center",
+          alignContent: "center",
         }}
       >
-        <TouchableOpacity onPress={() => setShow(false)}>
-          <Text style={{ color: "blue", textAlign: "right" }}>Cancel</Text>
+        <TouchableOpacity
+          onPress={() => setShow(false)}
+          style={{
+            paddingHorizontal: WP(3),
+            position: "absolute",
+            left: 0,
+            top: HP(6),
+          }}
+        >
+          <Ionicons name="ios-close-sharp" size={35} color="#333333" />
         </TouchableOpacity>
+        <Text style={{ ...GlobalStyles.H3 }}>Edit Experience</Text>
       </View>
       <View style={{ marginBottom: HP(10), paddingHorizontal: HP(3) }}>
         <ScrollView
@@ -96,9 +118,7 @@ export const ExpModal = ({
                 justifyContent: "space-between",
                 paddingBottom: HP(1),
               }}
-            >
-              <Text style={{ ...GlobalStyles.H2 }}>Add Experience</Text>
-            </View>
+            ></View>
             <Text style={{ ...Styles.enterTxt }}>Job Title</Text>
             <Input value={title} setValue={setTitle} />
             <Text style={{ ...Styles.enterTxt, paddingTop: HP(1) }}>
@@ -108,12 +128,7 @@ export const ExpModal = ({
             <Text style={{ ...Styles.enterTxt, paddingTop: HP(1) }}>
               Company Name
             </Text>
-            <View style={{ ...GlobalStyles.row }}>
-              <SVGS.photo />
-              <View style={{ flex: 1, marginLeft: WP(5) }}>
-                <Input value={cmpName} setValue={setCmpName} />
-              </View>
-            </View>
+            <Input value={companyName} setValue={setCompanyName} />
             <Text style={{ ...Styles.enterTxt, paddingTop: HP(1) }}>
               Location
             </Text>
@@ -124,10 +139,10 @@ export const ExpModal = ({
               </Text>
               <Switch
                 trackColor={{ false: "#767577", true: "#81b0ff" }}
-                thumbColor={isworking ? "#ffff" : "#f4f3f4"}
+                thumbColor={isWorking ? "#ffff" : "#f4f3f4"}
                 ios_backgroundColor="#3e3e3e"
                 onValueChange={toggleSwitch}
-                value={isworking}
+                value={isWorking}
                 style={{ marginLeft: 0 }}
               />
             </View>
@@ -147,15 +162,14 @@ export const ExpModal = ({
                     setdateType("start");
                   }}
                 >
-                  <Input
-                    setValue={setStart}
-                    value={startDate}
-                    editable={false}
-                    placeTxt={""}
-                  />
+                  <View style={Styles.input}>
+                    <Text style={{ ...Styles.enterTxt }}>
+                      {moment(startDate).format("MMM YYYY")}
+                    </Text>
+                  </View>
                 </TouchableOpacity>
               </View>
-              {!isworking ? (
+              {isWorking ? (
                 <></>
               ) : (
                 <View style={{ width: "48%" }}>
@@ -163,17 +177,14 @@ export const ExpModal = ({
                   <TouchableOpacity
                     onPress={() => {
                       setDatePickerVisibility(true);
-
                       setdateType("end");
                     }}
                   >
-                    <Input
-                      setValue={setEndDate}
-                      value={endDate}
-                      editable={false}
-                      placeTxt={""}
-                    />
-                    {/* <Text>jskdjkjdkj</Text> */}
+                    <View style={Styles.input}>
+                      <Text style={{ ...Styles.enterTxt }}>
+                        {moment(endDate).format("MMM YYYY")}
+                      </Text>
+                    </View>
                   </TouchableOpacity>
                 </View>
               )}
@@ -185,11 +196,11 @@ export const ExpModal = ({
                 onChangeText={(e) => setDescription(e)}
                 multiline
                 placeholder=""
-                style={{ ...Styles.input }}
+                style={{ ...Styles.multiInput }}
               />
             </View>
             <View style={{ marginTop: HP(5) }}>
-              <Button onPress={pressSave} btnTxt={"Add Experience"} />
+              <Button onPress={editExperience} btnTxt={"Edit Experience"} />
             </View>
           </View>
         </ScrollView>
@@ -227,8 +238,18 @@ const Styles = StyleSheet.create({
     fontSize: 15,
     paddingBottom: 2,
   },
-
   input: {
+    justifyContent: "center",
+    borderWidth: 0,
+    height: 45,
+    width: "100%",
+    backgroundColor: "rgba(247,247,247,1)",
+    color: "rgb(0,0,0)",
+    padding: 10,
+    borderRadius: 10,
+    paddingTop: 7,
+  },
+  multiInput: {
     borderWidth: 0,
     height: 100,
     width: "100%",
@@ -239,4 +260,4 @@ const Styles = StyleSheet.create({
     paddingTop: 7,
   },
 });
-export default ExpModal;
+export default EditExpModal;

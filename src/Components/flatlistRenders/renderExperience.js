@@ -30,21 +30,6 @@ const RenderExperience = ({item}) => {
           {moment(item['End Date']).format(' - MMM YYYY')}
         </Text>
       </View>
-      {/* {item['Current Position'] ? (
-        <View style={{flexDirection: 'row', marginTop: 10}}>
-          <Text style={styles.headingText}> Experince:{'  '}</Text>
-          <Text style={styles.description}>
-            {moment(item['End Date']).diff(item['Start Date'])}
-          </Text>
-        </View>
-      ) : (
-        <View style={{flexDirection: 'row', marginTop: 10}}>
-          <Text style={styles.headingText}> Joining Date:{'  '}</Text>
-          <Text style={styles.description}>
-            {moment(date).format('YYYY-MM-DD')}
-          </Text>
-        </View>
-      )} */}
     </View>
   );
 };

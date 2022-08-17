@@ -11,16 +11,11 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Job from "../Pages/jobs/job";
 import { HP, WP } from "../Assets/config/screen-ratio";
 import fontFamily from "../Assets/config/fontFamily";
-import { MsgNavigator } from "./msgNavigator";
 import Profile from "../Pages/profile/profile";
 import Notification from "../Pages/notification/notification";
 import Messages from "../Pages/messages/messages";
-import CreateJob from "../Pages/createJob/createJob";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
-import { FontAwesome5 } from "@expo/vector-icons";
 import { Icons } from "../Assets/Icons";
-
+import * as Haptics from "expo-haptics";
 
 const Tab = createBottomTabNavigator();
 const Styles = StyleSheet.create({
@@ -63,11 +58,15 @@ export const TabNavigator = () => {
       <Tab.Screen
         name="Jobs"
         component={Job}
+        listeners={() => ({
+          tabPress: () => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          },
+        })}
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={{ ...Styles.iconView }}>
               {focused ? <Icons.Briefcase_Focused /> : <Icons.Briefcase />}
-
             </View>
           ),
         }}
@@ -75,6 +74,11 @@ export const TabNavigator = () => {
       <Tab.Screen
         name="Notification"
         component={Notification}
+        listeners={() => ({
+          tabPress: () => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          },
+        })}
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={{ ...Styles.iconView }}>
@@ -86,6 +90,11 @@ export const TabNavigator = () => {
       <Tab.Screen
         name="Messages"
         component={Messages}
+        listeners={() => ({
+          tabPress: () => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          },
+        })}
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={{ ...Styles.iconView }}>
@@ -97,11 +106,15 @@ export const TabNavigator = () => {
       <Tab.Screen
         name="Profile"
         component={Profile}
+        listeners={() => ({
+          tabPress: () => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          },
+        })}
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={{ ...Styles.iconView }}>
               {focused ? <Icons.User_Focused /> : <Icons.User />}
-
             </View>
           ),
         }}

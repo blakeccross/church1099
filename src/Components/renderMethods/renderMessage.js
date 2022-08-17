@@ -2,8 +2,10 @@
 import React, {Component} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {HP, WP} from '../../Assets/config/screen-ratio';
+import moment from 'moment';
 
 const RenderMessages = ({item, myid}) => {
+  //console.log(item)
   return (
     <View
       style={{
@@ -22,10 +24,21 @@ const RenderMessages = ({item, myid}) => {
           }}>
           {item.content}
         </Text>
+        <Text
+        style={{
+          fontSize: 13,
+            paddingHorizontal: 15,
+            paddingBottom: 10,
+            textAlign: 'right',
+            color: 'white',
+          }}>
+            {moment(item['Created Date']).format('MMM Do, h:mm a')}
+            </Text>
         </View>
       ) : (
         <View style={{borderRadius: 17, borderTopLeftRadius: 0,backgroundColor: 'rgba(247,247,247,1)', marginVertical: 2, marginLeft: 10, maxWidth: WP(80)}}>
-        <Text           style={{
+        <Text
+        style={{
           fontSize: 16,
             paddingHorizontal: 15,
             paddingVertical: 10,
@@ -33,6 +46,16 @@ const RenderMessages = ({item, myid}) => {
             color: 'black',
           }}>
             {item.content}</Text>
+            <Text
+        style={{
+          fontSize: 13,
+            paddingHorizontal: 15,
+            paddingBottom: 10,
+            textAlign: 'left',
+            color: 'black',
+          }}>
+            {moment(item['Created Date']).format('MMM Do, h:mm a')}
+            </Text>
         </View>
       )}
     </View>

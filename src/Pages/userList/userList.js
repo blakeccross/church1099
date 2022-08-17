@@ -1,5 +1,5 @@
 //import liraries
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,119 +7,124 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
+  Pressable,
   SafeAreaView,
-} from 'react-native';
-import {Header} from '../../Components/header/header';
+} from "react-native";
+import { Header } from "../../Components/header/header";
 import { MaterialIcons } from "@expo/vector-icons";
-import {GlobalStyles} from '../../global/global.styles';
-import {HP, WP} from '../../Assets/config/screen-ratio';
-import {API} from '../../services/api.services';
-import {firebaseServices} from '../../services/firebase.services';
-import styles from './userList.styles';
+import { GlobalStyles } from "../../global/global.styles";
+import { HP, WP } from "../../Assets/config/screen-ratio";
+import { API } from "../../services/api.services";
+import styles from "./userList.styles";
 import { LinearGradient } from "expo-linear-gradient";
 import { createShimmerPlaceholder } from "react-native-shimmer-placeholder";
-import Feather from 'react-native-vector-icons/Feather';
+import { storageServices } from "../../services/storage.services";
+
 const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
-const UserList = props => {
-  const [search, setsearch] = useState('');
+const UserList = (props) => {
+  const [query, setQuery] = useState("");
   const [userlist, setUserlist] = useState([]);
   const [Loading, setLoading] = useState(true);
-  const [filterData, setFilterData] = React.useState([]);
   useEffect(() => {
     getUsersList();
   }, []);
   const getUsersList = async () => {
-    let data = await API.userListForChat(
-      `https://church1099.com/api/1.1/obj/user`,
-    );
+    let data = await API.searchUsers(query);
     setUserlist(data);
-    //console.log(UserList)
-    setLoading(false)
+    setLoading(false);
   };
-  const onSearch = text => {
-    setsearch(text);
-    if (text.length > 0) {
-      text = text.toLowerCase();
-      const filtered = userlist.filter(ele =>
-        ele.Name?.toLowerCase().includes(text),
-      );
-      setFilterData(filtered);
-    }
+  const onSearch = () => {
+    setLoading(true);
+    getUsersList();
   };
-  const checkConversation = async item => {
-    //console.log("Data=======>",item)
-    let obj = await firebaseServices.checkuserMessagesCollection(item);
-    props.navigation.replace('Convo', {obj: obj});
+  const checkConversation = async (item) => {
+    let id = await storageServices.fetchKey("id");
+    let convoUsers = [item._id, id];
+    let res = await API.createConvo(convoUsers);
+    let data = { ...item, ...res };
+    props.navigation.replace("Convo", { data: data });
   };
-  const renderItem = item => {
-    let url = item['Profile Photo'];
+  const renderItem = (item) => {
+    let url = item["Profile Photo"];
     return (
-      <TouchableOpacity
+      <Pressable
         onPress={() => checkConversation(item)}
-        style={{
-          ...GlobalStyles.row,
-         width:WP(80),
-          justifyContent: 'space-between',
-          paddingVertical: HP(1),
-          marginHorizontal: WP(8),
-        }}>
-        <View style={{...GlobalStyles.row}}>
-          {url?.includes('http') ? (
-            <Image source={{uri: url}} style={{...styles.userdp}} />
-          ) : (
-            <Image source={{uri: `https:${url}`}} style={{...styles.userdp}} />
-          )}
-          <View style={{paddingLeft: WP(5)}}>
-            <Text style={styles.nameTxt}>{item.Name}</Text>
-          </View>
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? "rgb(210, 230, 255)" : "white",
+          },
+          styles.item,
+        ]}
+      >
+        {item["Profile Photo"] ? (
+          <Image
+            source={{
+              uri: "https:" + item["Profile Photo"],
+              //priority: 'low',
+            }}
+            resizeMode="cover"
+            style={styles.image}
+          />
+        ) : (
+          <Image
+            style={styles.image}
+            source={require("../../Assets/Imgs/dp.jpg")}
+          />
+        )}
+        <View key={item.key} style={styles.infoContainer}>
+          <Text style={styles.userName}>{item.Name}</Text>
         </View>
-      </TouchableOpacity>
+      </Pressable>
     );
   };
   return (
     <>
-    <SafeAreaView style={{ flex: 0, backgroundColor: '#2b47fc' }} />
-    <SafeAreaView style={{...styles.container}}>
-      <Header title= "New Message" onPress={() => props.navigation.goBack()}/>
-      <View style={styles.searchBarContainer}>
-        <Text style={styles.searchText}>To</Text>
-        <View style={{ ...styles.searchSection }}>
-          <MaterialIcons
-            style={GlobalStyles.searchIcon}
-            name="search"
-            size={20}
-            color="#666666"
-          />
-          <TextInput
-            style={{...GlobalStyles.input, backgroundColor: 'white'}}
-            placeholderTextColor="#666666"
-            returnKeyType={"search"}
-            placeholder="Search"
-            onChangeText={(e) => setValue(e)}
-            onSubmitEditing={() => onSearch()}
-          />
+      <SafeAreaView style={{ flex: 0, backgroundColor: "#2b47fc" }} />
+      <SafeAreaView style={{ ...styles.container }}>
+        <Header title="New Message" onPress={() => props.navigation.goBack()} />
+        <View style={styles.searchBarContainer}>
+          <Text style={styles.searchText}>To</Text>
+          <View style={{ ...styles.searchSection }}>
+            <MaterialIcons
+              style={GlobalStyles.searchIcon}
+              name="search"
+              size={20}
+              color="#666666"
+            />
+            <TextInput
+              style={{ ...GlobalStyles.input, backgroundColor: "white" }}
+              placeholderTextColor="#666666"
+              returnKeyType={"search"}
+              placeholder="Search"
+              onChangeText={(e) => setQuery(e)}
+              onSubmitEditing={() => onSearch()}
+            />
+          </View>
         </View>
-      </View>
-      {Loading ? (
-        <>
+        {Loading ? (
+          <>
             {Array.apply(null, { length: 8 }).map((e, i) => (
-             
-              <View style={{flexDirection:'row',alignItems:'center',margin:15,backgroundColor:'#fff'}}>
-                <ShimmerPlaceHolder LinearGradient={LinearGradient}  style={{...styles.userdp}}/>
-                <ShimmerPlaceHolder LinearGradient={LinearGradient}  style={{marginHorizontal:10}}/>
+              <View style={styles.item}>
+                <ShimmerPlaceHolder
+                  LinearGradient={LinearGradient}
+                  style={{ ...styles.image }}
+                />
+                <ShimmerPlaceHolder
+                  LinearGradient={LinearGradient}
+                  style={{ marginHorizontal: WP(4) }}
+                />
               </View>
-             
             ))}
           </>
-      ) :
-      <FlatList
-      showsVerticalScrollIndicator={false}
-        data={search.length > 0 ? filterData : userlist}
-        renderItem={({item}) => renderItem(item)}
-        keyExtractor={(item, index) => index.toString()}
-      />
-      }
-    </SafeAreaView>
+        ) : (
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={userlist}
+            renderItem={({ item }) => renderItem(item)}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        )}
+      </SafeAreaView>
     </>
   );
 };

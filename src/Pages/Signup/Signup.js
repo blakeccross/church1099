@@ -1,28 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
+  Animated,
   SafeAreaView,
+  FlatList,
   Switch,
   Text,
   Image,
   View,
   TouchableOpacity,
+  Linking,
+  Pressable,
   ScrollView,
   TextInput,
 } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
-import { SVGS } from "../../Assets/Svgs";
 import { Input } from "../../Components/Input/Input";
 import { GlobalStyles } from "../../global/global.styles";
 import { SignupStyle as Styles } from "./signup.style";
-import Icon from "react-native-vector-icons/MaterialIcons";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import IconCam from "react-native-vector-icons/SimpleLineIcons";
-import fontFamily from "../../Assets/config/fontFamily";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Button } from "../../Components/Button/Button";
 import { API } from "../../services/api.services";
 import AlertService from "../../services/alertService";
-import PhoneInput from 'react-native-phone-input'
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from "expo-image-picker";
 import { storageServices } from "../../services/storage.services";
 import { getApp } from "firebase/app";
 import { firebaseServices } from "../../services/firebase.services";
@@ -35,14 +37,25 @@ const Signup = (props) => {
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
   const [bio, setBio] = useState("");
-  const [cv, setCv] = useState("");
+  const [skills, setSkills] = useState([]);
   const [gender, setGender] = useState(null);
-  const [open, setOpen] = useState(false);
   const [loading, setloading] = useState(false);
-  const [items, setItems] = useState([
-    { label: "Female", value: "Female" },
-    { label: "Male", value: "Male" },
-  ]);
+  const skill = [
+    { id: "Worship Leading", name: "Worship Leading" },
+    { id: "Speaking", name: "Speaking" },
+    { id: "Vocals", name: "Vocals" },
+    { id: "Web Design", name: "Web Design" },
+    { id: "Graphic Design", name: "Graphic Design" },
+    { id: "Social Media Management", name: "Social Media Management" },
+    { id: "Electric Guitar", name: "Electric Guitar" },
+    { id: "Piano", name: "Piano" },
+    { id: "Acoustic Guitar", name: "Acoustic Guitar" },
+    { id: "Drums", name: "Drums" },
+    { id: "Songwriting", name: "Songwriting" },
+    { id: "Live Mixing", name: "Live Mixing" },
+    { id: "Bass Guitar", name: "Bass Guitar" },
+    { id: "Video Editing", name: "Video Editing" },
+  ];
   const [formStep, setFormStep] = useState(0);
   const completeFormStep = () => {
     setFormStep((cur) => cur + 1);
@@ -79,7 +92,6 @@ const Signup = (props) => {
   const validatePhoneInput = () => {
     let reg = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
     if (reg.test(phone) === false) {
-      //console.log(phone)
       AlertService.show("Error", "hmmm... that doesn't look quite right");
       return false;
     } else {
@@ -87,13 +99,11 @@ const Signup = (props) => {
     }
   };
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: .2
-      //base64: true
+      quality: 0.2,
     });
 
     if (!result.cancelled) {
@@ -101,45 +111,90 @@ const Signup = (props) => {
     }
   };
 
+  const renderSkills = ({ item, index }) => {
+    const { id, name } = item;
+    const isSelected = skills.filter((i) => i === name).length > 0;
+
+    return (
+      <Pressable
+        style={{
+          ...Styles.skillItem,
+          backgroundColor: isSelected ? "#2b47fc" : "#F4F4F5",
+        }}
+        onPress={() => {
+          if (isSelected) {
+            setSkills((prev) => prev.filter((i) => i !== name));
+          } else {
+            setSkills((prev) => [...prev, name]);
+          }
+          let skillList = skills.map((name) => {
+            return name;
+          });
+        }}
+      >
+        <Text
+          style={{
+            color: isSelected ? "white" : "black",
+            textAlign: "center",
+          }}
+        >
+          {item.id}
+        </Text>
+      </Pressable>
+    );
+  };
+
+  //const result = Object.values(skills);
+
   const [isEnabled, setIsEnabled] = useState(true);
-  
+
   const onApply = async () => {
-    // console.log(email, password, name, phone, img, cv, gender, bio, location);
     if (isEnabled) {
-
-      let imageName =  Date.now().toString()
-      await firebaseServices.updateProfileImage(imageName,img,(async (ImageProfile)=>{
-              if (
-        email != "" &&
-        password != "" &&
-        name != "" &&
-        phone != "" &&
-        //cv != "" &&
-        gender != null &&
-        //bio != "" &&
-        location != ""
-      ) {
-        let reg =
-          /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-        if (reg.test(email)) {
-          setloading(true);
-          let res = await API.userSignup(
-            `https://church1099.com/api/1.1/wf/signup?email=${email}&password=${password}&profilephoto=${ImageProfile}&bio=${bio}&resume=${cv}&location=${location}&gender=${gender}&phone=${phone}&name=${name}&employer?=no`,
-            props,
-            ImageProfile
-          );
-          console.log(res);
-          setloading(false);
-        } else {
-          AlertService.show("Invalid Email");
+      let imageName = Date.now().toString();
+      await firebaseServices.updateProfileImage(
+        imageName,
+        img,
+        async (ImageProfile) => {
+          if (
+            email != "" &&
+            password != "" &&
+            name != "" &&
+            phone != "" &&
+            //cv != "" &&
+            gender != null &&
+            //bio != "" &&
+            location != ""
+          ) {
+            let reg =
+              /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+            if (reg.test(email)) {
+              setloading(true);
+              let res = await API.userSignup(
+                `https://church1099.com/api/1.1/wf/signup?email=${email}&password=${password}&profilephoto=${ImageProfile}&bio=${bio}&location=${location}&gender=${gender}&phone=${phone}&skills=${JSON.stringify(
+                  skills
+                )}&name=${name}&employer?=no`,
+                props,
+                ImageProfile
+              );
+              setloading(false);
+            } else {
+              AlertService.show("Invalid Email");
+            }
+          } else {
+            AlertService.show("Missing", "Please provide all required data");
+            console.log(
+              "mail::" + email,
+              "pa::" + password,
+              name,
+              phone,
+              ImageProfile,
+              gender,
+              bio,
+              location
+            );
+          }
         }
-      } else {
-        AlertService.show("Missing", "Please provide all required data");
-        console.log("mail::"+email,"pa::"+password, name, phone, ImageProfile, cv, gender, bio, location);
-      }
-      }))
-    
-
+      );
     } else {
       AlertService.show(
         "Terms and Condition",
@@ -154,6 +209,51 @@ const Signup = (props) => {
       >
         {formStep === 0 && (
           <View style={Styles.stepContainer}>
+            <Text style={Styles.titleTxt}>Choose Account Type</Text>
+            <View
+              style={{
+                ...GlobalStyles.row,
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+              }}
+            >
+              <TouchableOpacity style={Styles.box} onPress={completeFormStep}>
+                <Ionicons
+                  name="person"
+                  size={WP(17)}
+                  color="#333333"
+                  style={{ alignSelf: "center" }}
+                />
+                <Text style={{ ...Styles.subTxt }}>Finding Work</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={Styles.box}
+                onPress={() => {
+                  Linking.openURL("https://church1099.com/join");
+                }}
+              >
+                <MaterialCommunityIcons
+                  name="briefcase"
+                  size={WP(17)}
+                  color="#333333"
+                  style={{ alignSelf: "center" }}
+                />
+                <Text style={{ ...Styles.subTxt }}>Hiring</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={{ ...Styles.infoTxt }}>
+              What are you looking to do?
+            </Text>
+          </View>
+        )}
+        {formStep === 1 && (
+          <View style={Styles.stepContainer}>
+            <TouchableOpacity
+              onPress={() => setFormStep((cur) => cur - 1)}
+              style={{ paddingRight: WP(2) }}
+            >
+              <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
+            </TouchableOpacity>
             <Text style={Styles.titleTxt}>Get Started</Text>
             <Input
               setValue={setEmail}
@@ -169,8 +269,14 @@ const Signup = (props) => {
             </Text>
           </View>
         )}
-        {formStep === 1 && (
-          <View style={Styles.stepContainer}>
+        {formStep === 2 && (
+          <View style={{ ...Styles.stepContainer }}>
+            <TouchableOpacity
+              onPress={() => setFormStep((cur) => cur - 1)}
+              style={{ paddingRight: WP(2) }}
+            >
+              <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
+            </TouchableOpacity>
             <Text style={Styles.titleTxt}>What's Your Name?</Text>
             <Input
               value={name}
@@ -181,8 +287,14 @@ const Signup = (props) => {
             />
           </View>
         )}
-        {formStep === 2 && (
+        {formStep === 3 && (
           <View style={Styles.stepContainer}>
+            <TouchableOpacity
+              onPress={() => setFormStep((cur) => cur - 1)}
+              style={{ paddingRight: WP(2) }}
+            >
+              <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
+            </TouchableOpacity>
             <Text style={Styles.titleTxt}>Set Your Password</Text>
             <Input
               value={password}
@@ -194,19 +306,21 @@ const Signup = (props) => {
             />
           </View>
         )}
-        {formStep === 3 && (
+        {formStep === 4 && (
           <View style={Styles.stepContainer}>
+            <TouchableOpacity
+              onPress={() => setFormStep((cur) => cur - 1)}
+              style={{ paddingRight: WP(2) }}
+            >
+              <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
+            </TouchableOpacity>
             <Text style={Styles.titleTxt}>Phone Number?</Text>
-            <PhoneInput
-              onChangePhoneNumber={(text) => {
-                setPhone(text);
-              }}
-              initialCountry={'us'}
-              textProps={{
-                placeholder: 'Enter a phone number...'
-            }}
-              autoFocus
-              style={Styles.phoneInput} 
+            <Input
+              value={phone}
+              setValue={setPhone}
+              placeTxt={"Enter your phone number"}
+              keyboard={"phone-pad"}
+              type={"telephoneNumber"}
             />
             <Text style={{ ...Styles.infoTxt }}>
               Don't worry. We won't bother you, but this will be helpful in case
@@ -219,8 +333,14 @@ const Signup = (props) => {
             />
           </View>
         )}
-        {formStep === 4 && (
+        {formStep === 5 && (
           <View style={Styles.stepContainer}>
+            <TouchableOpacity
+              onPress={() => setFormStep((cur) => cur - 1)}
+              style={{ paddingRight: WP(2) }}
+            >
+              <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
+            </TouchableOpacity>
             <Text style={Styles.titleTxt}>Where Are You Located?</Text>
             <GooglePlacesAutocomplete
               styles={{
@@ -230,10 +350,10 @@ const Signup = (props) => {
                   fontSize: 16,
                 },
               }}
-              //value={location}
-              //setValue={setLocation}
               placeholder="Search"
-              onPress={(data, details = null) => {completeFormStep(setLocation(data.description))}}
+              onPress={(data, details = null) => {
+                completeFormStep(setLocation(data.description));
+              }}
               query={{
                 key: "AIzaSyCqfZsYioXmmp-FpCdAEZjnw8uJ4dwsYFo",
                 language: "en",
@@ -244,28 +364,81 @@ const Signup = (props) => {
             </Text>
           </View>
         )}
-        {formStep === 5 && (
+        {formStep === 6 && (
           <View style={Styles.stepContainer}>
+            <TouchableOpacity
+              onPress={() => setFormStep((cur) => cur - 1)}
+              style={{ paddingRight: WP(2) }}
+            >
+              <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
+            </TouchableOpacity>
             <Text style={Styles.titleTxt}>What Is Your Gender?</Text>
             <Button
-            btnCol={'white'}
-            textCol={'black'}
-            btnStyle={{backgroundColor: "rgba(247,247,247,1)",}}
-            btnTxt={'Male'}
-            onPress={() => {setFormStep((cur) => cur + 1), setGender('Male')}}
+              btnCol={"white"}
+              textCol={"black"}
+              btnStyle={{ backgroundColor: "rgba(247,247,247,1)" }}
+              btnTxt={"Male"}
+              onPress={() => {
+                setFormStep((cur) => cur + 1), setGender("Male");
+              }}
             />
             <Button
-            btnCol={'white'}
-            textCol={'black'}
-            btnTxt={'Female'}
-            setGender={"Female"}
-            btnStyle={{marginTop: 10, backgroundColor: "rgba(247,247,247,1)",}}
-            onPress={() => {setFormStep((cur) => cur + 1), setGender('Female')}}
+              btnCol={"white"}
+              textCol={"black"}
+              btnTxt={"Female"}
+              setGender={"Female"}
+              btnStyle={{
+                marginTop: 10,
+                backgroundColor: "rgba(247,247,247,1)",
+              }}
+              onPress={() => {
+                setFormStep((cur) => cur + 1), setGender("Female");
+              }}
             />
           </View>
         )}
-        {formStep === 6 && (
+        {formStep === 7 && (
           <View style={Styles.stepContainer}>
+            <TouchableOpacity
+              onPress={() => setFormStep((cur) => cur - 1)}
+              style={{ paddingRight: WP(2) }}
+            >
+              <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
+            </TouchableOpacity>
+            <Text style={Styles.titleTxt}>What Are You Interested In?</Text>
+
+            <FlatList
+              data={skill}
+              renderItem={renderSkills}
+              columnWrapperStyle={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                justifyContent: "center",
+              }}
+              numColumns={3}
+            />
+            {/*}
+              {skill.map((item, i) => {
+                return [renderSkills];
+              })}
+            </View>
+            
+        />*/}
+            <Button
+              btnStyle={{ position: "absolute", bottom: HP(10) }}
+              onPress={completeFormStep}
+              btnTxt={"Continue"}
+            />
+          </View>
+        )}
+        {formStep === 8 && (
+          <View style={Styles.stepContainer}>
+            <TouchableOpacity
+              onPress={() => setFormStep((cur) => cur - 1)}
+              style={{ paddingRight: WP(2) }}
+            >
+              <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
+            </TouchableOpacity>
             <Text style={Styles.titleTxt}>Profile Photo</Text>
             <TouchableOpacity
               onPress={pickImage}
@@ -283,7 +456,7 @@ const Signup = (props) => {
               {img ? (
                 <Image
                   source={{ uri: img }}
-                  style={{ width: WP(80), height: WP(80), borderRadius: 10, }}
+                  style={{ width: WP(80), height: WP(80), borderRadius: 10 }}
                 />
               ) : (
                 <IconCam name="camera" size={30} color={"#BDBDBD"} />
