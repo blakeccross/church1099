@@ -1,4 +1,3 @@
-//import liraries
 import React, { Component, useState } from "react";
 import {
   Modal,
@@ -21,7 +20,6 @@ import { useEffect } from "react";
 const JobModal = ({ show, setShow, selectedJob, user }) => {
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState("");
-  const [dropdownModal, setdropdownModal] = useState(false);
   console.log(saved);
 
   const applyForJob = async (selectedJob) => {
