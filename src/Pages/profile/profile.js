@@ -5,15 +5,10 @@ import {
   Image,
   View,
   TouchableOpacity,
-  TextInput,
-  SectionList,
   ScrollView,
-  Linking,
-  Modal,
   FlatList,
 } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
-import { Imgs } from "../../Assets/Imgs";
 import { ProfileStyle as Styles } from "./profile.style";
 import Icon from "react-native-vector-icons/Entypo";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -25,6 +20,8 @@ import Dropdown from "../../Components/dropdown/dropdown";
 import { Button } from "../../Components/Button/Button";
 import moment from "moment";
 import SkeletonLoader from "expo-skeleton-loader";
+import { storageServices } from "../../services/storage.services";
+import styles from "../newConvo/newConvo.styles";
 
 const Profile = (props) => {
   const [mod, setMod] = useState(false);
@@ -32,7 +29,6 @@ const Profile = (props) => {
   const [selectedSkill, setselectedSkill] = useState("");
   const [allSkills, setallSkills] = useState([]);
   const [skills, setskills] = useState([]);
-  const [userData, setuserData] = useState([]);
   const [experience, setExperience] = useState([]);
   const [title, settitle] = useState("");
   const [empType, setempType] = useState("");
@@ -45,23 +41,22 @@ const Profile = (props) => {
   const [ports, setPorts] = useState([]);
   const [Loading, setLoading] = useState(true);
   const [showResume, setShowResume] = useState(false);
+  const [user, setUser] = useState("");
 
   useEffect(() => {
     getData();
   }, []);
   const getData = async () => {
-    let res = await API.getUser();
-    let ex = await API.getExperienceList();
-    let skil = await API.getSkillSet();
-    let allSkill = await API.getAllSkills();
-    let port = await API.portfolio();
-    setskills(skil);
+    const userID = await storageServices.fetchKey("id");
+    let res = await API.getUser(userID);
+    let ex = await API.getExperienceList(userID);
+    let user2 = await API.getUser2(userID);
+    setUser(user2);
     setExperience(ex);
-    setuserData(res);
-    setallSkills(allSkill);
-    setPorts(port);
+    setPorts(user2.posts);
     setLoading(false);
   };
+
   const postExperience = async () => {
     let obj = {
       title: title,
@@ -108,11 +103,10 @@ const Profile = (props) => {
   };
 
   const renderPort = (item) => {
-    //console.log('item', item)
     return (
       <View style={Styles.portItem}>
         <Image
-          source={{ uri: "https:" + item.Photo }}
+          source={{ uri: "https:" + item.image }}
           style={{ width: WP(25), height: HP(17), borderRadius: 10 }}
         />
       </View>
@@ -124,7 +118,7 @@ const Profile = (props) => {
       <ScrollView contentContainerStyle={{ paddingBottom: HP(8) }}>
         <View>
           <TouchableOpacity
-            onPress={() => props.navigation.navigate("Setting", { userData })}
+            onPress={() => props.navigation.navigate("Setting", { user })}
             style={{
               position: "absolute",
               right: WP(1),
@@ -186,63 +180,64 @@ const Profile = (props) => {
           </SkeletonLoader>
         ) : (
           <>
-            <Image
-              source={{ uri: userData["Profile Photo"] }}
-              style={{ ...Styles.dp }}
-            />
-            <Text
-              style={{
-                ...GlobalStyles.H2,
-                textAlign: "center",
-                marginTop: HP(1),
-              }}
-            >
-              {userData?.Name}
-            </Text>
-            <View
-              style={{
-                ...GlobalStyles.row,
-                alignSelf: "center",
-                marginTop: HP(1),
-              }}
-            >
-              <Icon name="location-pin" color={"#666666"} size={14} />
-              <Text style={{ ...GlobalStyles.P1 }}>{userData?.Location}</Text>
-            </View>
-            <Text
-              style={{
-                ...GlobalStyles.P1,
-                textAlign: "center",
-                marginTop: HP(1),
-              }}
-            >
-              {userData.Bio}
-            </Text>
-            <View
-              style={{
-                ...GlobalStyles.row,
-                width: "100%",
-                justifyContent: "center",
-                marginTop: HP(2),
-                marginBottom: HP(2),
-              }}
-            >
-              <Button
-                textCol="black"
-                btnCol="white"
-                btnStyle={{ width: WP(43), marginRight: WP(1) }}
-                btnTxt={"View Resume"}
-                onPress={() =>
-                  props.navigation.navigate("Resume", { userData })
-                }
-                //onPress={() => openLink("https:" + userData?.Resume)}
+            <View style={{ marginHorizontal: WP(10) }}>
+              <Image
+                source={{ uri: "https:" + user.profilePhoto }}
+                style={{ ...Styles.dp }}
               />
-              <Button
-                btnTxt={"Message"}
-                btnStyle={{ width: WP(43), marginLeft: WP(1) }}
-              />
+              <Text
+                style={{
+                  ...GlobalStyles.H2,
+                  textAlign: "center",
+                  marginTop: HP(1),
+                }}
+              >
+                {user.name}
+              </Text>
+              <View
+                style={{
+                  ...GlobalStyles.row,
+                  alignSelf: "center",
+                  marginTop: HP(1),
+                }}
+              >
+                <Icon name="location-pin" color={"#666666"} size={14} />
+                <Text style={Styles.userInfoTxt}>{user.location}</Text>
+              </View>
+              <Text
+                style={{
+                  ...Styles.userInfoTxt,
+                  textAlign: "center",
+                  marginTop: HP(1),
+                }}
+              >
+                {user.header}
+              </Text>
+              <View
+                style={{
+                  ...GlobalStyles.row,
+                  width: "100%",
+                  justifyContent: "center",
+                  marginTop: HP(2),
+                  marginBottom: HP(2),
+                }}
+              >
+                <Button
+                  textCol="black"
+                  btnCol="white"
+                  btnStyle={{ width: WP(43), marginRight: WP(1) }}
+                  btnTxt={"View Resume"}
+                  onPress={() => props.navigation.navigate("Resume", { user })}
+                />
+                <Button
+                  btnTxt={"Message"}
+                  btnStyle={{ width: WP(43), marginLeft: WP(1) }}
+                />
+              </View>
             </View>
+
             {/*SKILLS*/}
+
             <View style={{ ...Styles.panelView }}>
               <View
                 style={{
@@ -257,23 +252,31 @@ const Profile = (props) => {
                 </TouchableOpacity>
               </View>
 
-              <View
-                style={{
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                  justifyContent: "flex-start",
-                }}
-              >
-                {userData?.Skills?.map((item, i) => {
-                  return (
-                    <View key={i} style={Styles.skillItem}>
-                      <Text style={{ color: "black", textAlign: "center" }}>
-                        {item}
-                      </Text>
-                    </View>
-                  );
-                })}
-              </View>
+              {user?.skills && user?.skills?.length ? (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    justifyContent: "flex-start",
+                  }}
+                >
+                  {user?.skills?.map((item, i) => {
+                    return (
+                      <View key={i} style={Styles.skillItem}>
+                        <Text style={{ color: "black", textAlign: "center" }}>
+                          {item}
+                        </Text>
+                      </View>
+                    );
+                  })}
+                </View>
+              ) : (
+                <View style={Styles.empty}>
+                  <Text style={Styles.emptyTxt}>
+                    Add skills so employers can see what you're good at
+                  </Text>
+                </View>
+              )}
             </View>
 
             {/*PORTFOLIO*/}
@@ -287,25 +290,38 @@ const Profile = (props) => {
               >
                 <Text style={{ ...GlobalStyles.H3 }}>Portfolio</Text>
               </View>
-              <TouchableOpacity
-                onPress={() => props.navigation.navigate("Portfolio")}
-              >
-                <FlatList
-                  horizontal={true}
-                  showsHorizontalScrollIndicator={false}
-                  //columnWrapperStyle={{ flexWrap: 'wrap'}}
-                  data={ports}
-                  //numColumns={3}
-                  renderItem={({ item }) => renderPort(item)}
-                  keyExtractor={(item, index) => index.toString()}
-                />
-              </TouchableOpacity>
+              {user?.posts && user.posts?.length ? (
+                <TouchableOpacity
+                  onPress={() =>
+                    props.navigation.navigate("Portfolio", { Portfolio: ports })
+                  }
+                >
+                  <FlatList
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                    //columnWrapperStyle={{ flexWrap: 'wrap'}}
+                    data={ports}
+                    //numColumns={3}
+                    renderItem={({ item }) => renderPort(item)}
+                    keyExtractor={(item, index) => index.toString()}
+                  />
+                </TouchableOpacity>
+              ) : (
+                <View style={Styles.empty}>
+                  <Text style={Styles.emptyTxt}>
+                    Show off something you've done or created
+                  </Text>
+                </View>
+              )}
             </View>
             {/*EXPERIENCE*/}
-            <View>
+            <View
+              style={{
+                ...Styles.panelView,
+              }}
+            >
               <View
                 style={{
-                  ...Styles.panelView,
                   marginBottom: HP(0),
                   ...GlobalStyles.row,
                   justifyContent: "space-between",
@@ -326,33 +342,41 @@ const Profile = (props) => {
                   </TouchableOpacity>
                 </View>
               </View>
-              <View style={Styles.experienceList}>
-                {experience.map((item, i) => {
-                  return (
-                    <View key={i} style={Styles.item}>
-                      <View style={{ flexDirection: "row" }}>
-                        <Image source={{ uri: item["Company Image"] }} />
-                        <Text style={Styles.headingText}>{item?.Title}</Text>
+              {experience && experience.length ? (
+                <View style={Styles.experienceList}>
+                  {experience.map((item, i) => {
+                    return (
+                      <View key={i} style={Styles.item}>
+                        <View style={{ flexDirection: "row" }}>
+                          <Image source={{ uri: item["Company Image"] }} />
+                          <Text style={Styles.headingText}>{item?.Title}</Text>
+                        </View>
+                        <View style={{ flexDirection: "row", marginTop: 0 }}>
+                          <Text style={Styles.description}>{item.Company}</Text>
+                          <Text style={Styles.description}>
+                            {" "}
+                            · {item["Employment Type"]}
+                          </Text>
+                        </View>
+                        <View style={{ flexDirection: "row", marginTop: 0 }}>
+                          <Text style={Styles.description}>
+                            {moment(item["Start Date"]).format("MMM YYYY")}
+                          </Text>
+                          <Text style={Styles.description}>
+                            {moment(item["End Date"]).format(" - MMM YYYY")}
+                          </Text>
+                        </View>
                       </View>
-                      <View style={{ flexDirection: "row", marginTop: 0 }}>
-                        <Text style={Styles.description}>{item.Company}</Text>
-                        <Text style={Styles.description}>
-                          {" "}
-                          · {item["Employment Type"]}
-                        </Text>
-                      </View>
-                      <View style={{ flexDirection: "row", marginTop: 0 }}>
-                        <Text style={Styles.description}>
-                          {moment(item["Start Date"]).format("MMM YYYY")}
-                        </Text>
-                        <Text style={Styles.description}>
-                          {moment(item["End Date"]).format(" - MMM YYYY")}
-                        </Text>
-                      </View>
-                    </View>
-                  );
-                })}
-              </View>
+                    );
+                  })}
+                </View>
+              ) : (
+                <View style={Styles.empty}>
+                  <Text style={Styles.emptyTxt}>
+                    Show some relevant work experience
+                  </Text>
+                </View>
+              )}
             </View>
           </>
         )}
