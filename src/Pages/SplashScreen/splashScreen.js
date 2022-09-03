@@ -18,13 +18,11 @@ const Splash = (props) => {
     });
   };
   return (
-    <SafeAreaView
-      style={{ backgroundColor: "#3920ff", ...GlobalStyles.container }}
-    >
+    <SafeAreaView style={{ backgroundColor: "#3920ff", flex: 1 }}>
       <View style={{ width: "50%", alignSelf: "center" }}>
         <Image
           resizeMode={"contain"}
-          source={require("../../Assets/Imgs/splash.jpeg")}
+          source={require("../../Assets/Imgs/church1099_LogoWht.png")}
           style={{ height: "100%", width: "100%", alignSelf: "center" }}
         />
       </View>

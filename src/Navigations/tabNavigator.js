@@ -1,12 +1,5 @@
 import React, { Component } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Platform,
-  Image,
-} from "react-native";
+import { StyleSheet, View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Job from "../Pages/jobs/job";
 import { HP, WP } from "../Assets/config/screen-ratio";
@@ -14,6 +7,8 @@ import fontFamily from "../Assets/config/fontFamily";
 import Profile from "../Pages/profile/profile";
 import Notification from "../Pages/notification/notification";
 import Messages from "../Pages/messages/messages";
+import Discover from "../Pages/Discover/discover";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { Icons } from "../Assets/Icons";
 import * as Haptics from "expo-haptics";
 
@@ -72,8 +67,8 @@ export const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Notification"
-        component={Notification}
+        name="Discover"
+        component={Discover}
         listeners={() => ({
           tabPress: () => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -82,7 +77,11 @@ export const TabNavigator = () => {
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={{ ...Styles.iconView }}>
-              {focused ? <Icons.Bell_Focused /> : <Icons.Bell />}
+              {focused ? (
+                <FontAwesome5 name="search" size={24} color="blue" />
+              ) : (
+                <FontAwesome5 name="search" size={24} color="black" />
+              )}
             </View>
           ),
         }}
@@ -99,6 +98,22 @@ export const TabNavigator = () => {
           tabBarIcon: ({ focused }) => (
             <View style={{ ...Styles.iconView }}>
               {focused ? <Icons.Mail_Focused /> : <Icons.Mail />}
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Notification"
+        component={Notification}
+        listeners={() => ({
+          tabPress: () => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          },
+        })}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <View style={{ ...Styles.iconView }}>
+              {focused ? <Icons.Bell_Focused /> : <Icons.Bell />}
             </View>
           ),
         }}

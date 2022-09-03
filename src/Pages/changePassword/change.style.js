@@ -7,7 +7,6 @@ import { GlobalStyles } from "../../global/global.styles";
 export const ChangeStyle = StyleSheet.create({
   container: {
     ...GlobalStyles.container,
-    backgroundColor: "white",
   },
   setTxt: {
     color: "#333333",

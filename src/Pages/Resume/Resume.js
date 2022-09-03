@@ -6,14 +6,12 @@ import { Header } from "../../Components/header/header";
 import { WebView } from "react-native-webview";
 
 const Resume = (props) => {
-  const [resume, setResume] = useState(props.route.params.userData.Resume);
+  const [resume, setResume] = useState(props.route.params.user.resume);
   return (
     <>
       <SafeAreaView style={{ flex: 0, backgroundColor: "#2b47fc" }} />
-      <SafeAreaView style={{ ...Styles.container }}>
-        <Header title={"Resume"} onPress={() => props.navigation.goBack()} />
-        <WebView source={{ uri: "https:" + resume }} />
-      </SafeAreaView>
+      <Header title={"Resume"} onPress={() => props.navigation.goBack()} />
+      <WebView source={{ uri: "https:" + resume }} />
     </>
   );
 };

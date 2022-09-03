@@ -6,7 +6,6 @@ import { storageServices } from "./storage.services";
 import { getApp } from "firebase/app";
 import {
   getFirestore,
-  getDocs,
   collection,
   onSnapshot,
   doc,
@@ -62,69 +61,47 @@ const createConversation = async (item) => {
   }),
     { merge: true };
   return obj;
-  // await firestore()
-  //   .collection('chatRoom')
-  //   .doc(chatId)
-  //   .set({
-  //     chatContainIDs: [token, item._id],
-  //     lastMessage: '',
-  //     users: [
-  //       {
-  //         isCreator: true,
-  //         thumb: '',
-  //         userId: token,
-  //       },
-  //       {
-  //         isCreator: false,
-  //         thumb: item['Profile Photo'],
-  //         userId: item._id,
-  //         username: item.Name,
-  //       },
-  //     ],
-  //   });
-  // return obj;
 };
 const getConversationList = async (callback) => {
   const app = getApp();
   const fireStore = getFirestore(app);
   // return new Promise(async (resolve) => {
-    let id = await storageServices.fetchKey("id");
+  let id = await storageServices.fetchKey("id");
+  let list = [];
+  // const querySnapshot = await getDocs(collection(fireStore, "chatRoom"));
+  const profileRef = await query(
+    collection(fireStore, "chatRoom"),
+    orderBy("lastMessageTime", "desc")
+  );
+  const unsubscribe = onSnapshot(profileRef, (snapshot) => {
     let list = [];
-    // const querySnapshot = await getDocs(collection(fireStore, "chatRoom"));
-    const profileRef = await query(
-      collection(fireStore, "chatRoom"),
-      orderBy("lastMessageTime", "desc")
-    );
-    const unsubscribe = onSnapshot(profileRef, (snapshot) => {
-      let list = [];
-      snapshot.forEach((doc) => {
-        let data = doc.data();
-        let ids = [];
-        let curUserinfo;
-        ids = doc.data().chatContainIDs;
-        let user = doc.data().users;
-        if (user[0].userId !== id) {
-          curUserinfo = user[0];
-        } else {
-          curUserinfo = user[1];
-        }
-        //console.log("Data======>", doc.data().lastMessageTime);
-        let obj = {
-          convoId: doc.id,
-          id: curUserinfo?.userId,
-          thumbnail: curUserinfo?.thumb,
-          lastMessage: doc.data().lastMessage,
-          lastMessageTime: doc.data().lastMessageTime,
-          name: curUserinfo?.username,
-        };
-        if (ids.includes(id)) {
-          list.push(obj);
-        }
-      });
-      callback(list);
+    snapshot.forEach((doc) => {
+      let data = doc.data();
+      let ids = [];
+      let curUserinfo;
+      ids = doc.data().chatContainIDs;
+      let user = doc.data().users;
+      if (user[0].userId !== id) {
+        curUserinfo = user[0];
+      } else {
+        curUserinfo = user[1];
+      }
+      let obj = {
+        convoId: doc.id,
+        id: curUserinfo?.userId,
+        thumbnail: curUserinfo?.thumb,
+        lastMessage: doc.data().lastMessage,
+        lastMessageTime: doc.data().lastMessageTime,
+        name: curUserinfo?.username,
+      };
+      if (ids.includes(id)) {
+        list.push(obj);
+      }
     });
-    return unsubscribe;
-    // resolve(list);
+    callback(list);
+  });
+  return unsubscribe;
+  // resolve(list);
   // });
 };
 const storeUserInfo = async (id, data) => {

@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import ActionSheet from "react-native-actionsheet";
 import { HP, WP } from "../../Assets/config/screen-ratio";
-import { ProfileStyle as Styles } from "./profile.style";
+import { ProfileViewStyle as Styles } from "./profileView.style";
 import Icon from "react-native-vector-icons/Entypo";
 import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles } from "../../global/global.styles";
@@ -23,17 +23,13 @@ import SkeletonLoader from "expo-skeleton-loader";
 import { storageServices } from "../../services/storage.services";
 import { MoreOrLess } from "@rntext/more-or-less";
 
-const Profile = (props) => {
-  //console.log(props);
-  const [dropdownModal, setdropdownModal] = useState(false);
-  const [selectedSkill, setselectedSkill] = useState("");
-  const [allSkills, setallSkills] = useState([]);
-  const [skills, setskills] = useState([]);
+const ProfileView = (props) => {
   const [experience, setExperience] = useState([]);
   const [ports, setPorts] = useState([]);
   const [Loading, setLoading] = useState(true);
   const [showResume, setShowResume] = useState(false);
   const [user, setUserData] = useState("");
+  const { profilePhoto, setProfilePhoto } = useState("");
 
   useEffect(() => {
     getData();
@@ -47,12 +43,11 @@ const Profile = (props) => {
   }, []);
 
   const getData = async () => {
-    const userID = await storageServices.fetchKey("id");
-    let res = await API.getUser(userID);
-    let user = await API.getUserData(userID);
+    const userId = props.route.params.user.userId;
+    let user = await API.getUserData(userId);
     setUserData(user);
-    setExperience(user.experience);
-    setPorts(user.posts);
+    setExperience(user?.experience);
+    setPorts(user?.posts);
     setLoading(false);
   };
 
@@ -64,12 +59,13 @@ const Profile = (props) => {
     return (
       <View style={Styles.portItem}>
         <Image
-          source={{ uri: "https:" + item.image }}
+          source={{ uri: item.image }}
           style={{ width: WP(25), height: HP(17), borderRadius: 10 }}
         />
       </View>
     );
   };
+
   let actionSheet = useRef();
   var optionArray = ["Photo", "Video", "Cancel"];
   const showActionSheet = (item) => {
@@ -107,20 +103,6 @@ const Profile = (props) => {
         }
         contentContainerStyle={{ paddingBottom: HP(8) }}
       >
-        <TouchableOpacity
-          onPress={() => props.navigation.navigate("Setting", { user })}
-          style={{
-            position: "absolute",
-            right: WP(5),
-            top: HP(7),
-            padding: 10,
-            borderRadius: 20,
-            backgroundColor: "#f4f4f5",
-            zIndex: 1,
-          }}
-        >
-          <Text>Settings</Text>
-        </TouchableOpacity>
         {Loading ? (
           <SkeletonLoader boneColor="#f4f4f5" highlightColor="#e3e3e3">
             <SkeletonLoader.Container
@@ -220,29 +202,6 @@ const Profile = (props) => {
                   alignSelf: "center",
                 }}
               />
-              {/*
-              <View
-                style={{
-                  ...GlobalStyles.row,
-                  width: "100%",
-                  justifyContent: "center",
-                  marginTop: HP(2),
-                  marginBottom: HP(2),
-                }}
-              >
-                <Button
-                  textCol="black"
-                  btnCol="white"
-                  btnStyle={{ width: WP(43), marginRight: WP(1) }}
-                  btnTxt={"View Resume"}
-                  onPress={() => props.navigation.navigate("Resume", { user })}
-                />
-                <Button
-                  btnTxt={"Message"}
-                  btnStyle={{ width: WP(43), marginLeft: WP(1) }}
-                />
-              </View>
-              */}
             </View>
 
             {/*SKILLS*/}
@@ -256,21 +215,7 @@ const Profile = (props) => {
                 }}
               >
                 <Text style={{ ...GlobalStyles.H3 }}>Skills</Text>
-                <View style={GlobalStyles.row}>
-                  <TouchableOpacity
-                    style={{ marginRight: 20 }}
-                    onPress={() => props.navigation.navigate("Skills")}
-                  >
-                    <Ionicons name="ios-add-sharp" size={30} color="black" />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() =>
-                      props.navigation.navigate("EditSkills", { data: user })
-                    }
-                  >
-                    <Ionicons name="ios-pencil-sharp" size={23} color="black" />
-                  </TouchableOpacity>
-                </View>
+                <View style={GlobalStyles.row}></View>
               </View>
 
               {user?.skills && user?.skills?.length ? (
@@ -292,11 +237,7 @@ const Profile = (props) => {
                   })}
                 </View>
               ) : (
-                <View style={Styles.empty}>
-                  <Text style={Styles.emptyTxt}>
-                    Add skills so employers can see what you're good at
-                  </Text>
-                </View>
+                <View style={Styles.empty}></View>
               )}
             </View>
 
@@ -310,9 +251,6 @@ const Profile = (props) => {
                 }}
               >
                 <Text style={{ ...GlobalStyles.H3 }}>Portfolio</Text>
-                <TouchableOpacity onPress={() => showActionSheet()}>
-                  <Ionicons name="ios-add-sharp" size={30} color="black" />
-                </TouchableOpacity>
               </View>
               {user?.posts && user.posts?.length ? (
                 <TouchableOpacity
@@ -323,9 +261,7 @@ const Profile = (props) => {
                   <FlatList
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}
-                    //columnWrapperStyle={{ flexWrap: 'wrap'}}
                     data={ports}
-                    //numColumns={3}
                     renderItem={({ item }) => renderPort(item)}
                     keyExtractor={(item, index) => index.toString()}
                   />
@@ -352,19 +288,6 @@ const Profile = (props) => {
                 }}
               >
                 <Text style={{ ...GlobalStyles.H3 }}>Experience</Text>
-                <View style={GlobalStyles.row}>
-                  <TouchableOpacity
-                    style={{ marginRight: 20 }}
-                    onPress={() => props.navigation.navigate("AddExp")}
-                  >
-                    <Ionicons name="ios-add-sharp" size={30} color="black" />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => props.navigation.navigate("UserExperience")}
-                  >
-                    <Ionicons name="ios-pencil-sharp" size={23} color="black" />
-                  </TouchableOpacity>
-                </View>
               </View>
               {experience && experience.length ? (
                 <View style={Styles.experienceList}>
@@ -423,4 +346,4 @@ const Profile = (props) => {
   );
 };
 
-export default Profile;
+export default ProfileView;

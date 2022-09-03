@@ -7,23 +7,7 @@ import { GlobalStyles } from "../../global/global.styles";
 export const ProfileStyle = StyleSheet.create({
   container: {
     ...GlobalStyles.container,
-  },
-  empty: {
-    flexDirection: "row",
-    justifyContent: "center",
-    paddingVertical: HP(4),
-    paddingHorizontal: WP(15),
-  },
-  emptyTxt: {
-    textAlign: "center",
-    fontSize: 15,
-    fontFamily: fontFamily.regular,
-    color: "grey",
-  },
-  userInfoTxt: {
-    color: "#666666",
-    fontSize: 15,
-    fontFamily: fontFamily.regular,
+    backgroundColor: "#f4f4f5",
   },
   dp: {
     width: WP(30),
@@ -62,6 +46,10 @@ export const ProfileStyle = StyleSheet.create({
     fontFamily: fontFamily.light,
     fontSize: 18,
   },
+  experienceList: {
+    // borderWidth: 1,
+    // borderColor: 'red',
+  },
   skillItem: {
     backgroundColor: "#F4F4F5",
     borderRadius: 20,
@@ -80,6 +68,7 @@ export const ProfileStyle = StyleSheet.create({
     justifyContent: "center",
   },
   item: {
+    // height: HP(15),
     width: WP(100),
     alignSelf: "center",
     backgroundColor: "white",

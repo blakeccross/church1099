@@ -20,11 +20,10 @@ import { Input } from "../../Components/Input/Input";
 import { storageServices } from "../../services/storage.services";
 import { commonServices } from "../../services/commonServices";
 import RenderMessages from "../../Components/renderMethods/renderMessage";
+
 const Convo = (props) => {
   let data = props?.route?.params?.data;
-  console.log("DATA!!!!", data);
   let scrollRef = React.useRef(null);
-  const [mod, setMod] = useState(false);
   const [obj, setObj] = useState(props.route.params.obj);
   const [myid, setmyid] = useState("");
   const [allMessages, setallMessages] = useState();
@@ -38,13 +37,10 @@ const Convo = (props) => {
     getMessages();
   }, []);
   const sendMessage = async () => {
-    // console.warn('send');
-    let id = await storageServices.fetchKey("id");
-    setmyid(id);
     let res = await API.sendMessage(
       `https://church1099.com/api/1.1/wf/sendmessage/?convoID=${
-        data._id
-      }&user=${id}&content=${(obj, message.trim())}`
+        data.convoId
+      }&content=${(obj, message.trim())}`
     );
     setmessage("");
     await getMessages();
@@ -53,12 +49,8 @@ const Convo = (props) => {
   const getMessages = async () => {
     let id = await storageServices.fetchKey("id");
     setmyid(id);
-    let res = await API.getMessages(
-      `${data._id}`
-      //console.log(data)
-    );
+    let res = await API.getMessages(`${data.convoId}`);
     setallMessages(res);
-    console.log(res);
     setLoading(false);
   };
 
@@ -66,7 +58,14 @@ const Convo = (props) => {
     <>
       <SafeAreaView style={{ flex: 0, backgroundColor: "white" }} />
       <SafeAreaView style={{ ...Styles.container }}>
-        <View style={{ paddingHorizontal: WP(5), paddingVertical: HP(1) }}>
+        <View
+          style={{
+            paddingHorizontal: WP(5),
+            paddingVertical: HP(1),
+            borderBottomColor: "#e0e0e0",
+            borderBottomWidth: 1,
+          }}
+        >
           <View
             style={{ ...GlobalStyles.row, justifyContent: "space-between" }}
           >
@@ -77,13 +76,18 @@ const Convo = (props) => {
               >
                 <IconBack name="chevron-back" size={27} color={"#2b47fc"} />
               </TouchableOpacity>
-              <TouchableOpacity style={{ ...GlobalStyles.row }}>
+              <TouchableOpacity
+                style={{ ...GlobalStyles.row }}
+                onPress={() =>
+                  props.navigation.navigate("ProfileView", { user: data })
+                }
+              >
                 <Image
-                  source={{ uri: "https:" + data?.["Profile Photo"] }}
+                  source={{ uri: "https:" + data?.profilePhoto }}
                   style={{ ...Styles.dp }}
                 />
                 <View style={{ paddingLeft: WP(3) }}>
-                  <Text style={{ ...Styles.nameTxt }}>{data?.Name}</Text>
+                  <Text style={{ ...Styles.nameTxt }}>{data?.name}</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -104,12 +108,15 @@ const Convo = (props) => {
                 onLayout={() => scrollRef.current.scrollToEnd()}
                 keyExtractor={(item, index) => index.toString()}
                 data={allMessages || []}
-                style={{ height: HP(73) }}
+                contentContainerStyle={{
+                  flex: 1,
+                  flexDirection: "column-reverse",
+                }}
                 renderItem={({ item }) => {
                   return (
-                    <>
+                    <View>
                       <RenderMessages item={item} myid={myid} />
-                    </>
+                    </View>
                   );
                 }}
               />
@@ -136,8 +143,7 @@ const Convo = (props) => {
               </View>
               <TouchableOpacity
                 onPress={() => sendMessage()}
-                disabled={commonServices.whiteSpcaes(message)}
-                // style={{paddingHorizontal: WP(5)}}
+                disabled={commonServices.whiteSpaces(message)}
               >
                 <Ionicons name={"send"} color={"#2b47fc"} size={25} />
               </TouchableOpacity>

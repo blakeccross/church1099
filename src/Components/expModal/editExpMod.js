@@ -6,6 +6,7 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  KeyboardAvoidingView,
   Switch,
   ScrollView,
 } from "react-native";
@@ -18,6 +19,7 @@ import { Button } from "../Button/Button";
 import { Input } from "../Input/Input";
 import { Ionicons } from "@expo/vector-icons";
 import moment from "moment";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export const EditExpModal = ({ exp, show, setShow, onPress, pressSave }) => {
   const [title, setTitle] = useState("");
@@ -40,11 +42,8 @@ export const EditExpModal = ({ exp, show, setShow, onPress, pressSave }) => {
     setLocation(exp.Location);
     setStartDate(exp["Start Date"]);
     setDescription(exp.Description);
+    setIsWorking(exp["Current Position"]);
   }, [exp]);
-
-  const showDatePicker = () => {
-    setDatePickerVisibility(true);
-  };
 
   const hideDatePicker = () => {
     setDatePickerVisibility(false);
@@ -106,39 +105,36 @@ export const EditExpModal = ({ exp, show, setShow, onPress, pressSave }) => {
         </TouchableOpacity>
         <Text style={{ ...GlobalStyles.H3 }}>Edit Experience</Text>
       </View>
-      <View style={{ marginBottom: HP(10), paddingHorizontal: HP(3) }}>
+      <KeyboardAwareScrollView extraScrollHeight={50}>
         <ScrollView
-          contentContainerStyle={{ paddingBottom: HP(8) }}
+          contentContainerStyle={{
+            //paddingBottom: HP(8),
+            //marginBottom: HP(10),
+            paddingHorizontal: HP(3),
+          }}
           showsVerticalScrollIndicator={false}
         >
-          <View>
-            <View
-              style={{
-                ...GlobalStyles.row,
-                justifyContent: "space-between",
-                paddingBottom: HP(1),
-              }}
-            ></View>
+          <View style={{ flex: 1 }}>
             <Text style={{ ...Styles.enterTxt }}>Job Title</Text>
             <Input value={title} setValue={setTitle} />
-            <Text style={{ ...Styles.enterTxt, paddingTop: HP(1) }}>
+            <Text style={{ ...Styles.enterTxt, paddingTop: HP(2) }}>
               Employement Type
             </Text>
             <Input value={empType} setValue={setEmpType} />
-            <Text style={{ ...Styles.enterTxt, paddingTop: HP(1) }}>
+            <Text style={{ ...Styles.enterTxt, paddingTop: HP(2) }}>
               Company Name
             </Text>
             <Input value={companyName} setValue={setCompanyName} />
-            <Text style={{ ...Styles.enterTxt, paddingTop: HP(1) }}>
+            <Text style={{ ...Styles.enterTxt, paddingTop: HP(2) }}>
               Location
             </Text>
             <Input value={location} setValue={setLocation} />
-            <View style={{ ...GlobalStyles.row, paddingTop: HP(1) }}>
+            <View style={{ ...GlobalStyles.row, paddingTop: HP(2) }}>
               <Text style={{ ...Styles.enterTxt, flex: 1 }}>
                 I am currently working in this role
               </Text>
               <Switch
-                trackColor={{ false: "#767577", true: "#81b0ff" }}
+                trackColor={{ false: "#767577", true: "#2b47fc" }}
                 thumbColor={isWorking ? "#ffff" : "#f4f3f4"}
                 ios_backgroundColor="#3e3e3e"
                 onValueChange={toggleSwitch}
@@ -163,7 +159,12 @@ export const EditExpModal = ({ exp, show, setShow, onPress, pressSave }) => {
                   }}
                 >
                   <View style={Styles.input}>
-                    <Text style={{ ...Styles.enterTxt }}>
+                    <Text
+                      style={{
+                        ...Styles.enterTxt,
+                        fontFamily: fontFamily.regular,
+                      }}
+                    >
                       {moment(startDate).format("MMM YYYY")}
                     </Text>
                   </View>
@@ -181,7 +182,12 @@ export const EditExpModal = ({ exp, show, setShow, onPress, pressSave }) => {
                     }}
                   >
                     <View style={Styles.input}>
-                      <Text style={{ ...Styles.enterTxt }}>
+                      <Text
+                        style={{
+                          ...Styles.enterTxt,
+                          fontFamily: fontFamily.regular,
+                        }}
+                      >
                         {moment(endDate).format("MMM YYYY")}
                       </Text>
                     </View>
@@ -189,22 +195,22 @@ export const EditExpModal = ({ exp, show, setShow, onPress, pressSave }) => {
                 </View>
               )}
             </View>
-            <View style={{ paddingTop: HP(2) }}>
-              <Text style={{ ...Styles.enterTxt }}>Description</Text>
-              <TextInput
-                value={description}
-                onChangeText={(e) => setDescription(e)}
-                multiline
-                placeholder=""
-                style={{ ...Styles.multiInput }}
-              />
-            </View>
+            <Text style={{ ...Styles.enterTxt, paddingTop: HP(2) }}>
+              Description
+            </Text>
+            <TextInput
+              value={description}
+              onChangeText={(e) => setDescription(e)}
+              multiline
+              placeholder=""
+              style={{ ...Styles.multiInput }}
+            />
             <View style={{ marginTop: HP(5) }}>
               <Button onPress={editExperience} btnTxt={"Edit Experience"} />
             </View>
           </View>
         </ScrollView>
-      </View>
+      </KeyboardAwareScrollView>
       <DateTimePickerModal
         isVisible={isDatePickerVisible}
         mode="date"
@@ -232,11 +238,10 @@ const Styles = StyleSheet.create({
     fontSize: 20,
   },
   enterTxt: {
-    color: "black",
-    fontFamily: fontFamily.regular,
-    // textAlign:'center',
+    fontFamily: fontFamily.bold,
+    marginBottom: 5,
     fontSize: 15,
-    paddingBottom: 2,
+    color: "#000000",
   },
   input: {
     justifyContent: "center",
@@ -245,9 +250,8 @@ const Styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "rgba(247,247,247,1)",
     color: "rgb(0,0,0)",
-    padding: 10,
+    paddingLeft: 10,
     borderRadius: 10,
-    paddingTop: 7,
   },
   multiInput: {
     borderWidth: 0,

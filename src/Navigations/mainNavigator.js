@@ -23,10 +23,18 @@ import EditJob from "../Pages/editJob/editJob";
 import HiringSignup from "../Pages/hiringSignup/hiringSignup";
 import JobApplicant from "../Pages/jobApplicant/jobApplicant";
 import JobApply from "../Pages/jobApply/jobApply";
-import UserList from "../Pages/userList/userList";
+import NewConvo from "../Pages/newConvo/newConvo";
 import Portfolio from "../Pages/portfolio/portfolio";
 import UserExperience from "../Pages/userExperience/userExperience";
-import Resume from "../Pages/Resume/Resume";
+import Resume from "../Pages/resume/resume";
+import AddExp from "../Pages/Add Experience/addExp";
+import SkillsCategory from "../Pages/skillsCategory/skillsCategory";
+import Skills from "../Pages/Skills/skills";
+import AddPhoto from "../Pages/Add Photo/addPhoto";
+import EditSkills from "../Pages/Edit Skills/editSkills";
+import ProfileView from "../Pages/Profile View/profileView";
+import Discover from "../Pages/Discover/discover";
+
 const Stack = createStackNavigator();
 export const MainNavigator = () => (
   <NavigationContainer>
@@ -57,9 +65,16 @@ export const MainNavigator = () => (
       <Stack.Screen name="HiringSignup" component={HiringSignup} />
       <Stack.Screen name="JobApplicant" component={JobApplicant} />
       <Stack.Screen name="JobApply" component={JobApply} />
-      <Stack.Screen name="UserList" component={UserList} />
+      <Stack.Screen name="newConvo" component={NewConvo} />
       <Stack.Screen name="Portfolio" component={Portfolio} />
       <Stack.Screen name="Resume" component={Resume} />
+      <Stack.Screen name="AddExp" component={AddExp} />
+      <Stack.Screen name="Skills" component={Skills} />
+      <Stack.Screen name="SkillsCategory" component={SkillsCategory} />
+      <Stack.Screen name="AddPhoto" component={AddPhoto} />
+      <Stack.Screen name="EditSkills" component={EditSkills} />
+      <Stack.Screen name="ProfileView" component={ProfileView} />
+      <Stack.Screen name="Discover" component={Discover} />
     </Stack.Navigator>
   </NavigationContainer>
 );

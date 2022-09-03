@@ -256,7 +256,6 @@ const Job = (props) => {
                       <View
                         style={{
                           ...GlobalStyles.row,
-                          backgroundColor: "white",
                           alignSelf: "flex-start",
                           paddingHorizontal: WP(3),
                           paddingVertical: HP(1),
@@ -285,7 +284,6 @@ const Job = (props) => {
                         <View
                           style={{
                             ...GlobalStyles.row,
-                            backgroundColor: "white",
                             alignSelf: "flex-start",
                             paddingHorizontal: WP(3),
                             paddingVertical: HP(1),
@@ -347,7 +345,6 @@ const Job = (props) => {
 const mapStateToProps = (state) => {
   const { backgroundColor } = state;
   const { user } = state;
-
   return state;
 };
 

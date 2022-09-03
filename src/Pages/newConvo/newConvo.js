@@ -15,13 +15,13 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { GlobalStyles } from "../../global/global.styles";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { API } from "../../services/api.services";
-import styles from "./userList.styles";
+import styles from "./newConvo.styles";
 import { LinearGradient } from "expo-linear-gradient";
 import { createShimmerPlaceholder } from "react-native-shimmer-placeholder";
 import { storageServices } from "../../services/storage.services";
 
 const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
-const UserList = (props) => {
+const NewConvo = (props) => {
   const [query, setQuery] = useState("");
   const [userlist, setUserlist] = useState([]);
   const [Loading, setLoading] = useState(true);
@@ -129,4 +129,4 @@ const UserList = (props) => {
   );
 };
 
-export default UserList;
+export default NewConvo;

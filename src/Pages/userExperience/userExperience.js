@@ -3,25 +3,19 @@ import {
   Alert,
   FlatList,
   SafeAreaView,
-  Text,
-  Image,
-  View,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   RefreshControl,
   ScrollView,
 } from "react-native";
-import AlertService from "../../services/alertService";
 import ActionSheet from "react-native-actionsheet";
 import { EditExpModal } from "../../Components/expModal/editExpMod";
-import fontFamily from "../../Assets/config/fontFamily";
 import { Header } from "../../Components/header/header";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { userExperience as Styles } from "./userExperience.style";
 import RenderExperience from "../../Components/flatlistRenders/renderExperience";
-import { GlobalStyles } from "../../global/global.styles";
+import { storageServices } from "../../services/storage.services";
 import { API } from "../../services/api.services";
-import Icon from "react-native-vector-icons/Ionicons";
+
 const UserExperience = (props) => {
   const [loading, setLoading] = useState(false);
   const [editMod, setEditMod] = useState(false);
@@ -40,7 +34,8 @@ const UserExperience = (props) => {
     getData();
   }, []);
   const getData = async () => {
-    let ex = await API.getExperienceList();
+    const userID = await storageServices.fetchKey("id");
+    let ex = await API.getExperienceList(userID);
     setExperience(ex);
     setLoading(false);
   };
@@ -107,7 +102,7 @@ const UserExperience = (props) => {
           <TouchableOpacity
             onPress={() => {
               setSelectedExp(item);
-              showActionSheet(item);
+              showActionSheet();
             }}
           >
             <RenderExperience item={item} />
@@ -130,7 +125,6 @@ const UserExperience = (props) => {
         onPress={() => {
           setEditMod(false);
         }}
-        //pressSave={() => postExperiance()}
       />
     </>
   );

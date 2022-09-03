@@ -16,56 +16,52 @@ import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles } from "../../global/global.styles";
 import { NotiStyle as Styles } from "./port.style";
 import { API } from "../../services/api.services";
+import { Header } from "../../Components/header/header";
 const Portfolio = (props) => {
-  const [ports, setallNotification] = useState([]);
-  useEffect(() => {
-    getAllNotification();
-  }, []);
-  const getAllNotification = async () => {
-    let notification = await API.portfolio();
-
-    setallNotification(notification);
-  };
+  const [ports, setPorts] = useState(props?.route?.params?.Portfolio);
   const renderPort = (item) => {
     return (
       <View style={Styles.portItem}>
+        <View
+          style={{
+            ...GlobalStyles.row,
+            paddingLeft: WP(2),
+            paddingVertical: HP(1),
+            borderBottomWidth: 1,
+            borderBottomColor: "grey",
+          }}
+        >
+          <Image
+            style={{
+              width: 30,
+              height: undefined,
+              aspectRatio: 1 / 1,
+              borderRadius: 20,
+            }}
+            source={{ uri: item.profilePhoto }}
+          ></Image>
+          <Text style={Styles.nameTxt}>{item.User}</Text>
+        </View>
         <Image
           source={{ uri: "https:" + item.Photo }}
-          style={{ width: "100%", height: HP(40) }}
+          style={{ width: WP(100), height: undefined, aspectRatio: 1 / 1 }}
+          //resizeMode="contain"
         />
+        <Text style={Styles.description}>{item.description}</Text>
       </View>
     );
   };
 
   return (
-    <SafeAreaView style={{ ...Styles.container }}>
-      <View
-        style={{
-          paddingBottom: HP(5),
-          paddingTop: HP(3),
-        }}
-      >
-        <TouchableOpacity onPress={() => props.navigation.goBack()}>
-          <View
-            style={{
-              ...GlobalStyles.row,
-              marginLeft: 7,
-              marginBottom: 10,
-            }}
-          >
-            <Ionicons name="chevron-back" size={30} color="black" />
-            <Text style={{ ...GlobalStyles.H2, paddingLeft: 6 }}>
-              Portfolio
-            </Text>
-          </View>
-        </TouchableOpacity>
-        <FlatList
-          data={ports}
-          renderItem={({ item }) => renderPort(item)}
-          keyExtractor={(item, index) => index.toString()}
-        />
-      </View>
-    </SafeAreaView>
+    <>
+      <Header title="Portfolio" onPress={() => props.navigation.goBack()} />
+      <FlatList
+        data={ports}
+        windowSize={1}
+        renderItem={({ item }) => renderPort(item)}
+        keyExtractor={(item, index) => index.toString()}
+      />
+    </>
   );
 };
 export default Portfolio;

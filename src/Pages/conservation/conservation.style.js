@@ -1,14 +1,14 @@
-import React, {useEffect} from 'react';
-import {SafeAreaView, Text, Image, View, StyleSheet} from 'react-native';
-import {palette} from '../../Assets/config/colors';
-import fontFamily from '../../Assets/config/fontFamily';
-import {HP, WP} from '../../Assets/config/screen-ratio';
-import {GlobalStyles} from '../../global/global.styles';
+import React, { useEffect } from "react";
+import { SafeAreaView, Text, Image, View, StyleSheet } from "react-native";
+import { palette } from "../../Assets/config/colors";
+import fontFamily from "../../Assets/config/fontFamily";
+import { HP, WP } from "../../Assets/config/screen-ratio";
+import { GlobalStyles } from "../../global/global.styles";
 
 export const ConvoStyle = StyleSheet.create({
   container: {
     ...GlobalStyles.container,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   userdp: {
     width: WP(18),
@@ -19,17 +19,17 @@ export const ConvoStyle = StyleSheet.create({
     width: WP(13),
     height: WP(13),
     borderRadius: WP(6.5),
-    resizeMode: 'cover',
+    resizeMode: "cover",
   },
   msgTxt: {
     fontFamily: fontFamily.bold,
-    color: 'black',
+    color: "black",
     fontSize: 22,
   },
   nameTxt: {
     fontFamily: fontFamily.medium,
     fontSize: 17,
-    color: 'black',
+    color: "black",
   },
 
   lastTxt: {
@@ -39,13 +39,11 @@ export const ConvoStyle = StyleSheet.create({
   },
   flatlistContainer: {
     flex: 1,
-   
-    // backgroundColor: 'red',
-    paddingBottom: HP(6),
+    paddingBottom: HP(7),
   },
   item: {
     height: HP(20),
-    backgroundColor: 'green',
+    backgroundColor: "green",
     width: WP(60),
     // maxWidth: WP(70),
   },

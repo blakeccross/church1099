@@ -13,6 +13,7 @@ export const Input = ({
   returnKeyLabel,
   type,
   autoCorrect,
+  multiline,
 }) => {
   const Styles = StyleSheet.create({
     input: {
@@ -41,6 +42,7 @@ export const Input = ({
         onSubmitEditing={onSubmit}
         textContentType={type}
         autoCorrect={autoCorrect}
+        multiline={multiline}
       />
     </View>
   );

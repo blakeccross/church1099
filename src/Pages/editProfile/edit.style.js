@@ -9,11 +9,14 @@ export const EditStyle = StyleSheet.create({
     ...GlobalStyles.container,
     backgroundColor: "white",
   },
-  emailTxt: {
-    color: "#333333",
-    fontSize: 18,
+  row: {
+    ...GlobalStyles.row,
+  },
+  setting: {
+    color: "black",
+    fontSize: 16,
     fontFamily: fontFamily.regular,
-    marginBottom: 5,
+    width: WP(20),
   },
   changePhotoTxt: {
     color: "#2b47fc",
@@ -47,11 +50,16 @@ export const EditStyle = StyleSheet.create({
     borderWidth: 0,
     height: 45,
     width: "100%",
-    backgroundColor: "rgba(247,247,247,1)",
+    backgroundColor: "white",
     color: "rgb(0,0,0)",
     padding: 10,
     borderRadius: 10,
     paddingTop: 7,
+  },
+  inputContainer: {
+    flex: 1,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f4f4f5",
   },
   rectangle: {
     justifyContent: "center",

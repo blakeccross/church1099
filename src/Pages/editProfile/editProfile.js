@@ -29,24 +29,19 @@ import ReactNativeModal from "react-native-modal";
 import * as ImagePicker from "expo-image-picker";
 
 const EditProfile = (props) => {
-  console.log(props);
-  const [img, setImg] = useState(
-    props?.route?.params?.userData["Profile Photo"]
-  );
-  const [name, setName] = useState(props?.route?.params?.userData.Name);
+  const [img, setImg] = useState(props?.route?.params?.userData.profilePhoto);
+  const [name, setName] = useState(props?.route?.params?.userData.name);
   const [email, setEmail] = useState(
     props?.route?.params?.userData.authentication?.email.email
   );
-  const [phone, setPhone] = useState(
-    props?.route?.params?.userData["Phone Number"]
-  );
-  const [loc, setLoc] = useState(props?.route?.params?.userData?.Location);
-  const [bio, setBio] = useState(props?.route?.params?.userData.Bio);
+  const [phone, setPhone] = useState(props?.route?.params?.userData.phone);
+  const [loc, setLoc] = useState(props?.route?.params?.userData?.location);
+  const [bio, setBio] = useState(props?.route?.params?.userData.header);
   const [open, setOpen] = useState(false);
   const [gender, setGender] = useState(
-    props?.route?.params?.userData.Gender
-      ? props?.route?.params?.userData.Gender
-      : "Male"
+    props?.route?.params?.userData.gender
+      ? props?.route?.params?.userData.gender
+      : ""
   );
   const [genderMod, setGenderMod] = useState(false);
 
@@ -94,8 +89,7 @@ const EditProfile = (props) => {
   };
   return (
     <>
-      <SafeAreaView style={{ flex: 0, backgroundColor: "#2b47fc" }} />
-      <SafeAreaView style={{ ...Styles.container }}>
+      <View style={Styles.container}>
         <Header
           title="Edit Profile"
           onPress={() => props.navigation.goBack()}
@@ -104,76 +98,98 @@ const EditProfile = (props) => {
           contentContainerStyle={{ paddingBottom: HP(8), marginTop: HP(2) }}
           showsVerticalScrollIndicator={false}
         >
-          <View>
-            <View style={{ paddingHorizontal: WP(6) }}>
-              <TouchableOpacity
-                onPress={pickImage}
-                style={{ alignItems: "center" }}
-              >
-                {img ? (
-                  <Image source={{ uri: img }} style={{ ...Styles.dp }} />
-                ) : (
-                  <Image source={Imgs.dp} style={{ ...Styles.dp }} />
-                )}
-                <Text style={{ ...Styles.changePhotoTxt, paddingTop: HP(1) }}>
-                  Upload Profile Picture
-                </Text>
-              </TouchableOpacity>
-              <View style={{ paddingTop: HP(2) }}>
-                <Text style={{ ...Styles.emailTxt }}>Full Name</Text>
-                <Input value={name} setValue={setName} placeTxt={""} />
-              </View>
-              <View style={{ paddingTop: HP(2) }}>
-                <Text style={{ ...Styles.emailTxt }}>Phone</Text>
+          <View
+            style={{
+              paddingHorizontal: WP(6),
+            }}
+          >
+            <TouchableOpacity
+              onPress={pickImage}
+              style={{
+                alignItems: "center",
+                borderBottomWidth: 1,
+                borderBottomColor: "#f4f4f5",
+                paddingBottom: HP(2),
+              }}
+            >
+              {img ? (
+                <Image source={{ uri: img }} style={{ ...Styles.dp }} />
+              ) : (
+                <Image source={Imgs.dp} style={{ ...Styles.dp }} />
+              )}
+              <Text style={{ ...Styles.changePhotoTxt, paddingTop: HP(1) }}>
+                Change Profile Picture
+              </Text>
+            </TouchableOpacity>
+            <View style={Styles.row}>
+              <Text style={{ ...Styles.setting }}>Name</Text>
+              <View style={Styles.inputContainer}>
                 <Input
+                  col={"white"}
+                  value={name}
+                  setValue={setName}
+                  placeTxt={"Full Name"}
+                />
+              </View>
+            </View>
+            <View style={Styles.row}>
+              <Text style={{ ...Styles.setting }}>Phone</Text>
+              <View style={Styles.inputContainer}>
+                <Input
+                  col={"white"}
                   value={phone}
                   setValue={setPhone}
-                  placeTxt={""}
+                  placeTxt={"Phone Number"}
                   keyboard={"phone-pad"}
                 />
               </View>
-              <View
-                style={{
-                  ...GlobalStyles.row,
-                  width: "100%",
-                  paddingTop: HP(2),
-                  justifyContent: "space-between",
+            </View>
+            <View style={Styles.row}>
+              <Text style={{ ...Styles.setting }}>Location</Text>
+              <View style={Styles.inputContainer}>
+                <Input
+                  col={"white"}
+                  value={loc}
+                  setValue={setLoc}
+                  placeTxt={"Location"}
+                />
+              </View>
+            </View>
+            <View style={Styles.row}>
+              <Text style={{ ...Styles.setting }}>Gender</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setGenderMod(true);
                 }}
+                style={Styles.inputContainer}
               >
-                <View style={{ width: "48%" }}>
-                  <Text style={{ ...Styles.emailTxt }}>
-                    Location <Text style={{ fontSize: 10 }}>(City,State)</Text>
-                  </Text>
-                  <Input value={loc} setValue={setLoc} placeTxt={""} />
-                </View>
-                <View style={{ width: "48%" }}>
-                  <Text style={{ ...Styles.emailTxt }}>Gender</Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setGenderMod(true);
+                <View style={Styles.input}>
+                  <Text
+                    style={{
+                      color: "black",
+                      fontSize: 15,
+                      paddingBottom: 2,
                     }}
                   >
-                    <View style={Styles.input}>
-                      <Text
-                        style={{
-                          color: "black",
-                          fontSize: 15,
-                          paddingBottom: 2,
-                        }}
-                      >
-                        {gender}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
+                    {gender}
+                  </Text>
                 </View>
+              </TouchableOpacity>
+            </View>
+            <View style={Styles.row}>
+              <Text style={{ ...Styles.setting }}>Header</Text>
+              <View style={{ ...Styles.inputContainer, height: 40 }}>
+                <Input
+                  col={"white"}
+                  value={bio}
+                  setValue={setBio}
+                  placeTxt={"Header"}
+                  multiline={false}
+                />
               </View>
-              <View style={{ paddingTop: HP(2) }}>
-                <Text style={{ ...Styles.emailTxt }}>Title</Text>
-                <Input value={bio} setValue={setBio} placeTxt={""} />
-              </View>
-              <View style={{ marginTop: HP(5) }}>
-                <Button onPress={() => onSubmit()} btnTxt={"Submit"} />
-              </View>
+            </View>
+            <View style={{ marginTop: HP(5) }}>
+              <Button onPress={() => onSubmit()} btnTxt={"Submit"} />
             </View>
           </View>
           <ReactNativeModal
@@ -199,7 +215,7 @@ const EditProfile = (props) => {
             </View>
           </ReactNativeModal>
         </ScrollView>
-      </SafeAreaView>
+      </View>
     </>
   );
 };

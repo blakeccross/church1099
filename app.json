@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "church1099",
+    "name": "Church1099",
     "slug": "church1099",
     "privacy": "public",
     "version": "1.0.0",
@@ -15,11 +15,9 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false
     },
     "android": {
       "adaptiveIcon": {

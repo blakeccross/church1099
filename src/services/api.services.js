@@ -1,13 +1,14 @@
-const base_url = "https://church1099.com/api/1.1/wf/";
-const base_url1 = "https://church1099.com/api/1.1/obj/";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AlertService from "./alertService";
 import { storageServices } from "./storage.services";
 import { CommonActions } from "@react-navigation/native";
+
+const base_url = "https://church1099.com/api/1.1/wf/";
+const base_url1 = "https://church1099.com/api/1.1/obj/";
+
 async function getHeaderConfig() {
   const token = await AsyncStorage.getItem("token");
-  // console.log('Token', token);
   return {
     headers: { Authorization: `Bearer ${token}` },
   };
@@ -198,19 +199,13 @@ const editProfile = async (obj) => {
     });
   return response;
 };
-const getUser = async () => {
-  const id = await AsyncStorage.getItem("id");
-  // console.log('IDD', id);
+const getUser = async (user) => {
   const tok = await AsyncStorage.getItem("token");
-  // console.log('TOKEN', tok);
   let value = {};
-  // console.log(`${base_url1}user/${id}`);
   await axios
-    .get(`${base_url1}user/${id}`)
+    .get(`${base_url1}user/${user}`)
     .then(async (res) => {
-      // AlertService.show("Posted!", "Successfully Posted")
       value = res?.data?.response;
-      // console.log(res?.data?.response);
     })
     .catch((err) => {
       // console.log(err);
@@ -286,10 +281,8 @@ const getMessages = async (relativeUrl) => {
     },
     data: {},
   };
-  console.log(config.url);
   await axios(config)
     .then((res) => {
-      //console.log('res', res.data.response.messages);
       response = res.data.response.messages;
     })
     .catch((error) => {
@@ -375,14 +368,38 @@ const userListForChat = async (relativeUrl) => {
     });
   return response;
 };
-const getConversationList = async (relativeUrl) => {
+const getConversationList = async () => {
   const token = await AsyncStorage.getItem("token");
-  // const url = getUrl(relativeUrl);
+  const url = `https://church1099.com/api/1.1/wf/conversations`;
   let response = "";
-  //console.log('url :', relativeUrl, 'token', token);
   const config = {
     method: "POST",
-    url: relativeUrl,
+    url: url,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    data: {},
+  };
+  await axios(config)
+    .then((res) => {
+      response = res.data.convos;
+    })
+    .catch((error) => {
+      console.log("error", error);
+      if (error?.response?.status == 400) {
+      }
+    });
+  return response;
+};
+const getConversationListDetails = async (userID) => {
+  const token = await AsyncStorage.getItem("token");
+  const url = `https://church1099.com/api/1.1/wf/convo_details?UserID=${userID}`;
+  let response = "";
+  const config = {
+    method: "POST",
+    url: url,
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
@@ -402,37 +419,8 @@ const getConversationList = async (relativeUrl) => {
     });
   return response;
 };
-const getConversationListDetails = async (relativeUrl) => {
-  const token = await AsyncStorage.getItem("token");
-  // const url = getUrl(relativeUrl);
-  let response = "";
-  //console.log('url :', relativeUrl, 'token', token);
-  const config = {
-    method: "POST",
-    url: relativeUrl,
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    data: {},
-  };
-  await axios(config)
-    .then((res) => {
-      //console.log('res', res.data.response.convos);
-      response = res.data.response.convos;
-    })
-    .catch((error) => {
-      // console.log('error', error);
-      if (error?.response?.status == 400) {
-      }
-    });
-  return response;
-};
-const getExperienceList = async () => {
-  const token = await AsyncStorage.getItem("id");
-  let d = "1599771467039x820731645948684800";
-  let url = `${base_url}experience?user=${token}`;
+const getExperienceList = async (userID) => {
+  let url = `${base_url}experience?user=${userID}`;
   let response = [];
   const config = {
     method: "POST",
@@ -446,26 +434,6 @@ const getExperienceList = async () => {
   await axios(config)
     .then((res) => {
       response = res.data?.response.experience;
-    })
-    .catch((error) => {});
-  return response;
-};
-const getSkillSet = async () => {
-  const token = await AsyncStorage.getItem("id");
-  let url = `${base_url}all_skills?User=${token}`;
-  let response = [];
-  const config = {
-    method: "POST",
-    url: url,
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    data: {},
-  };
-  await axios(config)
-    .then((res) => {
-      response = res.data.response.Skill;
     })
     .catch((error) => {});
   return response;
@@ -510,23 +478,25 @@ const searchUsers = async (query) => {
     .catch((error) => {});
   return response;
 };
-const getAllSkills = async () => {
-  let url = `https://church1099.com/api/1.1/obj/skill`;
-  let response = [];
+const getSkills = async (category) => {
+  let url = `${base_url}skills?category=${category}`;
+  let response = "";
   const config = {
-    method: "GET",
+    method: "POST",
     url: url,
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
     },
-    data: undefined,
+    data: {},
   };
   await axios(config)
     .then((res) => {
-      response = res.data?.response?.results;
+      response = res.data.response.skills;
     })
-    .catch((error) => {});
+    .catch((error) => {
+      console.log(error);
+    });
   return response;
 };
 const addExperience = async (data) => {
@@ -600,18 +570,18 @@ const removeJob = async (job) => {
     });
   return response;
 };
-const updateSkill = async (list) => {
+const addSkill = async (skill, operation) => {
   const id = await AsyncStorage.getItem("id");
+  let url = `${base_url}addSkill?operation=${operation}&skill=${skill}&user=${id}`;
   let response = "";
-  let url = `https://church1099.com/api/1.1/obj/user/${id}`;
   const config = {
-    method: "PATCH",
+    method: "POST",
     url: url,
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
     },
-    data: list,
+    data: {},
   };
   await axios(config)
     .then((res) => {
@@ -703,6 +673,7 @@ const deleteNotification = async (url) => {
   return response;
 };
 const deleteConversation = async (url) => {
+  const token = await AsyncStorage.getItem("token");
   let response = [];
   const config = {
     method: "POST",
@@ -710,6 +681,7 @@ const deleteConversation = async (url) => {
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     data: {},
   };
@@ -718,7 +690,6 @@ const deleteConversation = async (url) => {
       response = res;
     })
     .catch((error) => {
-      //console.log(url);
       console.log(error);
     });
   return response;
@@ -736,6 +707,7 @@ const sendMessage = async (url) => {
     },
     data: {},
   };
+  console.log(config);
   await axios(config)
     .then((res) => {
       response = res;
@@ -766,12 +738,9 @@ const jobApply = async (jobId) => {
     });
   return response;
 };
-const portfolio = async () => {
-  const id = await AsyncStorage.getItem("id");
+const portfolio = async (user) => {
   let response = [];
-
-  let url = `${base_url}portfolio?userID=${id}`;
-
+  let url = `${base_url}posts?user=${user}`;
   const config = {
     method: "POST",
     url: url,
@@ -784,9 +753,30 @@ const portfolio = async () => {
   };
   await axios(config)
     .then((res) => {
-      response = res.data?.response?.Portfolio;
-      //console.log(res.data?.response?.Portfolio);
-      //AlertService.show('WOW!', 'Successfully something');
+      response = res.data.Posts;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  return response;
+};
+const getUserData = async (userId) => {
+  const token = await AsyncStorage.getItem("token");
+  let response = [];
+  let url = `${base_url}user?userId=${userId}`;
+  const config = {
+    method: "POST",
+    url: url,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    data: {},
+  };
+  await axios(config)
+    .then((res) => {
+      response = res.data.user;
     })
     .catch((error) => {
       console.log(error);
@@ -797,6 +787,7 @@ export const API = {
   jobApply,
   signup,
   login,
+  getUserData,
   forgot,
   JobList,
   MyJobs,
@@ -820,10 +811,9 @@ export const API = {
   getConversationListDetails,
   getUserList,
   getExperienceList,
-  getSkillSet,
   addExperience,
-  getAllSkills,
-  updateSkill,
+  getSkills,
+  addSkill,
   userSignup,
   getApplicantList,
   deleteNotification,

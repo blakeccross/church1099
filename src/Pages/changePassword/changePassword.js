@@ -45,15 +45,25 @@ const ChangePassword = (props) => {
         <View style={{ paddingHorizontal: WP(5), paddingTop: HP(1) }}>
           <View style={{ paddingTop: HP(2) }}>
             <Text style={{ ...Styles.setTxt }}>Old Password</Text>
-            <Input value={old} pass={true} setValue={setOld} />
+            <Input col={"white"} value={old} pass={true} setValue={setOld} />
           </View>
           <View style={{ paddingTop: HP(2) }}>
             <Text style={{ ...Styles.setTxt }}>New Password</Text>
-            <Input value={newPas} pass={true} setValue={setNewPas} />
+            <Input
+              col={"white"}
+              value={newPas}
+              pass={true}
+              setValue={setNewPas}
+            />
           </View>
           <View style={{ paddingTop: HP(2) }}>
             <Text style={{ ...Styles.setTxt }}>Verify Password</Text>
-            <Input value={confirmPas} pass={true} setValue={setConfirmPas} />
+            <Input
+              col={"white"}
+              value={confirmPas}
+              pass={true}
+              setValue={setConfirmPas}
+            />
           </View>
           <View style={{ marginTop: HP(5) }}>
             <Button onPress={() => changePass()} btnTxt={"Change Password"} />
