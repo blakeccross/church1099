@@ -170,9 +170,7 @@ export const EditExpModal = ({ exp, show, setShow, onPress, pressSave }) => {
                   </View>
                 </TouchableOpacity>
               </View>
-              {isWorking ? (
-                <></>
-              ) : (
+              {isWorking ? null : (
                 <View style={{ width: "48%" }}>
                   <Text style={{ ...Styles.enterTxt }}>End Date</Text>
                   <TouchableOpacity

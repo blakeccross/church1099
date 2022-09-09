@@ -62,7 +62,7 @@ export const MessageStyle = StyleSheet.create({
     width: 50,
     borderRadius: 25,
     resizeMode: "cover",
-    marginRight: 20,
+    marginRight: 10,
   },
   infoContainer: {
     //justifyContent: "space-between",
@@ -82,9 +82,8 @@ export const MessageStyle = StyleSheet.create({
   lastMessage: {
     fontSize: 12,
     color: "gray",
-    //width: WP(60),
-    // borderWidth: 1,
-    // borderColor: 'red',
+    paddingTop: 5,
+    width: WP(60),
   },
   time: {
     fontSize: 12,

@@ -19,6 +19,7 @@ export const Button = ({
   disable,
   btnCol,
   textCol,
+  loadCol,
 }) => {
   const Styles = StyleSheet.create({
     btn: {
@@ -38,7 +39,7 @@ export const Button = ({
         style={{ ...Styles.btn, ...btnStyle }}
       >
         {disable ? (
-          <ActivityIndicator color={"white"} size="small" />
+          <ActivityIndicator color={loadCol ? loadCol : "white"} size="small" />
         ) : (
           <Text
             style={{

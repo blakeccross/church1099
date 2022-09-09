@@ -11,27 +11,19 @@ import {
 } from "react-native";
 import { API } from "../../services/api.services";
 import { HP, WP } from "../../Assets/config/screen-ratio";
-import { SettingStyle as Styles } from "./setting.style";
+import { SettingsStyle as Styles } from "./settings.style";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles } from "../../global/global.styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CommonActions } from "@react-navigation/native";
 import AlertService from "../../services/alertService";
-import { ChangeBackgroundColor, GetUser } from "../../root/action";
-import { connect } from "react-redux";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Header } from "../../Components/header/header";
 
-const Setting = (props) => {
-  const [userData, setUserData] = useState(props.route.params.user);
-  useEffect(() => {
-    getData();
-  }, []);
-  const getData = async () => {
-    let res = await API.getUser();
-  };
+const Settings = (props) => {
+  const [userData, setUserData] = useState(props.route.params.user.data);
 
   const onSignOut = async () => {
     AlertService.confirm("Are you sure you want to Logout?").then(
@@ -67,7 +59,7 @@ const Setting = (props) => {
             }
           >
             <Image
-              source={{ uri: userData.profilePhoto }}
+              source={{ uri: "https:" + userData.profilePhoto }}
               style={{ ...Styles.dp }}
             />
             <Text style={{ ...Styles.setTxt, fontSize: 18 }}>
@@ -190,15 +182,5 @@ const Setting = (props) => {
     </>
   );
 };
-const mapStateToProps = (state) => {
-  const { backgroundColor } = state;
-  const { user } = state;
-  return state;
-};
-const mapDispatchToProps = (dispatch) => {
-  return {
-    changeBackgroundColor: (bg) => dispatch(ChangeBackgroundColor(bg)),
-    getUser: (userInfo) => dispatch(GetUser(userInfo)),
-  };
-};
-export default connect(mapStateToProps, mapDispatchToProps)(Setting);
+
+export default Settings;

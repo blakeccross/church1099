@@ -12,7 +12,6 @@ import {
 import ActionSheet from "react-native-actionsheet";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { ProfileViewStyle as Styles } from "./profileView.style";
-import Icon from "react-native-vector-icons/Entypo";
 import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles } from "../../global/global.styles";
 import { API } from "../../services/api.services";
@@ -43,7 +42,7 @@ const ProfileView = (props) => {
   }, []);
 
   const getData = async () => {
-    const userId = props.route.params.user.userId;
+    const userId = await props.route.params.user.userId;
     let user = await API.getUserData(userId);
     setUserData(user);
     setExperience(user?.experience);
@@ -59,7 +58,7 @@ const ProfileView = (props) => {
     return (
       <View style={Styles.portItem}>
         <Image
-          source={{ uri: item.image }}
+          source={{ uri: "https:" + item.image }}
           style={{ width: WP(25), height: HP(17), borderRadius: 10 }}
         />
       </View>
@@ -161,7 +160,7 @@ const ProfileView = (props) => {
               }}
             >
               <Image
-                source={{ uri: user.profilePhoto }}
+                source={{ uri: "https:" + user?.profilePhoto }}
                 style={{ ...Styles.dp }}
               />
               <Text
@@ -171,17 +170,15 @@ const ProfileView = (props) => {
                   marginTop: HP(1),
                 }}
               >
-                {user.name}
+                {user?.name}
               </Text>
               <View
                 style={{
-                  ...GlobalStyles.row,
                   alignSelf: "center",
                   marginTop: HP(1),
                 }}
               >
-                <Icon name="location-pin" color={"#666666"} size={14} />
-                <Text style={Styles.userInfoTxt}>{user.location}</Text>
+                <Text style={Styles.userInfoTxt}>{user?.location}</Text>
               </View>
               <Text
                 style={{
@@ -190,7 +187,7 @@ const ProfileView = (props) => {
                   marginTop: HP(1),
                 }}
               >
-                {user.header}
+                {user?.header}
               </Text>
               <View
                 style={{
@@ -205,20 +202,18 @@ const ProfileView = (props) => {
             </View>
 
             {/*SKILLS*/}
-
-            <View style={{ ...Styles.panelView }}>
-              <View
-                style={{
-                  marginBottom: HP(2),
-                  ...GlobalStyles.row,
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text style={{ ...GlobalStyles.H3 }}>Skills</Text>
-                <View style={GlobalStyles.row}></View>
-              </View>
-
-              {user?.skills && user?.skills?.length ? (
+            {user?.skills && user?.skills?.length ? (
+              <View style={{ ...Styles.panelView }}>
+                <View
+                  style={{
+                    marginBottom: HP(2),
+                    ...GlobalStyles.row,
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text style={{ ...GlobalStyles.H3 }}>Skills</Text>
+                  <View style={GlobalStyles.row}></View>
+                </View>
                 <View
                   style={{
                     flexDirection: "row",
@@ -236,23 +231,21 @@ const ProfileView = (props) => {
                     );
                   })}
                 </View>
-              ) : (
-                <View style={Styles.empty}></View>
-              )}
-            </View>
+              </View>
+            ) : null}
 
             {/*PORTFOLIO*/}
-            <View style={{ ...Styles.panelView }}>
-              <View
-                style={{
-                  marginBottom: HP(2),
-                  ...GlobalStyles.row,
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text style={{ ...GlobalStyles.H3 }}>Portfolio</Text>
-              </View>
-              {user?.posts && user.posts?.length ? (
+            {user?.posts && user.posts?.length ? (
+              <View style={{ ...Styles.panelView }}>
+                <View
+                  style={{
+                    marginBottom: HP(2),
+                    ...GlobalStyles.row,
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text style={{ ...GlobalStyles.H3 }}>Portfolio</Text>
+                </View>
                 <TouchableOpacity
                   onPress={() =>
                     props.navigation.navigate("Portfolio", { Portfolio: ports })
@@ -266,30 +259,24 @@ const ProfileView = (props) => {
                     keyExtractor={(item, index) => index.toString()}
                   />
                 </TouchableOpacity>
-              ) : (
-                <View style={Styles.empty}>
-                  <Text style={Styles.emptyTxt}>
-                    Show off something you've done or created
-                  </Text>
-                </View>
-              )}
-            </View>
+              </View>
+            ) : null}
             {/*EXPERIENCE*/}
-            <View
-              style={{
-                ...Styles.panelView,
-              }}
-            >
+            {experience && experience.length ? (
               <View
                 style={{
-                  marginBottom: HP(0),
-                  ...GlobalStyles.row,
-                  justifyContent: "space-between",
+                  ...Styles.panelView,
                 }}
               >
-                <Text style={{ ...GlobalStyles.H3 }}>Experience</Text>
-              </View>
-              {experience && experience.length ? (
+                <View
+                  style={{
+                    marginBottom: HP(0),
+                    ...GlobalStyles.row,
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text style={{ ...GlobalStyles.H3 }}>Experience</Text>
+                </View>
                 <View style={Styles.experienceList}>
                   {experience.map((item, i) => {
                     return (
@@ -324,14 +311,8 @@ const ProfileView = (props) => {
                     );
                   })}
                 </View>
-              ) : (
-                <View style={Styles.empty}>
-                  <Text style={Styles.emptyTxt}>
-                    Show some relevant work experience
-                  </Text>
-                </View>
-              )}
-            </View>
+              </View>
+            ) : null}
           </>
         )}
       </ScrollView>

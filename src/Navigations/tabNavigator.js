@@ -77,11 +77,7 @@ export const TabNavigator = () => {
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={{ ...Styles.iconView }}>
-              {focused ? (
-                <FontAwesome5 name="search" size={24} color="blue" />
-              ) : (
-                <FontAwesome5 name="search" size={24} color="black" />
-              )}
+              {focused ? <Icons.search_focused /> : <Icons.search />}
             </View>
           ),
         }}

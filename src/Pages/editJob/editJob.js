@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   SafeAreaView,
   Text,
   View,
   TextInput,
   ScrollView,
+  TouchableOpacity,
   Switch,
 } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
@@ -12,150 +13,249 @@ import Styles from "./editJob.styles";
 import { GlobalStyles } from "../../global/global.styles";
 import { Input } from "../../Components/Input/Input";
 import { Button } from "../../Components/Button/Button";
-import { RadioButton } from "react-native-paper";
 import { API } from "../../services/api.services";
 import AlertService from "../../services/alertService";
-import DropDownPicker from "react-native-dropdown-picker";
+import ReactNativeModal from "react-native-modal";
+import { Header } from "../../Components/header/header";
+import { Picker } from "@react-native-picker/picker";
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { AutoGrowingTextInput } from "react-native-autogrow-textinput";
+
 const EditJob = ({ navigation, route }) => {
-  var item = route?.params?.item;
-  const [mod, setMod] = useState(false);
+  const job = route.params;
   const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("");
+  const [church, setChurch] = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
   const [position, setPosition] = useState("");
+  const [emp, setEmp] = useState("");
   const [isRemote, setIsRemote] = useState(false);
+  const [modal, setModal] = useState(false);
+  const [empModal, setEmpModal] = useState(false);
+  const ref = useRef();
 
-  const [items, setItems] = useState([
-    { label: "None", value: "" },
-    { label: "Communication", value: "Communication" },
-    { label: "Video", value: "Video" },
-    { label: "Design", value: "Design" },
-    { label: "Production", value: "Production" },
-  ]);
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
   useEffect(() => {
-    setTitle(item["Job Title"]);
-    setDescription(item["Job Description"]);
-    setCategory(item["Category"]);
-    setIsRemote(item["Remote Friendly"]);
-    setLocation(item["State"]);
-    setPosition(item["Position type"]);
+    setTitle(job.title);
+    setChurch(job.church);
+    setDescription(job.description);
+    setEmp(job.emp);
+    ref?.current?.setAddressText(job.location);
+    setIsRemote(job.remote == "yes" ? true : false);
+    setLocation(job.location);
+    setPosition(job.position);
   }, []);
+
   const updateJob = async () => {
+    let jobId = route.params.id;
     if (
       title != "" &&
-      category != "" &&
-      description != "" &&
+      church != "" &&
       location != "" &&
+      emp != "" &&
+      description != "" &&
       position != ""
     ) {
       await API.updateJobInfo(
+        jobId,
         title,
-        description,
+        church,
         location,
+        position,
+        emp,
+        description,
         isRemote,
-        category,
         navigation
       );
     } else {
-      AlertService.show("Missing", "Enter all required data !!!");
+      AlertService.show("Missing", "Make sure to fill out every field");
     }
   };
   return (
-    <SafeAreaView style={{ ...Styles.container }}>
-      <ScrollView
-        contentContainerStyle={{
-          paddingHorizontal: WP(6),
-          paddingBottom: HP(5),
-          paddingTop: HP(3),
-        }}
-      >
-        <Text style={{ ...Styles.createTxt }}>Edit Job</Text>
-        <View
-          style={{
-            ...GlobalStyles.row,
-            justifyContent: "space-between",
-            marginTop: HP(3),
-          }}
-        >
-          <View style={{ width: "45%" }}>
-            <Text style={{ ...Styles.createTxt, fontSize: 13 }}>Job Title</Text>
-            <Input value={title} setValue={setTitle} />
-          </View>
-          <View style={{ width: "45%" }}>
-            <Text style={{ ...Styles.createTxt, fontSize: 13 }}>
-              Church / Ministry
-            </Text>
-            <DropDownPicker
-              open={open}
-              value={category}
-              items={items}
-              setOpen={setOpen}
-              setValue={setCategory}
-              setItems={setItems}
-              style={{ borderWidth: 0 }}
-              placeholder={"Choose an option"}
-              dropDownContainerStyle={{ borderColor: "rgb(244, 244, 245)" }}
-            />
-            {/* <Input value={category} setValue={setCategory} /> */}
-          </View>
-        </View>
-        <View style={{ marginTop: HP(3) }}>
-          <Text style={{ ...Styles.createTxt, fontSize: 13 }}>
-            Job Description
-          </Text>
-          <TextInput
-            onChangeText={(e) => {
-              setDescription(e);
+    <>
+      <Header title="Edit" onPress={() => navigation.goBack()} />
+      <View style={{ backgroundColor: "white" }}>
+        <KeyboardAwareScrollView extraScrollHeight={200}>
+          <ScrollView
+            contentContainerStyle={{
+              paddingHorizontal: WP(6),
+              paddingBottom: HP(20),
             }}
-            value={description}
-            multiline
-            numberOfLines={8}
-            textAlignVertical={"top"}
-            autoCapitalize={"none"}
-            placeholderTextColor={"#666666"}
-            style={Styles.input}
-          />
-        </View>
-        <View
-          style={{
-            ...GlobalStyles.row,
-            justifyContent: "space-between",
-            marginTop: HP(3),
-          }}
-        >
-          <View style={{ width: "45%" }}>
-            <Text style={{ ...Styles.createTxt, fontSize: 13 }}>
-              Job Location
-            </Text>
-            <Input value={location} setValue={setLocation} />
-          </View>
-          <View style={{ width: "45%" }}>
-            <Text style={{ ...Styles.createTxt, fontSize: 13 }}>
-              Position Type
-            </Text>
-            <Input value={position} setValue={setPosition} />
-          </View>
-        </View>
-        <View style={{ ...GlobalStyles.row }}>
-          <Switch
-            trackColor={{ false: "#767577", true: "#81b0ff" }}
-            thumbColor={isRemote ? "#f5dd4b" : "#f4f3f4"}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={() => {
-              setIsRemote(!isRemote);
-            }}
-            value={isRemote}
-          />
-          <Text style={{ ...Styles.createTxt, fontSize: 13 }}>Remote</Text>
-        </View>
-        <View style={{ marginTop: HP(3) }}>
-          <Button onPress={() => updateJob()} btnTxt={"Update Job"} />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+          >
+            <View style={{ width: "100%" }}>
+              <Text style={{ ...Styles.createTxt }}>Job Title</Text>
+              <Input value={title} setValue={setTitle} />
+            </View>
+            <View style={{ width: "100%" }}>
+              <Text style={{ ...Styles.createTxt }}>Church / Ministry</Text>
+              <Input value={church} setValue={setChurch} />
+            </View>
+
+            <View style={{ width: "100%" }}>
+              <Text style={{ ...Styles.createTxt }}>Job Location</Text>
+              <GooglePlacesAutocomplete
+                styles={{
+                  textInput: {
+                    height: 45,
+                    backgroundColor: "rgba(247,247,247,1)",
+                    fontSize: 16,
+                  },
+                }}
+                ref={ref}
+                setAddressText={"hello"}
+                placeholder="Search"
+                onPress={(data, details = null) => {
+                  setLocation(data.description);
+                }}
+                query={{
+                  key: "AIzaSyCqfZsYioXmmp-FpCdAEZjnw8uJ4dwsYFo",
+                  language: "en",
+                }}
+              />
+            </View>
+            <View>
+              <Text style={{ ...Styles.createTxt }}>Position Type</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setModal(true);
+                }}
+              >
+                <View style={Styles.input}>
+                  <Text
+                    style={{
+                      color: "black",
+                      fontSize: 15,
+                      paddingBottom: 2,
+                    }}
+                  >
+                    {position}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            <View>
+              <Text style={{ ...Styles.createTxt }}>Employment Type</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setEmpModal(true);
+                }}
+              >
+                <View style={Styles.input}>
+                  <Text
+                    style={{
+                      color: "black",
+                      fontSize: 15,
+                      paddingBottom: 2,
+                    }}
+                  >
+                    {emp}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+
+            <View>
+              <Text style={{ ...Styles.createTxt }}>Job Description</Text>
+              <AutoGrowingTextInput
+                style={Styles.input}
+                //placeholder={"Message..."}
+                onChangeText={(e) => setDescription(e)}
+                value={description}
+                maxHeight={500}
+                minHeight={150}
+              />
+            </View>
+
+            <View
+              style={{
+                ...GlobalStyles.row,
+                marginTop: HP(2),
+                justifyContent: "space-between",
+              }}
+            >
+              <Text style={{ ...Styles.createTxt, marginBottom: 15 }}>
+                Is this position remote?
+              </Text>
+              <Switch
+                trackColor={{ false: "#767577", true: "#2B47FC" }}
+                thumbColor={isRemote ? "white" : "#f4f3f4"}
+                //ios_backgroundColor="#3e3e3e"
+                onValueChange={() => {
+                  setIsRemote(!isRemote);
+                }}
+                value={isRemote}
+              />
+            </View>
+            <View style={{ marginTop: HP(3) }}>
+              <Button onPress={() => updateJob()} btnTxt={"Save"} />
+            </View>
+            <ReactNativeModal
+              isVisible={modal}
+              style={{ margin: 0 }}
+              onBackButtonPress={() => setModal(false)}
+              onBackdropPress={() => setModal(false)}
+            >
+              <View style={Styles.centeredView}>
+                <View style={Styles.rectangle} />
+
+                <Picker
+                  selectedValue={position}
+                  onValueChange={(position, index) => {
+                    setPosition(position);
+                    setModal(false);
+                  }}
+                  mode="dropdown" // Android only
+                  //style={styles.picker}
+                >
+                  <Picker.Item label="Administration" value="Administration" />
+                  <Picker.Item label="Communications" value="Communications" />
+                  <Picker.Item label="Design" value="Design" />
+                  <Picker.Item label="Film" value="Film" />
+                  <Picker.Item label="Hospitality" value="Hospitality" />
+                  <Picker.Item label="Internship" value="Internship" />
+                  <Picker.Item label="IT" value="IT" />
+                  <Picker.Item label="Leadership" value="Leadership" />
+                  <Picker.Item label="Production" value="Production" />
+                  <Picker.Item label="Social Media" value="Social Media" />
+                  <Picker.Item label="Students" value="Students" />
+                  <Picker.Item label="Video" value="Video" />
+                  <Picker.Item label="Web" value="Web" />
+                  <Picker.Item label="Worship" value="Worship" />
+                  <Picker.Item label="Youth / Kids" value="Youth / Kids" />
+                </Picker>
+              </View>
+            </ReactNativeModal>
+            <ReactNativeModal
+              isVisible={empModal}
+              style={{ margin: 0 }}
+              onBackButtonPress={() => setEmpModal(false)}
+              onBackdropPress={() => setEmpModal(false)}
+            >
+              <View style={Styles.centeredView}>
+                <View style={Styles.rectangle} />
+
+                <Picker
+                  selectedValue={emp}
+                  onValueChange={(emp, index) => {
+                    setEmp(emp);
+                    setEmpModal(false);
+                  }}
+                  mode="dropdown" // Android only
+                  //style={styles.picker}
+                >
+                  <Picker.Item label="Full-Time" value="Full-Time" />
+                  <Picker.Item label="Part-Time" value="Part-Time" />
+                  <Picker.Item label="Contract" value="Contract" />
+                  <Picker.Item label="Tomporary" value="Tomporary" />
+                  <Picker.Item label="Volunteer" value="Volunteer" />
+                  <Picker.Item label="Internship" value="Internship" />
+                </Picker>
+              </View>
+            </ReactNativeModal>
+          </ScrollView>
+        </KeyboardAwareScrollView>
+      </View>
+    </>
   );
 };
 export default EditJob;

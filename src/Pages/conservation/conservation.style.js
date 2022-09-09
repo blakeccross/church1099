@@ -45,6 +45,16 @@ export const ConvoStyle = StyleSheet.create({
     height: HP(20),
     backgroundColor: "green",
     width: WP(60),
-    // maxWidth: WP(70),
+  },
+  textInput: {
+    borderWidth: 0,
+    borderRadius: 10,
+    height: 45,
+    width: "100%",
+    backgroundColor: "rgba(247,247,247,1)",
+    color: "#000",
+    padding: 10,
+    paddingTop: 10,
+    fontSize: 16,
   },
 });

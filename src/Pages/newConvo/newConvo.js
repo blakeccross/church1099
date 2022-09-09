@@ -104,7 +104,7 @@ const NewConvo = (props) => {
         {Loading ? (
           <>
             {Array.apply(null, { length: 8 }).map((e, i) => (
-              <View style={styles.item}>
+              <View style={styles.item} key={i}>
                 <ShimmerPlaceHolder
                   LinearGradient={LinearGradient}
                   style={{ ...styles.image }}

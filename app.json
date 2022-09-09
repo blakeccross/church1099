@@ -2,6 +2,7 @@
   "expo": {
     "name": "Church1099",
     "slug": "church1099",
+    "owner": "blakecross",
     "privacy": "public",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -17,7 +18,8 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": false
+      "supportsTablet": false,
+      "bundleIdentifier": "com.blakecross.church1099"
     },
     "android": {
       "adaptiveIcon": {
@@ -27,6 +29,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "43d9a921-7b3b-4fb4-834f-316c16f947b4"
+      }
     }
   }
 }

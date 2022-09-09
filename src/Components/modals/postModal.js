@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { Component, useState, useEffect } from "react";
 import {
   Modal,
   Image,
@@ -11,17 +11,32 @@ import {
 } from "react-native";
 import { API } from "../../services/api.services";
 import { HP, WP } from "../../Assets/config/screen-ratio";
-import * as Haptics from "expo-haptics";
-import { Button } from "../Button/Button";
 import fontFamily from "../../Assets/config/fontFamily";
-import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles } from "../../global/global.styles";
 import Icon from "react-native-vector-icons/Ionicons";
+import YoutubePlayer from "react-native-youtube-iframe";
 
 const PostModal = ({ show, setShow, selectedPost, user, props }) => {
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState("");
-  //console.log(props);
+  const [video, setVideo] = useState("");
+
+  const getYouTubeVideoIdFromUrl = (selectedPost) => {
+    const URL = selectedPost.videoURL;
+    // Our regex pattern to look for a youTube ID
+    const regExp =
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    //Match the url with the regex
+    const match = URL.match(regExp);
+    //console.log(match[2]);
+    setVideo(match && match[2].length === 11 ? match[2] : undefined);
+    //Return the result
+    //return match && match[2].length === 11 ? match[2] : undefined;
+  };
+
+  useEffect(() => {
+    getYouTubeVideoIdFromUrl(selectedPost);
+  }, [selectedPost]);
 
   return (
     <Modal
@@ -70,19 +85,23 @@ const PostModal = ({ show, setShow, selectedPost, user, props }) => {
                 borderRadius: 20,
               }}
               source={{ uri: "https:" + selectedPost.profilePhoto }}
-            ></Image>
+            />
             <Text style={Styles.nameTxt}>{selectedPost.User}</Text>
           </TouchableOpacity>
-          <Image
-            source={{ uri: "https:" + selectedPost.Photo }}
-            style={{
-              //flex: 1,
-              resizeMode: "center",
-              width: WP(100),
-              height: HP(50),
-              backgroundColor: "#F4F4F5",
-            }}
-          />
+          {selectedPost.videoURL.length < 2 ? (
+            <Image
+              source={{ uri: "https:" + selectedPost.Photo }}
+              style={{
+                //flex: 1,
+                resizeMode: "center",
+                width: WP(100),
+                height: HP(50),
+                backgroundColor: "#F4F4F5",
+              }}
+            />
+          ) : (
+            <YoutubePlayer height={500} videoId={video} />
+          )}
           <Text style={Styles.description}>{selectedPost.description}</Text>
         </View>
       </SafeAreaView>

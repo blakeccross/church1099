@@ -97,24 +97,56 @@ const forgot = (email) => {
       AlertService.show("Not Found", "Please enter correct data!");
     });
 };
-const JobList = async () => {
-  let value = [];
-  await axios
-    .get(`https://church1099.com/api/1.1/obj/joblisting`)
+const myJobListings = async () => {
+  const token = await AsyncStorage.getItem("token");
+  const url = `${base_url}myJobListings`;
+  let response = [];
+  const config = {
+    method: "POST",
+    url: url,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    data: {},
+  };
+  await axios(config)
     .then(async (res) => {
-      value = res?.data?.response?.results;
+      response = res.data.jobs;
     })
     .catch((err) => {
       // AlertService.show("Not Found", "Please enter correct data!")
     });
-  return value;
+  return response;
+};
+const getJobs = async () => {
+  let url = `${base_url}jobs`;
+  const token = await AsyncStorage.getItem("token");
+  let response = "";
+  const config = {
+    method: "POST",
+    url: url,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    data: {},
+  };
+  await axios(config)
+    .then(async (res) => {
+      response = res.data.jobs;
+    })
+    .catch((err) => {
+      // AlertService.show("Not Found", "Please enter correct data!")
+    });
+  return response;
 };
 const MyJobs = async () => {
-  const id = await AsyncStorage.getItem("id");
   const token = await AsyncStorage.getItem("token");
-  const url = `${base_url}myJobs?user=${id}`;
+  const url = `${base_url}myJobs`;
   let response = "";
-  //console.log('url :', url, 'token', token);
   const config = {
     method: "POST",
     url: url,
@@ -127,8 +159,7 @@ const MyJobs = async () => {
   };
   await axios(config)
     .then((res) => {
-      //console.log('res', res.data.response.messages);
-      response = res.data.response.myJobs;
+      response = res.data.myJobs;
     })
     .catch((error) => {
       console.log("error", error);
@@ -154,26 +185,39 @@ const getNotifications = async () => {
   });
   return value;
 };
-const PostJob = async (title, desc, location, remote, category, props) => {
-  let value = [];
-  // console.log(
-  //   `${base_url}postjob?title=${title}&description=${desc}&location=${location}&remote?=${remote}&category=${category}`,
-  // );
-  await axios
-    .post(
-      `${base_url}postjob?title=${title}&description=${desc}&location=${location}&remote?=${remote}&category=${category}`
-    )
+const PostJob = async (
+  title,
+  church,
+  location,
+  position,
+  emp,
+  description,
+  isRemote,
+  props
+) => {
+  const token = await AsyncStorage.getItem("token");
+  let url = `${base_url}postJob?title=${title}&church=${church}&location=${location}&position=${position}&emp=${emp}&description=${description}&remote=${isRemote}`;
+  let response = [];
+  const config = {
+    method: "POST",
+    url: url,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    data: {},
+  };
+  await axios(config)
     .then(async (res) => {
       AlertService.show("Posted!", "Successfully Posted");
-      props.navigation.goBack();
-      props.navigation.replace("Job");
-      // console.log(res);
+      props.navigation.navigate("Job");
     })
     .catch((err) => {
-      // console.log(err);
+      console.log(err);
       AlertService.show("Not Posted", "Please enter correct data!");
     });
-  return value;
+  return response;
 };
 const editProfile = async (obj) => {
   const id = await AsyncStorage.getItem("id");
@@ -194,7 +238,6 @@ const editProfile = async (obj) => {
       response = res;
     })
     .catch((error) => {
-      console.log(obj);
       console.log(error);
     });
   return response;
@@ -245,27 +288,42 @@ const changePassword = async (relativeUrl, props) => {
     });
 };
 const updateJobInfo = async (
+  jobId,
   title,
-  desc,
+  church,
   location,
-  remote,
-  category,
+  position,
+  emp,
+  description,
+  isRemote,
   navigation
 ) => {
-  let url = `${base_url}postjob?title=${title}&description=${desc}&location=${location}&remote?=${remote}&category=${category}`;
-  // console.log(url);
-  await axios
-    .post(url)
+  const token = await AsyncStorage.getItem("token");
+  let url = `${base_url}editjob?jobId=${jobId}&title=${title}&church=${church}&location=${location}&position=${position}&emp=${emp}&description=${description}&remote=${isRemote}`;
+  let response = [];
+  const config = {
+    method: "POST",
+    url: url,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    data: {},
+  };
+
+  await axios(config)
     .then(async (res) => {
       AlertService.show("Updated!", "Successfully updated");
       // props.navigation.goBack();
-      // props.navigation.replace('Job');
+      navigation.goBack();
       // console.log(res);
     })
     .catch((err) => {
       // console.log(err);
       AlertService.show("Error", "Enter Valid Data!");
     });
+  return response;
 };
 const getMessages = async (relativeUrl) => {
   const token = await AsyncStorage.getItem("token");
@@ -523,10 +581,34 @@ const addExperience = async (data) => {
   return response;
 };
 const saveJob = async (job) => {
-  const id = await AsyncStorage.getItem("id");
   const token = await AsyncStorage.getItem("token");
   let response = "";
-  let url = `${base_url}saveJob?user=${id}&job=${job}`;
+  let url = `${base_url}saveJob?job=${job}`;
+  const config = {
+    method: "POST",
+    url: url,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    data: {},
+  };
+  await axios(config)
+    .then((res) => {
+      response = res;
+      console.log(res.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  return response;
+};
+const removeJob = async (job) => {
+  const id = await AsyncStorage.getItem("id");
+  const token = await AsyncStorage.getItem("token");
+  let response = [];
+  let url = `${base_url}removeJob?user=${id}&job=${job}`;
   const config = {
     method: "POST",
     url: url,
@@ -546,13 +628,38 @@ const saveJob = async (job) => {
     });
   return response;
 };
-const removeJob = async (job) => {
-  const id = await AsyncStorage.getItem("id");
+const createPost = async (img, video, description) => {
   const token = await AsyncStorage.getItem("token");
-  let response = "";
-  let url = `${base_url}removeJob?user=${id}&job=${job}`;
+  let response = [];
+  let url = `${base_url}post?image=${img}&video=${video}&description=${description}`;
   const config = {
     method: "POST",
+    url: url,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    data: {},
+  };
+  console.log(config);
+  await axios(config)
+    .then((res) => {
+      response = res;
+      props.navigation.goBack();
+      console.log(res);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  return response;
+};
+const deleteJobListing = async (jobId) => {
+  const token = await AsyncStorage.getItem("token");
+  let response = [];
+  let url = `${base_url1}job_listing/${jobId}`;
+  const config = {
+    method: "DELETE",
     url: url,
     headers: {
       Accept: "application/json",
@@ -634,8 +741,8 @@ const deleteExperience = async (id) => {
     });
   return response;
 };
-const getApplicantList = async (id = "1651521361459x871475238184943600") => {
-  let url = `${base_url}applicants?id=${id}`;
+const getApplicantList = async (jobId) => {
+  let url = `${base_url}applicants?id=${jobId}`;
   let response = [];
   const config = {
     method: "POST",
@@ -707,7 +814,29 @@ const sendMessage = async (url) => {
     },
     data: {},
   };
-  console.log(config);
+  await axios(config)
+    .then((res) => {
+      response = res;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  return response;
+};
+const addRead = async (relativeUrl) => {
+  let response = [];
+  let url = `${base_url}addRead?convoId=${relativeUrl}`;
+  const token = await AsyncStorage.getItem("token");
+  const config = {
+    method: "POST",
+    url: url,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    data: {},
+  };
   await axios(config)
     .then((res) => {
       response = res;
@@ -789,13 +918,15 @@ export const API = {
   login,
   getUserData,
   forgot,
-  JobList,
+  createPost,
+  myJobListings,
   MyJobs,
   editExperience,
   deleteExperience,
   PostJob,
   portfolio,
   editProfile,
+  getJobs,
   getUser,
   changePassword,
   getNotifications,
@@ -805,6 +936,8 @@ export const API = {
   searchUsers,
   saveJob,
   removeJob,
+  deleteJobListing,
+  addRead,
   updateJobInfo,
   getMessages,
   getConversationList,

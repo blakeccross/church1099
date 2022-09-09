@@ -1,7 +1,4 @@
-//import database from '@react-native-firebase/database';
 import moment from "moment";
-//import firestore from '@react-native-firebase/firestore';
-//import '@firebase/firestore';
 import { storageServices } from "./storage.services";
 import { getApp } from "firebase/app";
 import {
@@ -22,6 +19,7 @@ import {
   getDownloadURL,
   uploadBytesResumable,
 } from "firebase/storage";
+
 const getUserInfo = async () => {
   // let id = await storageServices.getKey("@user_id");
   // const user = await firestore().collection("Users").doc(id).get();
@@ -169,6 +167,7 @@ const GetMessages = async (id, callback) => {
   });
   return unsubscribe;
 };
+
 const updateProfileImage = async (imageName, uri, callback) => {
   const storageRef = ref(getStorage(), imageName);
 
@@ -217,6 +216,7 @@ const updateProfileImage = async (imageName, uri, callback) => {
     }
   );
 };
+/*
 const checkuserMessagesCollection = async (item) => {
   const app = getApp();
   const fireStore = getFirestore(app);
@@ -255,6 +255,7 @@ const checkuserMessagesCollection = async (item) => {
   //   return obj;
   // });
 };
+*/
 export const firebaseServices = {
   getUserInfo,
   updateProfileImage,

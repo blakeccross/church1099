@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
 import {
-  FlatList,
   SafeAreaView,
   Text,
   Image,
@@ -10,11 +9,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { MessageStyle as styles } from "./messages.style";
-import FastImage from "react-native-fast-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { createShimmerPlaceholder } from "react-native-shimmer-placeholder";
-//import Toast from 'react-native-tiny-toast';
-//import firestore from '@react-native-firebase/firestore';
 import { API } from "../../services/api.services";
 import Icon from "react-native-vector-icons/Ionicons";
 import { GlobalStyles } from "../../global/global.styles";
@@ -75,6 +71,7 @@ const Messages = (props) => {
     props.navigation.navigate("Convo", { data: item });
   };
   const renderItem = (item) => {
+    //console.log(item);
     return (
       <Pressable
         onPress={() => Conversation(item)}
@@ -85,6 +82,18 @@ const Messages = (props) => {
           styles.item,
         ]}
       >
+        {item.read == "false" && (
+          <View
+            style={{
+              position: "absolute",
+              backgroundColor: "blue",
+              height: 10,
+              width: 10,
+              borderRadius: 10,
+              left: 5,
+            }}
+          />
+        )}
         {item.profilePhoto ? (
           <Image
             source={{
@@ -104,7 +113,7 @@ const Messages = (props) => {
             <Text style={styles.userName}>{item.name}</Text>
             <Text style={styles.time}>
               {item?.lastMessageTime &&
-                moment(item?.lastMessageTime).startOf("day").fromNow()}
+                moment(item?.lastMessageTime, "MMM DD YYYY hh:mm").fromNow()}
             </Text>
           </View>
           <Text

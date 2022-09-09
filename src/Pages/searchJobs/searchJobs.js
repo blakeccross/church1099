@@ -9,7 +9,6 @@ import {
   TextInput,
   ScrollView,
 } from "react-native";
-import { Header } from "../../Components/header/header";
 import Icon from "react-native-vector-icons/Ionicons";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { SearchStyle as Styles } from "./search.style";
@@ -18,7 +17,7 @@ import { API } from "../../services/api.services";
 import { MaterialIcons } from "@expo/vector-icons";
 import AlertService from "../../services/alertService";
 
-const Search = ({ route, navigation }) => {
+const SearchJobs = ({ route, navigation }) => {
   const [mod, setMod] = useState(false);
   const [job, setJob] = useState([]);
   const [query, setQuery] = useState(route?.params?.searchTxt);
@@ -213,4 +212,4 @@ const Search = ({ route, navigation }) => {
     </>
   );
 };
-export default Search;
+export default SearchJobs;

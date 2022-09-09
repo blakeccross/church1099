@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   FlatList,
   SafeAreaView,
@@ -7,6 +7,7 @@ import {
   View,
   Text,
   TouchableOpacity,
+  RefreshControl,
 } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { skillsStyle as Styles } from "./discover.style";
@@ -22,6 +23,7 @@ const Discover = (props) => {
   const [query, setQuery] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     getData();
@@ -32,6 +34,15 @@ const Discover = (props) => {
     let res = await API.portfolio(userId);
     setPosts(res);
   };
+
+  const onSearch = () => {
+    props.navigation.navigate("SearchUsers", { search: query });
+  };
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getData().then(() => setRefreshing(false));
+  }, []);
 
   const renderPort = (item, index) => {
     return (
@@ -71,6 +82,9 @@ const Discover = (props) => {
         />
       </View>
       <FlatList
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         data={posts}
         windowSize={2}
         numColumns={3}

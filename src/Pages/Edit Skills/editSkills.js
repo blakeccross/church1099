@@ -16,7 +16,6 @@ import { storageServices } from "../../services/storage.services";
 import { API } from "../../services/api.services";
 import { Input } from "../../Components/Input/Input";
 import { Ionicons } from "@expo/vector-icons";
-import AlertService from "../../services/alertService";
 
 const EditSkills = (props) => {
   const [skills, setSkills] = useState([]);
@@ -54,7 +53,10 @@ const EditSkills = (props) => {
 
   return (
     <>
-      <Header title="Skills" onPress={() => props.navigation.goBack()} />
+      <Header
+        title="Skills"
+        onPress={() => props.navigation.replace("TabNavigator")}
+      />
       <View style={Styles.container}>
         {skills.map((item, i) => {
           return (

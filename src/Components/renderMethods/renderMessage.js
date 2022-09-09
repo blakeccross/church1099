@@ -14,73 +14,75 @@ const RenderMessages = ({ item, myid }) => {
       }}
     >
       {item["Created By"] == myid ? (
-        <View
-          style={{
-            borderRadius: 17,
-            borderTopRightRadius: 0,
-            backgroundColor: "#2b47fc",
-            marginVertical: 2,
-            marginRight: 10,
-            maxWidth: WP(80),
-          }}
-        >
-          <Text
+        <>
+          <View
             style={{
-              fontSize: 16,
-              paddingHorizontal: 15,
-              paddingVertical: 10,
-              textAlign: "left",
-              color: "white",
+              borderRadius: 17,
+              backgroundColor: "#2b47fc",
+              marginVertical: 2,
+              marginRight: 10,
+              maxWidth: WP(80),
             }}
           >
-            {item.content}
-          </Text>
+            <Text
+              style={{
+                fontSize: 16,
+                paddingHorizontal: 15,
+                paddingVertical: 10,
+                textAlign: "left",
+                color: "white",
+              }}
+            >
+              {item.content}
+            </Text>
+          </View>
           <Text
             style={{
               fontSize: 13,
               paddingHorizontal: 15,
               paddingBottom: 10,
               textAlign: "right",
-              color: "white",
+              color: "grey",
             }}
           >
             {moment(item["Created Date"]).format("MMM Do, h:mm a")}
           </Text>
-        </View>
+        </>
       ) : (
-        <View
-          style={{
-            borderRadius: 17,
-            borderTopLeftRadius: 0,
-            backgroundColor: "rgba(247,247,247,1)",
-            marginVertical: 2,
-            marginLeft: 10,
-            maxWidth: WP(80),
-          }}
-        >
-          <Text
+        <>
+          <View
             style={{
-              fontSize: 16,
-              paddingHorizontal: 15,
-              paddingVertical: 10,
-              textAlign: "left",
-              color: "black",
+              borderRadius: 17,
+              backgroundColor: "rgba(247,247,247,1)",
+              marginVertical: 2,
+              marginLeft: 10,
+              maxWidth: WP(80),
             }}
           >
-            {item.content}
-          </Text>
+            <Text
+              style={{
+                fontSize: 16,
+                paddingHorizontal: 15,
+                paddingVertical: 10,
+                textAlign: "left",
+                color: "black",
+              }}
+            >
+              {item.content}
+            </Text>
+          </View>
           <Text
             style={{
               fontSize: 13,
               paddingHorizontal: 15,
               paddingBottom: 10,
               textAlign: "left",
-              color: "black",
+              color: "grey",
             }}
           >
             {moment(item["Created Date"]).format("MMM Do, h:mm a")}
           </Text>
-        </View>
+        </>
       )}
     </View>
   );

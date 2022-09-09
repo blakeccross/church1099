@@ -16,11 +16,17 @@ import fontFamily from "../../Assets/config/fontFamily";
 import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles } from "../../global/global.styles";
 import { useEffect } from "react";
+import moment from "moment";
+import DropDownPicker from "react-native-dropdown-picker";
 
-const JobModal = ({ show, setShow, selectedJob, user }) => {
+const JobModal = ({ show, setShow, selectedJob }) => {
   const [loading, setLoading] = useState(false);
-  const [saved, setSaved] = useState("");
-  console.log(saved);
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    setSaved(selectedJob.saved);
+  }, [selectedJob]);
 
   const applyForJob = async (selectedJob) => {
     setLoading(true);
@@ -29,23 +35,27 @@ const JobModal = ({ show, setShow, selectedJob, user }) => {
     setLoading(false);
     setShow(false);
   };
-  const saveJob = async (item) => {
+  const saveJob = async (selectedJob) => {
+    setSaveLoading(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    let job = item._id;
+    let job = selectedJob.id;
     await API.saveJob(job);
+    setSaveLoading(false);
     setSaved(true);
   };
-  const removeJob = async (item) => {
+  const removeJob = async (selectedJob) => {
+    setSaveLoading(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    let job = item._id;
+    let job = selectedJob.id;
     await API.removeJob(job);
+    setSaveLoading(false);
     setSaved(false);
   };
   return (
     <Modal
       animationType={"slide"}
       visible={show}
-      presentationStyle={"FullScreen"}
+      presentationStyle={"pageSheet"}
       selectedJob={selectedJob}
       onRequestClose={() => setShow(false)}
       onBackButtonPress={() => setShow(false)}
@@ -54,19 +64,21 @@ const JobModal = ({ show, setShow, selectedJob, user }) => {
       <View
         style={{
           marginHorizontal: WP(6),
-          marginTop: HP(5),
+          paddingVertical: HP(2),
           borderBottomColor: "#e0e0e0",
           borderBottomWidth: 1,
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        <TouchableOpacity
-          onPress={() => setShow(false)}
+        <View
           style={{
-            paddingBottom: HP(2),
+            backgroundColor: "grey",
+            width: 50,
+            height: 5,
+            borderRadius: 10,
           }}
-        >
-          <Ionicons name="ios-close-sharp" size={35} color="#333333" />
-        </TouchableOpacity>
+        />
       </View>
       <View>
         <ScrollView
@@ -77,11 +89,24 @@ const JobModal = ({ show, setShow, selectedJob, user }) => {
             paddingBottom: HP(20),
           }}
         >
-          <Text style={{ ...GlobalStyles.H2, marginVertical: WP(2) }}>
-            {selectedJob["Job Title"]}
+          <Text style={{ ...GlobalStyles.H2, marginVertical: HP(1) }}>
+            {selectedJob.title}
           </Text>
-          <Text style={styles.church}>{selectedJob.Church}</Text>
-          <Text style={styles.church}>Category: {selectedJob.Category}</Text>
+          <Text style={styles.subTxt}>{selectedJob.church}</Text>
+          <Text style={styles.subTxt}>Category: {selectedJob.category}</Text>
+          <Text
+            style={{
+              ...styles.subTxt,
+              color: "grey",
+              marginVertical: HP(1),
+              fontSize: 14,
+            }}
+          >
+            {moment(selectedJob.postDate, "MMM DD, YYYY h:mm a")
+              .startOf("day")
+              .fromNow()}
+            <Text> • {selectedJob.applicants} applicants</Text>
+          </Text>
           <View
             style={{
               ...GlobalStyles.row,
@@ -89,7 +114,7 @@ const JobModal = ({ show, setShow, selectedJob, user }) => {
               justifyContent: "space-between",
             }}
           >
-            {selectedJob.Applicants?.includes(user._id) ? (
+            {selectedJob == "yes" ? (
               <Button
                 btnStyle={{ alignSelf: "center", width: WP(45) }}
                 btnCol="grey"
@@ -105,7 +130,7 @@ const JobModal = ({ show, setShow, selectedJob, user }) => {
                 disable={loading}
               />
             )}
-            {selectedJob?.Saved?.includes(user._id) ? (
+            {saved ? (
               <Button
                 btnStyle={{
                   alignSelf: "center",
@@ -117,7 +142,8 @@ const JobModal = ({ show, setShow, selectedJob, user }) => {
                 btnCol={"white"}
                 onPress={() => removeJob(selectedJob)}
                 btnTxt={"Saved"}
-                disable={loading}
+                loadCol={"#2b47fc"}
+                disable={saveLoading}
               />
             ) : (
               <Button
@@ -131,14 +157,13 @@ const JobModal = ({ show, setShow, selectedJob, user }) => {
                 btnCol={"white"}
                 onPress={() => saveJob(selectedJob)}
                 btnTxt={"Save"}
-                disable={loading}
+                loadCol={"#2b47fc"}
+                disable={saveLoading}
               />
             )}
           </View>
           <Text style={{ ...GlobalStyles.H3 }}>Job Description</Text>
-          <Text style={{ ...GlobalStyles.P1 }}>
-            {selectedJob["Job Description"]}
-          </Text>
+          <Text style={{ ...GlobalStyles.P1 }}>{selectedJob.description}</Text>
         </ScrollView>
       </View>
     </Modal>
@@ -153,10 +178,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#2c3e50",
   },
-  church: {
+  subTxt: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "black",
+    color: "#333333",
   },
   modView: {
     backgroundColor: "white",

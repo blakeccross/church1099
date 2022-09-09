@@ -18,6 +18,7 @@ import { NotiStyle as Styles } from "./noti.style";
 import { API } from "../../services/api.services";
 import SwipeableFlatList from "react-native-swipeable-list";
 import moment from "moment";
+
 const Notification = (props) => {
   const [allNotification, setallNotification] = useState([]);
   const [refreshing, setRefreshing] = useState(false);

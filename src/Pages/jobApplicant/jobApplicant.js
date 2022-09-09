@@ -1,22 +1,19 @@
-//import liraries
-import React, {useState, useEffect} from 'react';
-import {GlobalStyles} from '../../global/global.styles';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  SafeAreaView,
-  StatusBar,
   TouchableOpacity,
   Image,
   FlatList,
   ActivityIndicator,
-} from 'react-native';
-import styles from './jobApplicant.styles';
-import {API} from '../../services/api.services';
-import {HP, WP} from '../../Assets/config/screen-ratio';
-import Icon from 'react-native-vector-icons/Ionicons';
-const JobApplicant = ({navigation, route}) => {
-  var data = route?.params?.data;
+} from "react-native";
+import styles from "./jobApplicant.styles";
+import { API } from "../../services/api.services";
+import { HP, WP } from "../../Assets/config/screen-ratio";
+import { Header } from "../../Components/header/header";
+
+const JobApplicant = ({ navigation, route }) => {
+  var data = route.params;
   const [applicants, setapplicants] = useState([]);
   const [loading, setloading] = useState(false);
   useEffect(() => {
@@ -25,17 +22,18 @@ const JobApplicant = ({navigation, route}) => {
 
   const getData = async () => {
     setloading(true);
-    let res = await API.getApplicantList(data?._id);
+    const jobId = data.id;
+    let res = await API.getApplicantList(jobId);
     setapplicants(res);
     setloading(false);
   };
-  const renderItem = item => {
+  const renderItem = (item) => {
     return (
       <TouchableOpacity style={styles.item}>
         <View>
           <Image
             style={styles.image}
-            source={{uri: 'https:' + item['Profile Photo']}}
+            source={{ uri: "https:" + item["Profile Photo"] }}
           />
           <View>
             <Text style={styles.name}>{item.Name}</Text>
@@ -49,27 +47,19 @@ const JobApplicant = ({navigation, route}) => {
     );
   };
   return (
-          <SafeAreaView style={{...styles.container}}>
-      <View style={{...GlobalStyles.row, justifyContent: 'center', marginTop: HP(1), marginBottom: HP(2)}}>
-        <Text style={{...GlobalStyles.H3}}>Applicants</Text>
-        <Text style={styles.heading}>{data['Job Title']}</Text>
-        <TouchableOpacity
-          onPress={() => props.navigation.goBack()}
-          style={{paddingHorizontal: WP(3), position: 'absolute', left: 0}}>
-          <Icon name={'chevron-back'} color={'#000'} size={24} />
-        </TouchableOpacity>
-      </View>
-      <View style={{flex: 1}}>
+    <>
+      <Header title="Applicants" onPress={() => navigation.goBack()} />
+      <View style={{ flex: 1 }}>
         {loading ? (
-          <ActivityIndicator color={'black'} size={'large'} />
+          <ActivityIndicator color={"black"} size={"large"} />
         ) : (
-          <View style={{flex: 1}}>
+          <View style={{ flex: 1 }}>
             {applicants.length > 0 ? (
               <FlatList
                 //contentContainerStyle={{marginTop: HP(2)}}
                 numColumns={2}
                 data={applicants}
-                renderItem={({item}) => renderItem(item)}
+                renderItem={({ item }) => renderItem(item)}
                 keyExtractor={(item, index) => index.toString()}
               />
             ) : (
@@ -78,7 +68,7 @@ const JobApplicant = ({navigation, route}) => {
           </View>
         )}
       </View>
-    </SafeAreaView>
+    </>
   );
 };
 

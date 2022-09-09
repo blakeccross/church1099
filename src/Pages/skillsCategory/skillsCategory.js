@@ -32,7 +32,7 @@ const SkillsCategory = (props) => {
     const skill = item.Type;
     const operation = "add";
     await API.addSkill(skill, operation);
-    props.navigation.navigate("Profile");
+    props.navigation.replace("TabNavigator");
   };
 
   return (

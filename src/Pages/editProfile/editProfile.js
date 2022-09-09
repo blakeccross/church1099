@@ -113,7 +113,10 @@ const EditProfile = (props) => {
               }}
             >
               {img ? (
-                <Image source={{ uri: img }} style={{ ...Styles.dp }} />
+                <Image
+                  source={{ uri: "https:" + img }}
+                  style={{ ...Styles.dp }}
+                />
               ) : (
                 <Image source={Imgs.dp} style={{ ...Styles.dp }} />
               )}

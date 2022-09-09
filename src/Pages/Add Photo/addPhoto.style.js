@@ -8,12 +8,14 @@ import { GlobalStyles } from "../../global/global.styles";
 export const addPhotoStyle = StyleSheet.create({
   container: {
     ...GlobalStyles.container,
-    backgroundColor: "#F4F4F5",
+    backgroundColor: "white",
   },
-  createTxt: {
-    color: "#333333",
-    fontSize: 20,
-    fontFamily: fontFamily.light,
+  txt: {
+    marginTop: HP(2),
+    fontFamily: fontFamily.bold,
+    marginBottom: 5,
+    fontSize: 15,
+    color: "#000000",
   },
   item: {
     backgroundColor: "white",
@@ -21,6 +23,11 @@ export const addPhotoStyle = StyleSheet.create({
     borderBottomWidth: 1,
     paddingLeft: WP(4),
     paddingVertical: HP(2),
+  },
+  input: {
+    borderWidth: 0,
+    borderRadius: 10,
+    width: WP(100),
   },
   skillItem: {
     backgroundColor: "#F4F4F5",
@@ -37,5 +44,11 @@ export const addPhotoStyle = StyleSheet.create({
     marginTop: HP(2),
     marginBottom: HP(1),
     marginLeft: WP(4),
+  },
+  postTxt: {
+    fontFamily: fontFamily.bold,
+    marginBottom: 5,
+    fontSize: 15,
+    color: "white",
   },
 });

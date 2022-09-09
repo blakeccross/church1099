@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
-  SafeAreaView,
   Text,
   Image,
   View,
@@ -12,28 +11,23 @@ import {
 import ActionSheet from "react-native-actionsheet";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { ProfileStyle as Styles } from "./profile.style";
-import Icon from "react-native-vector-icons/Entypo";
 import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles } from "../../global/global.styles";
 import { API } from "../../services/api.services";
-import Dropdown from "../../Components/dropdown/dropdown";
-import { Button } from "../../Components/Button/Button";
 import moment from "moment";
 import SkeletonLoader from "expo-skeleton-loader";
 import { storageServices } from "../../services/storage.services";
 import { MoreOrLess } from "@rntext/more-or-less";
+import { useSelector, useDispatch } from "react-redux";
+import { getUser } from "../../root/reducer";
 
 const Profile = (props) => {
-  //console.log(props);
-  const [dropdownModal, setdropdownModal] = useState(false);
-  const [selectedSkill, setselectedSkill] = useState("");
-  const [allSkills, setallSkills] = useState([]);
-  const [skills, setskills] = useState([]);
   const [experience, setExperience] = useState([]);
   const [ports, setPorts] = useState([]);
   const [Loading, setLoading] = useState(true);
   const [showResume, setShowResume] = useState(false);
-  const [user, setUserData] = useState("");
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
 
   useEffect(() => {
     getData();
@@ -48,9 +42,8 @@ const Profile = (props) => {
 
   const getData = async () => {
     const userID = await storageServices.fetchKey("id");
-    let res = await API.getUser(userID);
     let user = await API.getUserData(userID);
-    setUserData(user);
+    dispatch(getUser(user));
     setExperience(user.experience);
     setPorts(user.posts);
     setLoading(false);
@@ -64,7 +57,7 @@ const Profile = (props) => {
     return (
       <View style={Styles.portItem}>
         <Image
-          source={{ uri: "https:" + item.image }}
+          source={{ uri: "https:" + item.image, cache: "force-cache" }}
           style={{ width: WP(25), height: HP(17), borderRadius: 10 }}
         />
       </View>
@@ -108,7 +101,7 @@ const Profile = (props) => {
         contentContainerStyle={{ paddingBottom: HP(8) }}
       >
         <TouchableOpacity
-          onPress={() => props.navigation.navigate("Setting", { user })}
+          onPress={() => props.navigation.navigate("Settings", { user })}
           style={{
             position: "absolute",
             right: WP(5),
@@ -178,10 +171,17 @@ const Profile = (props) => {
                 paddingTop: HP(7),
               }}
             >
-              <Image
-                source={{ uri: user.profilePhoto }}
-                style={{ ...Styles.dp }}
-              />
+              {user.data.profilePhoto ? (
+                <Image
+                  source={{ uri: "https:" + user.data.profilePhoto }}
+                  style={{ ...Styles.dp }}
+                />
+              ) : (
+                <Image
+                  style={Styles.dp}
+                  source={require("../../Assets/Imgs/dp.jpg")}
+                />
+              )}
               <Text
                 style={{
                   ...GlobalStyles.H2,
@@ -189,17 +189,15 @@ const Profile = (props) => {
                   marginTop: HP(1),
                 }}
               >
-                {user.name}
+                {user.data.name}
               </Text>
               <View
                 style={{
-                  ...GlobalStyles.row,
                   alignSelf: "center",
                   marginTop: HP(1),
                 }}
               >
-                <Icon name="location-pin" color={"#666666"} size={14} />
-                <Text style={Styles.userInfoTxt}>{user.location}</Text>
+                <Text style={Styles.userInfoTxt}>{user.data.location}</Text>
               </View>
               <Text
                 style={{
@@ -208,7 +206,7 @@ const Profile = (props) => {
                   marginTop: HP(1),
                 }}
               >
-                {user.header}
+                {user.data.header}
               </Text>
               <View
                 style={{
@@ -273,7 +271,7 @@ const Profile = (props) => {
                 </View>
               </View>
 
-              {user?.skills && user?.skills?.length ? (
+              {user?.data.skills && user?.data.skills?.length ? (
                 <View
                   style={{
                     flexDirection: "row",
@@ -281,7 +279,7 @@ const Profile = (props) => {
                     justifyContent: "flex-start",
                   }}
                 >
-                  {user?.skills?.map((item, i) => {
+                  {user?.data.skills?.map((item, i) => {
                     return (
                       <View key={i} style={Styles.skillItem}>
                         <Text style={{ color: "black", textAlign: "center" }}>
@@ -314,7 +312,7 @@ const Profile = (props) => {
                   <Ionicons name="ios-add-sharp" size={30} color="black" />
                 </TouchableOpacity>
               </View>
-              {user?.posts && user.posts?.length ? (
+              {user?.data.posts && user.data.posts?.length ? (
                 <TouchableOpacity
                   onPress={() =>
                     props.navigation.navigate("Portfolio", { Portfolio: ports })

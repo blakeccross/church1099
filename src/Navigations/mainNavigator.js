@@ -5,7 +5,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import Login from "../Pages/Login/Login";
 import Signup from "../Pages/Signup/Signup";
 import Profile from "../Pages/profile/profile";
-import Setting from "../Pages/setting/setting";
+import Settings from "../Pages/settings/settings";
 import ChangePassword from "../Pages/changePassword/changePassword";
 import EditProfile from "../Pages/editProfile/editProfile";
 import Subscription from "../Pages/subscriptions/subscription";
@@ -18,7 +18,8 @@ import CreateJob from "../Pages/createJob/createJob";
 import JobListing from "../Pages/jobListing/jobListing";
 import MyJobs from "../Pages/myJobs/myJobs";
 import Job from "../Pages/jobs/job";
-import Search from "../Pages/search/search";
+import SearchJobs from "../Pages/searchJobs/searchJobs";
+import SearchUsers from "../Pages/searchUsers/searchUsers";
 import EditJob from "../Pages/editJob/editJob";
 import HiringSignup from "../Pages/hiringSignup/hiringSignup";
 import JobApplicant from "../Pages/jobApplicant/jobApplicant";
@@ -60,8 +61,9 @@ export const MainNavigator = () => (
       <Stack.Screen name="JobListing" component={JobListing} />
       <Stack.Screen name="MyJobs" component={MyJobs} />
       <Stack.Screen name="Job" component={Job} />
-      <Stack.Screen name="Setting" component={Setting} />
-      <Stack.Screen name="Search" component={Search} />
+      <Stack.Screen name="Settings" component={Settings} />
+      <Stack.Screen name="SearchJobs" component={SearchJobs} />
+      <Stack.Screen name="SearchUsers" component={SearchUsers} />
       <Stack.Screen name="HiringSignup" component={HiringSignup} />
       <Stack.Screen name="JobApplicant" component={JobApplicant} />
       <Stack.Screen name="JobApply" component={JobApply} />

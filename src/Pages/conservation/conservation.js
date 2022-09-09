@@ -6,7 +6,6 @@ import {
   Image,
   KeyboardAvoidingView,
   View,
-  RefreshControl,
   TouchableOpacity,
   FlatList,
 } from "react-native";
@@ -16,10 +15,10 @@ import { GlobalStyles } from "../../global/global.styles";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import IconBack from "react-native-vector-icons/Ionicons";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { Input } from "../../Components/Input/Input";
 import { storageServices } from "../../services/storage.services";
 import { commonServices } from "../../services/commonServices";
 import RenderMessages from "../../Components/renderMethods/renderMessage";
+import { AutoGrowingTextInput } from "react-native-autogrow-textinput";
 
 const Convo = (props) => {
   let data = props?.route?.params?.data;
@@ -47,6 +46,7 @@ const Convo = (props) => {
   };
 
   const getMessages = async () => {
+    await API.addRead(`${data.convoId}`);
     let id = await storageServices.fetchKey("id");
     setmyid(id);
     let res = await API.getMessages(`${data.convoId}`);
@@ -98,7 +98,7 @@ const Convo = (props) => {
           keyboardVerticalOffset={Platform.OS == "ios" ? 60 : 20}
           style={{ flex: 1 }}
         >
-          <View style={[Styles.flatlistContainer]}>
+          <View style={Styles.flatlistContainer}>
             {Loading ? (
               <ActivityIndicator color={"black"} size="small" />
             ) : (
@@ -135,10 +135,13 @@ const Convo = (props) => {
               }}
             >
               <View style={{ width: "90%" }}>
-                <Input
+                <AutoGrowingTextInput
+                  style={Styles.textInput}
+                  placeholder={"Message..."}
+                  onChangeText={(e) => setmessage(e)}
                   value={message}
-                  setValue={setmessage}
-                  placeTxt={"Message..."}
+                  maxHeight={100}
+                  minHeight={45}
                 />
               </View>
               <TouchableOpacity

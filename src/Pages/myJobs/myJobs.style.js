@@ -20,28 +20,11 @@ export const MyJobsStyle = StyleSheet.create({
     fontSize: 18,
     fontFamily: fontFamily.bold,
   },
-  nothingTxt: {
-    fontFamily: fontFamily.light,
-    fontSize: 14,
-    color: "#666666",
-  },
   input: {
     borderWidth: 0,
     width: "100%",
     backgroundColor: "rgba(247,247,247,1)",
     color: "rgb(0,0,0)",
     padding: 10,
-  },
-  applicantViewContainer: {
-    justifyContent: "space-between",
-    alignItems: "center",
-    justifyContent: "space-between",
-    flexDirection: "row",
-    paddingVertical: HP(0.5),
-  },
-  keyTxt: {
-    color: "#333333",
-    fontSize: 20,
-    fontFamily: fontFamily.bold,
   },
 });
