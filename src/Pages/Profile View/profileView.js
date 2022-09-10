@@ -90,6 +90,20 @@ const ProfileView = (props) => {
 
   return (
     <>
+      <TouchableOpacity
+        onPress={() => props.navigation.goBack()}
+        style={{
+          position: "absolute",
+          left: WP(5),
+          top: HP(7),
+          padding: 10,
+          borderRadius: 20,
+          backgroundColor: "#f4f4f5",
+          zIndex: 1,
+        }}
+      >
+        <Ionicons name="ios-chevron-back" size={20} color="black" />
+      </TouchableOpacity>
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={

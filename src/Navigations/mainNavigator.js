@@ -27,7 +27,7 @@ import JobApply from "../Pages/jobApply/jobApply";
 import NewConvo from "../Pages/newConvo/newConvo";
 import Portfolio from "../Pages/portfolio/portfolio";
 import UserExperience from "../Pages/userExperience/userExperience";
-import Resume from "../Pages/resume/resume";
+import Resume from "../Pages/Resume/Resume";
 import AddExp from "../Pages/Add Experience/addExp";
 import SkillsCategory from "../Pages/skillsCategory/skillsCategory";
 import Skills from "../Pages/Skills/skills";

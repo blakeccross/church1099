@@ -115,7 +115,7 @@ const Profile = (props) => {
           <Text>Settings</Text>
         </TouchableOpacity>
         {Loading ? (
-          <SkeletonLoader boneColor="#f4f4f5" highlightColor="#e3e3e3">
+          <SkeletonLoader boneColor="#fbfbfb" highlightColor="#f2f2f2">
             <SkeletonLoader.Container
               style={[
                 {
@@ -141,7 +141,7 @@ const Profile = (props) => {
               />
               <SkeletonLoader.Container
                 style={{
-                  paddingVertical: 10,
+                  paddingTop: 10,
                   alignItems: "center",
                   alignContent: "center",
                   justifyContent: "center",
@@ -218,29 +218,6 @@ const Profile = (props) => {
                   alignSelf: "center",
                 }}
               />
-              {/*
-              <View
-                style={{
-                  ...GlobalStyles.row,
-                  width: "100%",
-                  justifyContent: "center",
-                  marginTop: HP(2),
-                  marginBottom: HP(2),
-                }}
-              >
-                <Button
-                  textCol="black"
-                  btnCol="white"
-                  btnStyle={{ width: WP(43), marginRight: WP(1) }}
-                  btnTxt={"View Resume"}
-                  onPress={() => props.navigation.navigate("Resume", { user })}
-                />
-                <Button
-                  btnTxt={"Message"}
-                  btnStyle={{ width: WP(43), marginLeft: WP(1) }}
-                />
-              </View>
-              */}
             </View>
 
             {/*SKILLS*/}

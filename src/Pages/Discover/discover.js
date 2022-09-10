@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import {
+  ActivityIndicator,
   FlatList,
   SafeAreaView,
   TextInput,
@@ -24,6 +25,7 @@ const Discover = (props) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getData();
@@ -33,6 +35,7 @@ const Discover = (props) => {
     let userId = "";
     let res = await API.portfolio(userId);
     setPosts(res);
+    setLoading(false);
   };
 
   const onSearch = () => {
@@ -81,17 +84,27 @@ const Discover = (props) => {
           onSubmitEditing={() => onSearch()}
         />
       </View>
-      <FlatList
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        data={posts}
-        windowSize={2}
-        numColumns={3}
-        keyExtractor={(item, index) => index.toString()}
-        contentContainerStyle={Styles.grid}
-        renderItem={({ item, index }) => renderPort(item, index)}
-      />
+      {loading ? (
+        <View
+          style={{
+            marginTop: HP(10),
+          }}
+        >
+          <ActivityIndicator color={"black"} size="small" />
+        </View>
+      ) : (
+        <FlatList
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          data={posts}
+          windowSize={2}
+          numColumns={3}
+          keyExtractor={(item, index) => index.toString()}
+          contentContainerStyle={Styles.grid}
+          renderItem={({ item, index }) => renderPort(item, index)}
+        />
+      )}
       {selectedPost ? (
         <PostModal
           show={showModal}

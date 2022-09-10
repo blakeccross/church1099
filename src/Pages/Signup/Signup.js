@@ -144,8 +144,6 @@ const Signup = (props) => {
     );
   };
 
-  //const result = Object.values(skills);
-
   const [isEnabled, setIsEnabled] = useState(true);
 
   const onApply = async () => {
@@ -160,26 +158,18 @@ const Signup = (props) => {
             password != "" &&
             name != "" &&
             phone != "" &&
-            //cv != "" &&
             gender != null &&
-            //bio != "" &&
             location != ""
           ) {
-            let reg =
-              /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-            if (reg.test(email)) {
-              setloading(true);
-              let res = await API.userSignup(
-                `https://church1099.com/api/1.1/wf/signup?email=${email}&password=${password}&profilephoto=${ImageProfile}&bio=${bio}&location=${location}&gender=${gender}&phone=${phone}&skills=${JSON.stringify(
-                  skills
-                )}&name=${name}&employer?=no`,
-                props,
-                ImageProfile
-              );
-              setloading(false);
-            } else {
-              AlertService.show("Invalid Email");
-            }
+            setloading(true);
+            let res = await API.userSignup(
+              `https://church1099.com/api/1.1/wf/signup?email=${email}&password=${password}&profilephoto=${ImageProfile}&bio=${bio}&location=${location}&gender=${gender}&phone=${phone}&skills=${JSON.stringify(
+                skills
+              )}&name=${name}&employer?=no`,
+              props,
+              ImageProfile
+            );
+            setloading(false);
           } else {
             AlertService.show("Missing", "Please provide all required data");
             console.log(
@@ -189,7 +179,6 @@ const Signup = (props) => {
               phone,
               ImageProfile,
               gender,
-              bio,
               location
             );
           }

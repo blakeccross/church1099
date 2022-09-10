@@ -152,7 +152,7 @@ const Messages = (props) => {
         {Loading ? (
           <>
             {Array.apply(null, { length: 4 }).map((e, i) => (
-              <View style={styles.item} key={i}>
+              <View style={{ ...styles.item, height: HP(10) }} key={i}>
                 <ShimmerPlaceHolder
                   LinearGradient={LinearGradient}
                   style={{ ...styles.image }}

@@ -15,6 +15,7 @@ import fontFamily from "../../Assets/config/fontFamily";
 import { GlobalStyles } from "../../global/global.styles";
 import Icon from "react-native-vector-icons/Ionicons";
 import YoutubePlayer from "react-native-youtube-iframe";
+import Post from "../renderMethods/post";
 
 const PostModal = ({ show, setShow, selectedPost, user, props }) => {
   const [loading, setLoading] = useState(false);
@@ -65,45 +66,7 @@ const PostModal = ({ show, setShow, selectedPost, user, props }) => {
             <Icon name={"chevron-back"} color={"black"} size={24} />
           </TouchableOpacity>
         </View>
-        <View style={Styles.portItem}>
-          <TouchableOpacity
-            style={{
-              ...GlobalStyles.row,
-              paddingLeft: WP(2),
-              paddingVertical: HP(1),
-            }}
-            onPress={() => {
-              setShow(false);
-              props.navigation.navigate("ProfileView", { user: selectedPost });
-            }}
-          >
-            <Image
-              style={{
-                width: 30,
-                height: undefined,
-                aspectRatio: 1 / 1,
-                borderRadius: 20,
-              }}
-              source={{ uri: "https:" + selectedPost.profilePhoto }}
-            />
-            <Text style={Styles.nameTxt}>{selectedPost.User}</Text>
-          </TouchableOpacity>
-          {selectedPost.videoURL.length < 2 ? (
-            <Image
-              source={{ uri: "https:" + selectedPost.Photo }}
-              style={{
-                //flex: 1,
-                resizeMode: "center",
-                width: WP(100),
-                height: HP(50),
-                backgroundColor: "#F4F4F5",
-              }}
-            />
-          ) : (
-            <YoutubePlayer height={500} videoId={video} />
-          )}
-          <Text style={Styles.description}>{selectedPost.description}</Text>
-        </View>
+        <Post selectedPost={selectedPost} props={props} setShow={setShow} />
       </SafeAreaView>
     </Modal>
   );

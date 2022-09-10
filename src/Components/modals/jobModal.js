@@ -30,8 +30,15 @@ const JobModal = ({ show, setShow, selectedJob }) => {
 
   const applyForJob = async (selectedJob) => {
     setLoading(true);
-    let jobId = selectedJob._id;
-    await API.jobApply(jobId);
+    let jobId = selectedJob.id;
+    await API.apply(jobId);
+    setLoading(false);
+    setShow(false);
+  };
+  const removeApp = async (selectedJob) => {
+    setLoading(true);
+    let jobId = selectedJob.id;
+    await API.removeApply(jobId);
     setLoading(false);
     setShow(false);
   };
@@ -114,11 +121,12 @@ const JobModal = ({ show, setShow, selectedJob }) => {
               justifyContent: "space-between",
             }}
           >
-            {selectedJob == "yes" ? (
+            {console.log(selectedJob)}
+            {selectedJob.applied == "yes" ? (
               <Button
                 btnStyle={{ alignSelf: "center", width: WP(45) }}
                 btnCol="grey"
-                onPress={() => applyForJob(selectedJob)}
+                onPress={() => removeApp(selectedJob)}
                 btnTxt={"Remove Application"}
                 disable={loading}
               />

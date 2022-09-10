@@ -628,7 +628,76 @@ const removeJob = async (job) => {
     });
   return response;
 };
-const createPost = async (img, video, description) => {
+const apply = async (jobId) => {
+  const token = await AsyncStorage.getItem("token");
+  let response = [];
+  let url = `${base_url}apply?job=${jobId}`;
+  const config = {
+    method: "POST",
+    url: url,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    data: {},
+  };
+  await axios(config)
+    .then((res) => {
+      response = res;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  return response;
+};
+const removeApply = async (jobId) => {
+  const token = await AsyncStorage.getItem("token");
+  let response = [];
+  let url = `${base_url}removeapply?job=${jobId}`;
+  const config = {
+    method: "POST",
+    url: url,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    data: {},
+  };
+  await axios(config)
+    .then((res) => {
+      response = res;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  return response;
+};
+const deletePost = async (postId) => {
+  const token = await AsyncStorage.getItem("token");
+  let response = [];
+  let url = `${base_url1}post/${postId}`;
+  const config = {
+    method: "DELETE",
+    url: url,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    data: {},
+  };
+  await axios(config)
+    .then((res) => {
+      response = res;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  return response;
+};
+const createPost = async (img, description, video) => {
   const token = await AsyncStorage.getItem("token");
   let response = [];
   let url = `${base_url}post?image=${img}&video=${video}&description=${description}`;
@@ -646,8 +715,6 @@ const createPost = async (img, video, description) => {
   await axios(config)
     .then((res) => {
       response = res;
-      props.navigation.goBack();
-      console.log(res);
     })
     .catch((error) => {
       console.log(error);
@@ -846,27 +913,6 @@ const addRead = async (relativeUrl) => {
     });
   return response;
 };
-const jobApply = async (jobId) => {
-  const id = await AsyncStorage.getItem("id");
-  let url = `${base_url}addapplicant?jobID=${jobId}&user=${id}`;
-  let response = [];
-  const config = {
-    method: "POST",
-    url: url,
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  };
-  await axios(config)
-    .then((res) => {
-      response = res.data;
-    })
-    .catch((error) => {
-      console.log("error", error);
-    });
-  return response;
-};
 const portfolio = async (user) => {
   let response = [];
   let url = `${base_url}posts?user=${user}`;
@@ -882,7 +928,7 @@ const portfolio = async (user) => {
   };
   await axios(config)
     .then((res) => {
-      response = res.data.Posts;
+      response = res.data.posts;
     })
     .catch((error) => {
       console.log(error);
@@ -913,7 +959,8 @@ const getUserData = async (userId) => {
   return response;
 };
 export const API = {
-  jobApply,
+  apply,
+  removeApply,
   signup,
   login,
   getUserData,
@@ -934,6 +981,7 @@ export const API = {
   createConvo,
   searchJob,
   searchUsers,
+  deletePost,
   saveJob,
   removeJob,
   deleteJobListing,

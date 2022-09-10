@@ -21,6 +21,7 @@ import { Input } from "../../Components/Input/Input";
 import * as ImagePicker from "expo-image-picker";
 import IconCam from "react-native-vector-icons/SimpleLineIcons";
 import { firebaseServices } from "../../services/firebase.services";
+import { manipulateAsync, FlipType, SaveFormat } from "expo-image-manipulator";
 
 const AddPhoto = (props) => {
   const [img, setImg] = useState("");
@@ -28,22 +29,25 @@ const AddPhoto = (props) => {
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
-      quality: 0.2,
+      aspect: [1, 1],
+      quality: 1,
     });
-
+    const manipResult = await manipulateAsync(result.uri, [
+      { resize: { height: 1080, width: 1080 } },
+    ]);
     if (!result.cancelled) {
-      setImg(result.uri);
+      setImg(manipResult.uri);
     }
   };
 
   const post = async () => {
     let imageName = Date.now().toString();
-    let image = await firebaseServices.updateProfileImage(imageName, img);
-    console.log(image);
-    //await API.createPost(image, description);
+    await firebaseServices.updateProfileImage(imageName, img, async (image) => {
+      await API.createPost(image, description);
+    });
+    props.navigation.goBack();
   };
 
   return (
@@ -106,7 +110,7 @@ const AddPhoto = (props) => {
           {img ? (
             <Image
               source={{ uri: img }}
-              style={{ width: WP(80), height: WP(80), borderRadius: 10 }}
+              style={{ width: WP(100), height: WP(100) }}
             />
           ) : (
             <IconCam name="camera" size={30} color={"#BDBDBD"} />

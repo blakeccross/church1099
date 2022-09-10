@@ -41,7 +41,7 @@ const Job = (props) => {
   ]);
   const [userData, setuserData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [Loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [selectedJob, setSelectedJob] = useState("");
   const user = useSelector((state) => state.user);
 
@@ -155,7 +155,7 @@ const Job = (props) => {
           </TouchableOpacity>
         </View>
       </BlurView>
-      {Loading ? (
+      {loading ? (
         <View
           style={{
             marginTop: HP(10),
