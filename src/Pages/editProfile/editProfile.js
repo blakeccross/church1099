@@ -18,7 +18,6 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { Input } from "../../Components/Input/Input";
 import { Button } from "../../Components/Button/Button";
 import { GlobalStyles } from "../../global/global.styles";
-import DropDownPicker from "react-native-dropdown-picker";
 import { Header } from "../../Components/header/header";
 import { API } from "../../services/api.services";
 import AlertService from "../../services/alertService";

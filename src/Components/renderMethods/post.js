@@ -20,13 +20,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import { createShimmerPlaceholder } from "react-native-shimmer-placeholder";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { API } from "../../services/api.services";
+import { useSelector } from "react-redux";
 
 const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 
 const Post = ({ show, setShow, selectedPost, loading, props }) => {
-  //const [loading, setLoading] = useState(true);
-  const [saved, setSaved] = useState("");
   const [video, setVideo] = useState("");
+  const user = useSelector((state) => state.user);
 
   const getYouTubeVideoIdFromUrl = (selectedPost) => {
     const URL = selectedPost.videoURL;
@@ -76,8 +76,6 @@ const Post = ({ show, setShow, selectedPost, loading, props }) => {
               },
             ]
           );
-        } else if (buttonIndex === 3) {
-          props.navigation.navigate("EditJob", item);
         }
       }
     );
@@ -142,17 +140,19 @@ const Post = ({ show, setShow, selectedPost, loading, props }) => {
               />
               <Text style={Styles.nameTxt}>{selectedPost.User}</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                showActionSheet(selectedPost);
-              }}
-            >
-              <MaterialCommunityIcons
-                name="dots-horizontal"
-                size={30}
-                color="black"
-              />
-            </TouchableOpacity>
+            {selectedPost.userId == user.data._id ? (
+              <TouchableOpacity
+                onPress={() => {
+                  showActionSheet(selectedPost);
+                }}
+              >
+                <MaterialCommunityIcons
+                  name="dots-horizontal"
+                  size={30}
+                  color="black"
+                />
+              </TouchableOpacity>
+            ) : null}
           </View>
           {selectedPost.videoURL.length < 2 ? (
             <Image

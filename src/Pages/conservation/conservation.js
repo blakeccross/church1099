@@ -32,9 +32,11 @@ const Convo = (props) => {
   function onError(error) {
     console.error(error);
   }
+
   useEffect(() => {
     getMessages();
   }, []);
+
   const sendMessage = async () => {
     let res = await API.sendMessage(
       `https://church1099.com/api/1.1/wf/sendmessage/?convoID=${
@@ -115,7 +117,11 @@ const Convo = (props) => {
                 renderItem={({ item }) => {
                   return (
                     <View>
-                      <RenderMessages item={item} myid={myid} />
+                      <RenderMessages
+                        item={item}
+                        myid={myid}
+                        profilePhoto={props?.route?.params?.data.profilePhoto}
+                      />
                     </View>
                   );
                 }}

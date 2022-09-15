@@ -37,15 +37,16 @@ const NewConvo = (props) => {
     setLoading(true);
     getUsersList();
   };
+
   const checkConversation = async (item) => {
     let id = await storageServices.fetchKey("id");
-    let convoUsers = [item._id, id];
+    let convoUsers = [item.id, id];
     let res = await API.createConvo(convoUsers);
-    let data = { ...item, ...res };
-    props.navigation.replace("Convo", { data: data });
+    //let data = { ...item, ...res };
+    props.navigation.replace("Convo", { data: res });
   };
+
   const renderItem = (item) => {
-    let url = item["Profile Photo"];
     return (
       <Pressable
         onPress={() => checkConversation(item)}
@@ -56,11 +57,10 @@ const NewConvo = (props) => {
           styles.item,
         ]}
       >
-        {item["Profile Photo"] ? (
+        {item.profilePhoto ? (
           <Image
             source={{
-              uri: "https:" + item["Profile Photo"],
-              //priority: 'low',
+              uri: "https:" + item.profilePhoto,
             }}
             resizeMode="cover"
             style={styles.image}
@@ -72,7 +72,7 @@ const NewConvo = (props) => {
           />
         )}
         <View key={item.key} style={styles.infoContainer}>
-          <Text style={styles.userName}>{item.Name}</Text>
+          <Text style={styles.userName}>{item.name}</Text>
         </View>
       </Pressable>
     );

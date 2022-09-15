@@ -1,11 +1,10 @@
 //import liraries
 import React, { Component } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import moment from "moment";
 
-const RenderMessages = ({ item, myid }) => {
-  //console.log(myid);
+const RenderMessages = ({ item, myid, profilePhoto }) => {
   return (
     <View
       style={{
@@ -17,16 +16,16 @@ const RenderMessages = ({ item, myid }) => {
         <>
           <View
             style={{
-              borderRadius: 17,
+              borderRadius: 25,
               backgroundColor: "#2b47fc",
               marginVertical: 2,
               marginRight: 10,
-              maxWidth: WP(80),
+              maxWidth: WP(70),
             }}
           >
             <Text
               style={{
-                fontSize: 16,
+                fontSize: 15,
                 paddingHorizontal: 15,
                 paddingVertical: 10,
                 textAlign: "left",
@@ -50,38 +49,52 @@ const RenderMessages = ({ item, myid }) => {
         </>
       ) : (
         <>
-          <View
-            style={{
-              borderRadius: 17,
-              backgroundColor: "rgba(247,247,247,1)",
-              marginVertical: 2,
-              marginLeft: 10,
-              maxWidth: WP(80),
-            }}
-          >
-            <Text
+          {console.log(item)}
+          <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
+            <Image
+              source={{ uri: "https:" + profilePhoto }}
               style={{
-                fontSize: 16,
-                paddingHorizontal: 15,
-                paddingVertical: 10,
-                textAlign: "left",
-                color: "black",
+                height: 40,
+                width: 40,
+                marginHorizontal: 10,
+                borderRadius: 20,
+                backgroundColor: "grey",
               }}
-            >
-              {item.content}
-            </Text>
+            />
+            <View>
+              <View
+                style={{
+                  borderRadius: 25,
+                  backgroundColor: "rgba(247,247,247,1)",
+                  marginVertical: 2,
+                  maxWidth: WP(70),
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 15,
+                    paddingHorizontal: 15,
+                    paddingVertical: 10,
+                    textAlign: "left",
+                    color: "black",
+                  }}
+                >
+                  {item.content}
+                </Text>
+              </View>
+              <Text
+                style={{
+                  fontSize: 13,
+                  paddingHorizontal: 15,
+                  paddingBottom: 10,
+                  textAlign: "left",
+                  color: "grey",
+                }}
+              >
+                {moment(item["Created Date"]).format("MMM Do, h:mm a")}
+              </Text>
+            </View>
           </View>
-          <Text
-            style={{
-              fontSize: 13,
-              paddingHorizontal: 15,
-              paddingBottom: 10,
-              textAlign: "left",
-              color: "grey",
-            }}
-          >
-            {moment(item["Created Date"]).format("MMM Do, h:mm a")}
-          </Text>
         </>
       )}
     </View>

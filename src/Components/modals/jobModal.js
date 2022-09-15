@@ -17,7 +17,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles } from "../../global/global.styles";
 import { useEffect } from "react";
 import moment from "moment";
-import DropDownPicker from "react-native-dropdown-picker";
 
 const JobModal = ({ show, setShow, selectedJob }) => {
   const [loading, setLoading] = useState(false);
@@ -192,8 +191,6 @@ const styles = StyleSheet.create({
   },
   modView: {
     backgroundColor: "white",
-    //position: "absolute",
-    //bottom: "3%",
     paddingVertical: HP(1),
     paddingHorizontal: WP(5),
     alignSelf: "center",

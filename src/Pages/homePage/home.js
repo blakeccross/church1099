@@ -25,7 +25,7 @@ const Home = (props) => {
   />*/}
       <Video
         source={{
-          uri: "https://filmsupply-files.s3.amazonaws.com/fs/files/production/clip_mov/1126333/mp4.wat.h.484.Kt14nxIDewipUYOr5r9271pxLYQJYeWCteVLFhXJz1qR3.mp4",
+          uri: "https://s3.amazonaws.com/appforest_uf/f1663107285275x207534264490968580/Church1099_BG.mp4",
         }}
         style={Styles.video}
         useNativeControls={false}

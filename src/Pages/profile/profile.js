@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
+  ActionSheetIOS,
   Text,
   Image,
   View,
@@ -58,32 +59,29 @@ const Profile = (props) => {
       <View style={Styles.portItem}>
         <Image
           source={{ uri: "https:" + item.image, cache: "force-cache" }}
-          style={{ width: WP(25), height: HP(17), borderRadius: 10 }}
+          style={{ width: WP(29), height: HP(20), borderRadius: 10 }}
         />
       </View>
     );
   };
-  let actionSheet = useRef();
-  var optionArray = ["Photo", "Video", "Cancel"];
+
   const showActionSheet = (item) => {
-    actionSheet.current.show();
-  };
-  const onActionSelect = (index) => {
-    if (index === 0) {
-      props.navigation.navigate("AddPhoto");
-    } else if (index === 1) {
-      Alert.alert("Delete", "Are you sure you want to delete?", [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        {
-          text: "OK",
-          onPress: () => deleteExperience(index),
-        },
-      ]);
-    }
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: ["Cancel", "Photo", "Video"],
+        cancelButtonIndex: 0,
+        userInterfaceStyle: "dark",
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          // cancel action
+        } else if (buttonIndex === 1) {
+          props.navigation.navigate("AddPhoto");
+        } else if (buttonIndex === 2) {
+          console.log("Video pressed");
+        }
+      }
+    );
   };
 
   return (
@@ -361,11 +359,13 @@ const Profile = (props) => {
                         </View>
                         <View style={{ flexDirection: "row", marginTop: 0 }}>
                           <Text style={Styles.description}>
-                            {moment(item["Start Date"]).format("MMM YYYY")}
+                            {moment(item.startDate).format("MMM YYYY")}
                           </Text>
-                          <Text style={Styles.description}>
-                            {moment(item["End Date"]).format(" - MMM YYYY")}
-                          </Text>
+                          {item.current ? null : (
+                            <Text style={Styles.description}>
+                              {moment(item.endDate).format(" - MMM YYYY")}
+                            </Text>
+                          )}
                         </View>
                         <View style={{ marginTop: HP(1) }}>
                           <MoreOrLess numberOfLines={2}>
@@ -387,13 +387,6 @@ const Profile = (props) => {
           </>
         )}
       </ScrollView>
-      <ActionSheet
-        ref={actionSheet}
-        title={"Upload a Photo"}
-        options={optionArray}
-        cancelButtonIndex={2}
-        onPress={onActionSelect}
-      />
     </>
   );
 };

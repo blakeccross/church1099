@@ -37,18 +37,17 @@ const SearchUsers = ({ search, route, navigation }) => {
     getUsersList();
   };
   const handlePress = async (item) => {
-    let user = await item._id;
+    let user = await item.id;
     navigation.navigate("ProfileView", { user: { userId: user } });
   };
 
   const renderItem = (item) => {
     return (
       <TouchableOpacity onPress={() => handlePress(item)} style={Styles.item}>
-        {item["Profile Photo"] ? (
+        {item.profilePhoto ? (
           <Image
             source={{
-              uri: "https:" + item["Profile Photo"],
-              //priority: 'low',
+              uri: "https:" + item.profilePhoto,
             }}
             resizeMode="cover"
             style={Styles.image}
@@ -60,7 +59,7 @@ const SearchUsers = ({ search, route, navigation }) => {
           />
         )}
         <View key={item.key} style={Styles.infoContainer}>
-          <Text style={Styles.userName}>{item.Name}</Text>
+          <Text style={Styles.userName}>{item.name}</Text>
           <View
             style={{
               flexDirection: "row",
@@ -69,7 +68,7 @@ const SearchUsers = ({ search, route, navigation }) => {
               paddingTop: 7,
             }}
           >
-            {item?.Skills?.map((item, i) => {
+            {item?.skills?.map((item, i) => {
               return (
                 <View key={i} style={Styles.skillItem}>
                   <Text

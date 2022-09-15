@@ -24,9 +24,11 @@ const RenderExperience = ({ item }) => {
         <Text style={styles.description}>
           {moment(item["Start Date"]).format("MMM YYYY")}
         </Text>
-        <Text style={styles.description}>
-          {moment(item["End Date"]).format(" - MMM YYYY")}
-        </Text>
+        {item["Current Position"] ? null : (
+          <Text style={styles.description}>
+            {moment(item["End Date"]).format(" - MMM YYYY")}
+          </Text>
+        )}
       </View>
     </View>
   );

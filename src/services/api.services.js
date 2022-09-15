@@ -365,8 +365,7 @@ const createConvo = async (convoUsers) => {
   };
   await axios(config)
     .then((res) => {
-      //console.log("res", res);
-      response = res.data.response.convo;
+      response = res.data.convo;
     })
     .catch((error) => {
       console.log("error", error);
@@ -389,7 +388,6 @@ const getUserList = async (relativeUrl) => {
   };
   await axios(config)
     .then((res) => {
-      // console.log('res', res.data);
       response = res.data;
     })
     .catch((error) => {
@@ -477,8 +475,9 @@ const getConversationListDetails = async (userID) => {
     });
   return response;
 };
-const getExperienceList = async (userID) => {
-  let url = `${base_url}experience?user=${userID}`;
+const getExperienceList = async () => {
+  const token = await AsyncStorage.getItem("token");
+  let url = `${base_url}experience`;
   let response = [];
   const config = {
     method: "POST",
@@ -486,6 +485,7 @@ const getExperienceList = async (userID) => {
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     data: {},
   };
@@ -493,7 +493,9 @@ const getExperienceList = async (userID) => {
     .then((res) => {
       response = res.data?.response.experience;
     })
-    .catch((error) => {});
+    .catch((error) => {
+      console.log(error);
+    });
   return response;
 };
 const searchJob = async (query) => {
@@ -516,6 +518,27 @@ const searchJob = async (query) => {
     .catch((error) => {});
   return response;
 };
+const searchSkills = async (query) => {
+  let url = `${base_url}search_skills?query=${query}`;
+  let response = [];
+  const config = {
+    method: "POST",
+    url: url,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    data: {},
+  };
+  await axios(config)
+    .then((res) => {
+      response = res.data.response.skills;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  return response;
+};
 const searchUsers = async (query) => {
   const token = await AsyncStorage.getItem("id");
   let url = `${base_url}searchUsers?query=${query}`;
@@ -531,9 +554,11 @@ const searchUsers = async (query) => {
   };
   await axios(config)
     .then((res) => {
-      response = res.data.response.users;
+      response = res.data.users;
     })
-    .catch((error) => {});
+    .catch((error) => {
+      console.log(error);
+    });
   return response;
 };
 const getSkills = async (category) => {
@@ -557,10 +582,10 @@ const getSkills = async (category) => {
     });
   return response;
 };
-const addExperience = async (data) => {
+const addExperience = async (data, navigation) => {
   const token = await AsyncStorage.getItem("token");
   let response = "";
-  let url = `${base_url}create_experience?title=${data.title}&company=${data.company}&photo&type=${data.type}&start=${data.start}&end=${data.end}&description=${data.description}`;
+  let url = `${base_url}add_experience?title=${data.title}&company=${data.company}&location=${data.location}&type=${data.type}&start=${data.start}&end=${data.end}&current=${data.current}&description=${data.description}`;
   const config = {
     method: "POST",
     url: url,
@@ -574,6 +599,7 @@ const addExperience = async (data) => {
   await axios(config)
     .then((res) => {
       response = res;
+      navigation.goBack();
     })
     .catch((error) => {
       console.log(error);
@@ -698,9 +724,13 @@ const deletePost = async (postId) => {
   return response;
 };
 const createPost = async (img, description, video) => {
+  video ? video : null;
+  console.log(video);
   const token = await AsyncStorage.getItem("token");
   let response = [];
-  let url = `${base_url}post?image=${img}&video=${video}&description=${description}`;
+  let url = `${base_url}post?image=${img}&video=${
+    video ? video : ""
+  }&description=${description}`;
   const config = {
     method: "POST",
     url: url,
@@ -766,7 +796,7 @@ const addSkill = async (skill, operation) => {
     });
   return response;
 };
-const editExperience = async (obj, id) => {
+const editExperience = async (obj, id, navigation) => {
   let response = "";
   let url = `https://church1099.com/api/1.1/obj/experience/${id}`;
   const config = {
@@ -781,7 +811,7 @@ const editExperience = async (obj, id) => {
   await axios(config)
     .then((res) => {
       response = res;
-      //console.log(res);
+      navigation.goBack();
     })
     .catch((error) => {
       console.log(error);
@@ -979,6 +1009,7 @@ export const API = {
   getNotifications,
   sendMessage,
   createConvo,
+  searchSkills,
   searchJob,
   searchUsers,
   deletePost,

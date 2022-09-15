@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
+  ActionSheetIOS,
   Alert,
   FlatList,
   SafeAreaView,
@@ -7,26 +8,15 @@ import {
   RefreshControl,
   ScrollView,
 } from "react-native";
-import ActionSheet from "react-native-actionsheet";
-import { EditExpModal } from "../../Components/expModal/editExpMod";
+//import ActionSheet from "react-native-actionsheet";
 import { Header } from "../../Components/header/header";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { userExperience as Styles } from "./userExperience.style";
 import RenderExperience from "../../Components/flatlistRenders/renderExperience";
-import { storageServices } from "../../services/storage.services";
 import { API } from "../../services/api.services";
 
 const UserExperience = (props) => {
   const [loading, setLoading] = useState(false);
-  const [editMod, setEditMod] = useState(false);
-  const [title, settitle] = useState("");
-  const [empType, setempType] = useState("");
-  const [companyName, setcompanyName] = useState("");
-  const [startDate, setstartDate] = useState("");
-  const [endDate, setendDate] = useState("");
-  const [isEmployee, setisEmployee] = useState(true);
-  const [location, setlocation] = useState("");
-  const [description, setdescription] = useState("");
   const [experience, setExperience] = useState([]);
   const [selectedExp, setSelectedExp] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -34,8 +24,7 @@ const UserExperience = (props) => {
     getData();
   }, []);
   const getData = async () => {
-    const userID = await storageServices.fetchKey("id");
-    let ex = await API.getExperienceList(userID);
+    let ex = await API.getExperienceList();
     setExperience(ex);
     setLoading(false);
   };
@@ -43,46 +32,39 @@ const UserExperience = (props) => {
     setRefreshing(true);
     getData().then(() => setRefreshing(false));
   }, []);
-  const postExperience = async () => {
-    let obj = {
-      title: title,
-      type: empType,
-      company: companyName,
-      description: description,
-      start: startDate,
-      photo: companyPhoto,
-      ["Current Position"]: isEmployee,
-      end: endDate,
-    };
-    let res = await API.addExperience(obj);
-    setMod(true);
-    await getData();
-  };
-  let actionSheet = useRef();
-  var optionArray = ["Edit", "Delete", "Cancel"];
+
   const showActionSheet = (item) => {
-    actionSheet.current.show();
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: ["Cancel", "Edit", "Delete"],
+        destructiveButtonIndex: 2,
+        cancelButtonIndex: 0,
+        userInterfaceStyle: "dark",
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          // cancel action
+        } else if (buttonIndex === 1) {
+          props.navigation.navigate("EditExp", { exp: item });
+        } else if (buttonIndex === 2) {
+          Alert.alert("Delete", "Are you sure you want to delete?", [
+            {
+              text: "Cancel",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel",
+            },
+            {
+              text: "OK",
+              onPress: () => deleteExperience(item),
+            },
+          ]);
+        }
+      }
+    );
   };
 
-  const onActionSelect = (index) => {
-    if (index === 0) {
-      setEditMod(true);
-    } else if (index === 1) {
-      Alert.alert("Delete", "Are you sure you want to delete?", [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        {
-          text: "OK",
-          onPress: () => deleteExperience(index),
-        },
-      ]);
-    }
-  };
-  const deleteExperience = async () => {
-    let id = selectedExp._id;
+  const deleteExperience = async (item) => {
+    let id = item._id;
     await API.deleteExperience(id);
     getData();
   };
@@ -101,30 +83,14 @@ const UserExperience = (props) => {
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() => {
-              setSelectedExp(item);
-              showActionSheet();
+              //setSelectedExp(item);
+              showActionSheet(item);
             }}
           >
             <RenderExperience item={item} />
           </TouchableOpacity>
         )}
         keyExtractor={(item, index) => index.toString()}
-      />
-      <ActionSheet
-        ref={actionSheet}
-        title={"What would you like to do?"}
-        options={optionArray}
-        cancelButtonIndex={2}
-        destructiveButtonIndex={1}
-        onPress={onActionSelect}
-      />
-      <EditExpModal
-        exp={selectedExp}
-        show={editMod}
-        setShow={setEditMod}
-        onPress={() => {
-          setEditMod(false);
-        }}
       />
     </>
   );

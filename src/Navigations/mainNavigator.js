@@ -35,6 +35,7 @@ import AddPhoto from "../Pages/Add Photo/addPhoto";
 import EditSkills from "../Pages/Edit Skills/editSkills";
 import ProfileView from "../Pages/Profile View/profileView";
 import Discover from "../Pages/Discover/discover";
+import EditExp from "../Pages/Edit Experience/editExp";
 
 const Stack = createStackNavigator();
 export const MainNavigator = () => (
@@ -77,6 +78,7 @@ export const MainNavigator = () => (
       <Stack.Screen name="EditSkills" component={EditSkills} />
       <Stack.Screen name="ProfileView" component={ProfileView} />
       <Stack.Screen name="Discover" component={Discover} />
+      <Stack.Screen name="EditExp" component={EditExp} />
     </Stack.Navigator>
   </NavigationContainer>
 );

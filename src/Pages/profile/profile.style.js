@@ -31,6 +31,7 @@ export const ProfileStyle = StyleSheet.create({
     alignSelf: "center",
     marginTop: HP(4),
     borderRadius: WP(15),
+    backgroundColor: "#F4F4F5",
   },
   locTxt: {
     color: "#666666",

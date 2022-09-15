@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Modal,
   Text,
@@ -20,29 +20,38 @@ import { Input } from "../Input/Input";
 import { Ionicons } from "@expo/vector-icons";
 import moment from "moment";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { AutoGrowingTextInput } from "react-native-autogrow-textinput";
+import ReactNativeModal from "react-native-modal";
+import { Picker } from "@react-native-picker/picker";
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import { Header } from "../header/header";
 
 export const EditExpModal = ({ exp, show, setShow, onPress, pressSave }) => {
   const [title, setTitle] = useState("");
-  const [empType, setEmpType] = useState("");
+  const [emp, setEmp] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isEmployee, setisEmployee] = useState(true);
-  const [isWorking, setIsWorking] = useState("");
+  const [isCurrent, setIsCurrent] = useState("");
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
   const toggleSwitch = () => setIsWorking(!isWorking);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [dateType, setdateType] = useState("");
+  const [empModal, setEmpModal] = useState(false);
+  const ref = useRef();
 
   useEffect(() => {
     setTitle(exp.Title);
-    setEmpType(exp["Employment Type"]);
+    setEmp(exp["Employment Type"]);
     setCompanyName(exp.Company);
-    setLocation(exp.Location);
+    setLocation(exp?.Location?.address);
+    ref.current?.setAddressText(exp.Location?.address);
     setStartDate(exp["Start Date"]);
+    setEndDate(exp["End Date"]);
     setDescription(exp.Description);
-    setIsWorking(exp["Current Position"]);
+    setIsCurrent(exp["Current Position"]);
   }, [exp]);
 
   const hideDatePicker = () => {
@@ -62,13 +71,14 @@ export const EditExpModal = ({ exp, show, setShow, onPress, pressSave }) => {
     let obj = {
       Company: companyName,
       Title: title,
-      ["Employment Type"]: empType,
+      ["Employment Type"]: emp,
       ["Current Position"]: isEmployee,
       Location: location,
       ["Start Date"]: startDate,
       ...(endDate.length > 0 && { ["End Date"]: endDate }),
       Description: description,
     };
+    console.log(obj);
     let id = exp._id;
 
     await API.editExperience(obj, id);
@@ -83,75 +93,96 @@ export const EditExpModal = ({ exp, show, setShow, onPress, pressSave }) => {
       onBackButtonPress={() => setShow(false)}
       onBackdropPress={() => setShow(false)}
     >
-      <View
-        style={{
-          paddingTop: HP(7),
-          paddingBottom: HP(2),
-          ...GlobalStyles.row,
-          justifyContent: "center",
-          alignContent: "center",
-        }}
-      >
-        <TouchableOpacity
-          onPress={() => setShow(false)}
-          style={{
-            paddingHorizontal: WP(3),
-            position: "absolute",
-            left: 0,
-            top: HP(6),
-          }}
-        >
-          <Ionicons name="ios-close-sharp" size={35} color="#333333" />
-        </TouchableOpacity>
-        <Text style={{ ...GlobalStyles.H3 }}>Edit Experience</Text>
-      </View>
-      <KeyboardAwareScrollView extraScrollHeight={50}>
+      <Header title="Edit Experience" onPress={() => setShow(false)} />
+      <View style={{ ...Styles.container }}>
         <ScrollView
           contentContainerStyle={{
-            //paddingBottom: HP(8),
-            //marginBottom: HP(10),
-            paddingHorizontal: HP(3),
+            paddingHorizontal: WP(6),
+            paddingBottom: HP(20),
           }}
-          showsVerticalScrollIndicator={false}
         >
-          <View style={{ flex: 1 }}>
-            <Text style={{ ...Styles.enterTxt }}>Job Title</Text>
+          <View>
+            <View
+              style={{
+                ...GlobalStyles.row,
+                justifyContent: "space-between",
+                paddingBottom: HP(1),
+              }}
+            ></View>
+            <Text style={{ ...Styles.txt }}>Job Title</Text>
             <Input value={title} setValue={setTitle} />
-            <Text style={{ ...Styles.enterTxt, paddingTop: HP(2) }}>
-              Employement Type
-            </Text>
-            <Input value={empType} setValue={setEmpType} />
-            <Text style={{ ...Styles.enterTxt, paddingTop: HP(2) }}>
-              Company Name
-            </Text>
+            <Text style={{ ...Styles.txt }}>Employement Type</Text>
+            <TouchableOpacity
+              onPress={() => {
+                setEmpModal(true);
+              }}
+            >
+              <View style={Styles.input}>
+                <Text
+                  style={{
+                    color: "black",
+                    fontSize: 15,
+                    paddingBottom: 2,
+                  }}
+                >
+                  {emp}
+                </Text>
+              </View>
+            </TouchableOpacity>
+            <Text style={{ ...Styles.txt }}>Company Name</Text>
             <Input value={companyName} setValue={setCompanyName} />
-            <Text style={{ ...Styles.enterTxt, paddingTop: HP(2) }}>
-              Location
-            </Text>
-            <Input value={location} setValue={setLocation} />
-            <View style={{ ...GlobalStyles.row, paddingTop: HP(2) }}>
-              <Text style={{ ...Styles.enterTxt, flex: 1 }}>
+            <Text style={{ ...Styles.txt }}>Location</Text>
+            <GooglePlacesAutocomplete
+              styles={{
+                textInput: {
+                  height: 45,
+                  backgroundColor: "rgba(247,247,247,1)",
+                  fontSize: 16,
+                  borderRadius: 10,
+                },
+              }}
+              //ref={(ref) => {
+              //  ref?.setAddressText(exp?.Location?.address);
+              //}}
+              ref={ref}
+              disableScroll={false}
+              isRowScrollable={false}
+              onPress={(data, details = null) => {
+                setLocation(data.description);
+              }}
+              query={{
+                key: "AIzaSyCqfZsYioXmmp-FpCdAEZjnw8uJ4dwsYFo",
+                language: "en",
+              }}
+            />
+            <View
+              style={{
+                ...GlobalStyles.row,
+                justifyContent: "space-between",
+              }}
+            >
+              <Text style={{ ...Styles.txt, marginBottom: 15 }}>
                 I am currently working in this role
               </Text>
               <Switch
-                trackColor={{ false: "#767577", true: "#2b47fc" }}
-                thumbColor={isWorking ? "#ffff" : "#f4f3f4"}
+                trackColor={{ false: "#767577", true: "#2B47FC" }}
+                thumbColor={isCurrent ? "white" : "#f4f3f4"}
                 ios_backgroundColor="#3e3e3e"
-                onValueChange={toggleSwitch}
-                value={isWorking}
+                onValueChange={() => {
+                  setIsCurrent(!isCurrent);
+                }}
+                value={isCurrent}
                 style={{ marginLeft: 0 }}
               />
             </View>
             <View
               style={{
                 ...GlobalStyles.row,
-                width: "100%",
-                paddingTop: HP(2),
                 justifyContent: "space-between",
               }}
             >
               <View style={{ width: "48%" }}>
-                <Text style={{ ...Styles.enterTxt }}>Start Date </Text>
+                <Text style={{ ...Styles.txt }}>Start Date </Text>
                 <TouchableOpacity
                   onPress={() => {
                     setDatePickerVisibility(true);
@@ -159,20 +190,21 @@ export const EditExpModal = ({ exp, show, setShow, onPress, pressSave }) => {
                   }}
                 >
                   <View style={Styles.input}>
-                    <Text
-                      style={{
-                        ...Styles.enterTxt,
-                        fontFamily: fontFamily.regular,
-                      }}
-                    >
-                      {moment(startDate).format("MMM YYYY")}
-                    </Text>
+                    {startDate ? (
+                      <Text
+                        style={{
+                          ...Styles.enterTxt,
+                        }}
+                      >
+                        {moment(startDate).format("MMM YYYY")}
+                      </Text>
+                    ) : null}
                   </View>
                 </TouchableOpacity>
               </View>
-              {isWorking ? null : (
+              {isCurrent ? null : (
                 <View style={{ width: "48%" }}>
-                  <Text style={{ ...Styles.enterTxt }}>End Date</Text>
+                  <Text style={{ ...Styles.txt }}>End Date</Text>
                   <TouchableOpacity
                     onPress={() => {
                       setDatePickerVisibility(true);
@@ -183,7 +215,6 @@ export const EditExpModal = ({ exp, show, setShow, onPress, pressSave }) => {
                       <Text
                         style={{
                           ...Styles.enterTxt,
-                          fontFamily: fontFamily.regular,
                         }}
                       >
                         {moment(endDate).format("MMM YYYY")}
@@ -193,22 +224,50 @@ export const EditExpModal = ({ exp, show, setShow, onPress, pressSave }) => {
                 </View>
               )}
             </View>
-            <Text style={{ ...Styles.enterTxt, paddingTop: HP(2) }}>
-              Description
-            </Text>
-            <TextInput
-              value={description}
+            <Text style={{ ...Styles.txt }}>Description</Text>
+            <AutoGrowingTextInput
+              style={Styles.input}
               onChangeText={(e) => setDescription(e)}
-              multiline
-              placeholder=""
-              style={{ ...Styles.multiInput }}
+              value={description}
+              maxHeight={300}
+              minHeight={100}
             />
-            <View style={{ marginTop: HP(5) }}>
-              <Button onPress={editExperience} btnTxt={"Edit Experience"} />
-            </View>
           </View>
+          <View
+            style={{
+              marginTop: HP(2),
+            }}
+          >
+            <Button onPress={editExperience} btnTxt={"Edit Experience"} />
+          </View>
+          <ReactNativeModal
+            isVisible={empModal}
+            style={{ margin: 0 }}
+            onBackButtonPress={() => setEmpModal(false)}
+            onBackdropPress={() => setEmpModal(false)}
+          >
+            <View style={Styles.centeredView}>
+              <View style={Styles.rectangle} />
+
+              <Picker
+                selectedValue={emp}
+                onValueChange={(emp, index) => {
+                  setEmp(emp);
+                  setEmpModal(false);
+                }}
+                mode="dropdown"
+              >
+                <Picker.Item label="Full-Time" value="Full-Time" />
+                <Picker.Item label="Part-Time" value="Part-Time" />
+                <Picker.Item label="Contract" value="Contract" />
+                <Picker.Item label="Temporary" value="Temporary" />
+                <Picker.Item label="Volunteer" value="Volunteer" />
+                <Picker.Item label="Internship" value="Internship" />
+              </Picker>
+            </View>
+          </ReactNativeModal>
         </ScrollView>
-      </KeyboardAwareScrollView>
+      </View>
       <DateTimePickerModal
         isVisible={isDatePickerVisible}
         mode="date"
@@ -235,12 +294,6 @@ const Styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 20,
   },
-  enterTxt: {
-    fontFamily: fontFamily.bold,
-    marginBottom: 5,
-    fontSize: 15,
-    color: "#000000",
-  },
   input: {
     justifyContent: "center",
     borderWidth: 0,
@@ -260,6 +313,35 @@ const Styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     paddingTop: 7,
+  },
+  txt: {
+    marginTop: HP(2),
+    fontFamily: fontFamily.bold,
+    marginBottom: 5,
+    fontSize: 15,
+    color: "#000000",
+  },
+  input: {
+    borderWidth: 0,
+    borderRadius: 10,
+    width: "100%",
+    backgroundColor: "rgba(247,247,247,1)",
+    color: "rgb(0,0,0)",
+    padding: 10,
+    height: 45,
+    justifyContent: "center",
+  },
+  centeredView: {
+    paddingTop: 10,
+    backgroundColor: "white",
+    height: HP(30),
+    width: WP(100),
+    position: "absolute",
+    bottom: 0,
+    paddingVertical: HP(1),
+    paddingHorizontal: WP(5),
+    alignSelf: "center",
+    borderRadius: 25,
   },
 });
 export default EditExpModal;

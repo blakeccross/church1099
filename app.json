@@ -4,7 +4,7 @@
     "slug": "church1099",
     "owner": "blakecross",
     "privacy": "public",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -19,7 +19,8 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.blakecross.church1099"
+      "bundleIdentifier": "com.blakecross.church1099",
+      "buildNumber": "1.0.1"
     },
     "android": {
       "adaptiveIcon": {

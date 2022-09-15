@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
     width: 50,
     borderRadius: 25,
     resizeMode: "cover",
+    backgroundColor: "#F4F4F5",
   },
   item: {
     width: "100%",

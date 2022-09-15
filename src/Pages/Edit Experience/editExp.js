@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   SafeAreaView,
   Text,
@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { Header } from "../../Components/header/header";
-import { CreateJobStyle as Styles } from "./addExp.style";
+import { EditExpStyle as Styles } from "./EditExp.style";
 import { GlobalStyles } from "../../global/global.styles";
 import { Input } from "../../Components/Input/Input";
 import { Button } from "../../Components/Button/Button";
@@ -23,57 +23,66 @@ import { Picker } from "@react-native-picker/picker";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-const AddExp = ({ route, navigation }) => {
+const EditExp = ({ navigation, route }) => {
   const [title, setTitle] = useState("");
   const [emp, setEmp] = useState("");
   const [companyName, setCompanyName] = useState("");
-  const [startDate, setStart] = useState("");
+  const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [isCurrent, setIsCurrent] = useState(true);
+  const [isCurrent, setIsCurrent] = useState("");
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
+  const toggleSwitch = () => setIsWorking(!isWorking);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [dateType, setdateType] = useState("");
   const [empModal, setEmpModal] = useState(false);
+  const ref = useRef();
+  const exp = route.params.exp;
+
+  useEffect(() => {
+    setTitle(exp.Title);
+    setEmp(exp["Employment Type"]);
+    setCompanyName(exp.Company);
+    setLocation(exp?.Location?.address);
+    ref.current?.setAddressText(exp.Location?.address);
+    setStartDate(exp["Start Date"]);
+    setEndDate(exp["End Date"]);
+    setDescription(exp.Description);
+    setIsCurrent(exp["Current Position"]);
+  }, [exp]);
 
   const hideDatePicker = () => {
     setDatePickerVisibility(false);
   };
 
   const handleConfirm = (date) => {
-    console.log(date);
     if (dateType == "start") {
-      setStart(moment(date).format("YYYY-MM-DD"));
+      setStartDate(moment(date).format("YYYY-MM-DD"));
     } else {
       setEndDate(moment(date).format("YYYY-MM-DD"));
     }
     setDatePickerVisibility(false);
   };
-
-  useEffect(() => {
-    setEndDate(moment(Date.now()).format("YYYY-MM-DD"));
-  }, []);
-
-  const postExperience = async () => {
+  const editExperience = async () => {
     let obj = {
-      title: title,
-      type: emp,
-      company: companyName,
-      location: location,
-      description: description,
-      start: startDate,
-      current: isCurrent,
-      end: endDate,
+      Company: companyName,
+      Title: title,
+      ["Employment Type"]: emp,
+      ["Current Position"]: isCurrent,
+      Location: location,
+      ["Start Date"]: startDate,
+      ...(endDate ? { ["End Date"]: endDate } : null),
+      Description: description,
     };
-    await API.addExperience(obj, navigation);
+    console.log(obj);
+    let id = exp._id;
+
+    await API.editExperience(obj, id, navigation);
   };
 
   return (
     <>
-      <Header
-        title="Add Experience"
-        onPress={() => props.navigation.goBack()}
-      />
+      <Header title={title} onPress={() => navigation.goBack()} />
       <View style={{ ...Styles.container }}>
         <KeyboardAwareScrollView
           extraScrollHeight={100}
@@ -123,9 +132,13 @@ const AddExp = ({ route, navigation }) => {
                   borderRadius: 10,
                 },
               }}
+              enablePoweredByContainer={false}
+              //ref={(ref) => {
+              //  ref?.setAddressText(exp?.Location?.address);
+              //}}
+              ref={ref}
               disableScroll={false}
               isRowScrollable={false}
-              setAddressText={"hello"}
               onPress={(data, details = null) => {
                 setLocation(data.description);
               }}
@@ -191,15 +204,13 @@ const AddExp = ({ route, navigation }) => {
                     }}
                   >
                     <View style={Styles.input}>
-                      {endDate ? (
-                        <Text
-                          style={{
-                            ...Styles.enterTxt,
-                          }}
-                        >
-                          {moment(endDate).format("MMM YYYY")}
-                        </Text>
-                      ) : null}
+                      <Text
+                        style={{
+                          ...Styles.enterTxt,
+                        }}
+                      >
+                        {moment(endDate).format("MMM YYYY")}
+                      </Text>
                     </View>
                   </TouchableOpacity>
                 </View>
@@ -248,7 +259,7 @@ const AddExp = ({ route, navigation }) => {
             marginHorizontal: WP(5),
           }}
         >
-          <Button onPress={postExperience} btnTxt={"Add Experience"} />
+          <Button onPress={editExperience} btnTxt={"Edit Experience"} />
         </View>
       </View>
       <DateTimePickerModal
@@ -260,4 +271,4 @@ const AddExp = ({ route, navigation }) => {
     </>
   );
 };
-export default AddExp;
+export default EditExp;

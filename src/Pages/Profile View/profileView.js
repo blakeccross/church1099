@@ -9,7 +9,6 @@ import {
   FlatList,
   RefreshControl,
 } from "react-native";
-import ActionSheet from "react-native-actionsheet";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { ProfileViewStyle as Styles } from "./profileView.style";
 import { Ionicons } from "@expo/vector-icons";
@@ -63,29 +62,6 @@ const ProfileView = (props) => {
         />
       </View>
     );
-  };
-
-  let actionSheet = useRef();
-  var optionArray = ["Photo", "Video", "Cancel"];
-  const showActionSheet = (item) => {
-    actionSheet.current.show();
-  };
-  const onActionSelect = (index) => {
-    if (index === 0) {
-      props.navigation.navigate("AddPhoto");
-    } else if (index === 1) {
-      Alert.alert("Delete", "Are you sure you want to delete?", [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        {
-          text: "OK",
-          onPress: () => deleteExperience(index),
-        },
-      ]);
-    }
   };
 
   return (
@@ -330,13 +306,6 @@ const ProfileView = (props) => {
           </>
         )}
       </ScrollView>
-      <ActionSheet
-        ref={actionSheet}
-        title={"Upload a Photo"}
-        options={optionArray}
-        cancelButtonIndex={2}
-        onPress={onActionSelect}
-      />
     </>
   );
 };

@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import ActionSheet from "react-native-actionsheet";
 import fontFamily from "../../Assets/config/fontFamily";
 import JobModal from "../../Components/modals/jobModal";
 import { Header } from "../../Components/header/header";
