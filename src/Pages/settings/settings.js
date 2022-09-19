@@ -1,15 +1,5 @@
-import React, { Fragment, useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  SafeAreaView,
-  Text,
-  Image,
-  View,
-  TouchableOpacity,
-  TextInput,
-  ScrollView,
-} from "react-native";
-import { API } from "../../services/api.services";
+import React from "react";
+import { Text, Image, View, TouchableOpacity, ScrollView } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { SettingsStyle as Styles } from "./settings.style";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -19,11 +9,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CommonActions } from "@react-navigation/native";
 import AlertService from "../../services/alertService";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
 import { Header } from "../../Components/header/header";
+import Constants from "expo-constants";
+import { useSelector } from "react-redux";
 
 const Settings = (props) => {
-  const [userData, setUserData] = useState(props.route.params.user.data);
+  const user = useSelector((state) => state.user.data);
 
   const onSignOut = async () => {
     AlertService.confirm("Are you sure you want to Logout?").then(
@@ -54,17 +45,13 @@ const Settings = (props) => {
               paddingVertical: 15,
               paddingHorizontal: 15,
             }}
-            onPress={() =>
-              props.navigation.navigate("EditProfile", { userData })
-            }
+            onPress={() => props.navigation.navigate("EditProfile")}
           >
             <Image
-              source={{ uri: "https:" + userData.profilePhoto }}
+              source={{ uri: "https:" + user.profilePhoto }}
               style={{ ...Styles.dp }}
             />
-            <Text style={{ ...Styles.setTxt, fontSize: 18 }}>
-              {userData.name}
-            </Text>
+            <Text style={{ ...Styles.setTxt, fontSize: 18 }}>{user.name}</Text>
             <Icon
               name={"chevron-forward"}
               style={{ position: "absolute", right: 15 }}
@@ -84,23 +71,6 @@ const Settings = (props) => {
             >
               <MaterialCommunityIcons name="key" size={24} color="black" />
               <Text style={{ ...Styles.setTxt }}>Change Password</Text>
-              <Icon
-                name={"chevron-forward"}
-                style={{ position: "absolute", right: 0 }}
-                size={24}
-                color="black"
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                ...GlobalStyles.row,
-                ...Styles.settingItem,
-                width: "100%",
-              }}
-              onPress={() => props.navigation.navigate("Subscription")}
-            >
-              <MaterialIcons name="payment" size={24} color="black" />
-              <Text style={{ ...Styles.setTxt }}>Subscription</Text>
               <Icon
                 name={"chevron-forward"}
                 style={{ position: "absolute", right: 0 }}
@@ -174,9 +144,10 @@ const Settings = (props) => {
         <Text
           style={{
             textAlign: "center",
+            paddingBottom: HP(3),
           }}
         >
-          Version 1.0
+          Version {Constants.expoConfig.ios.buildNumber}
         </Text>
       </View>
     </>

@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import styles from "./jobApplicant.styles";
 import { API } from "../../services/api.services";
-import { HP, WP } from "../../Assets/config/screen-ratio";
 import { Header } from "../../Components/header/header";
 
 const JobApplicant = ({ navigation, route }) => {

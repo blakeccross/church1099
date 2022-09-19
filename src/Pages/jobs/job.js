@@ -3,7 +3,6 @@ import JobModal from "../../Components/modals/jobModal";
 import { BlurView } from "expo-blur";
 import {
   ActivityIndicator,
-  Image,
   RefreshControl,
   Text,
   TextInput,
@@ -12,7 +11,6 @@ import {
   ScrollView,
 } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
-import { Button } from "../../Components/Button/Button";
 import { MaterialIcons } from "@expo/vector-icons";
 import { GlobalStyles } from "../../global/global.styles";
 import { JobStyle as Styles } from "./job.style";

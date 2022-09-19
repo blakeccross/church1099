@@ -49,7 +49,6 @@ const RenderMessages = ({ item, myid, profilePhoto }) => {
         </>
       ) : (
         <>
-          {console.log(item)}
           <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
             <Image
               source={{ uri: "https:" + profilePhoto }}

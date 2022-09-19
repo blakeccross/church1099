@@ -1,11 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
-  SafeAreaView,
   Text,
   View,
-  TextInput,
   TouchableOpacity,
-  ScrollView,
   Switch,
 } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";

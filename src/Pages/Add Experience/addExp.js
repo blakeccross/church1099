@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  SafeAreaView,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  Switch,
-} from "react-native";
+import { Text, View, TouchableOpacity, Switch } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { Header } from "../../Components/header/header";
 import { CreateJobStyle as Styles } from "./addExp.style";

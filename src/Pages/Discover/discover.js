@@ -6,17 +6,13 @@ import {
   TextInput,
   Image,
   View,
-  Text,
   TouchableOpacity,
   RefreshControl,
 } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { skillsStyle as Styles } from "./discover.style";
-import { storageServices } from "../../services/storage.services";
 import { API } from "../../services/api.services";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Input } from "../../Components/Input/Input";
-import { GlobalStyles } from "../../global/global.styles";
 import PostModal from "../../Components/modals/postModal";
 
 const Discover = (props) => {

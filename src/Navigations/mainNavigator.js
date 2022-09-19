@@ -33,7 +33,7 @@ import SkillsCategory from "../Pages/skillsCategory/skillsCategory";
 import Skills from "../Pages/Skills/skills";
 import AddPhoto from "../Pages/Add Photo/addPhoto";
 import EditSkills from "../Pages/Edit Skills/editSkills";
-import ProfileView from "../Pages/Profile View/profileView";
+import ProfileView from "../Pages/profileView/profileView";
 import Discover from "../Pages/Discover/discover";
 import EditExp from "../Pages/Edit Experience/editExp";
 

@@ -1,12 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState } from "react";
 import {
-  Alert,
-  FlatList,
   SafeAreaView,
   TouchableOpacity,
   Image,
-  RefreshControl,
-  ScrollView,
   Text,
   TextInput,
   View,
@@ -15,9 +11,7 @@ import { GlobalStyles } from "../../global/global.styles";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { addPhotoStyle as Styles } from "./addPhoto.style";
 import Icon from "react-native-vector-icons/Ionicons";
-import { storageServices } from "../../services/storage.services";
 import { API } from "../../services/api.services";
-import { Input } from "../../Components/Input/Input";
 import * as ImagePicker from "expo-image-picker";
 import IconCam from "react-native-vector-icons/SimpleLineIcons";
 import { firebaseServices } from "../../services/firebase.services";

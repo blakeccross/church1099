@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   TouchableOpacity,
@@ -7,11 +7,8 @@ import {
   View,
 } from "react-native";
 import { Header } from "../../Components/header/header";
-import { HP, WP } from "../../Assets/config/screen-ratio";
 import { skillsCategoryStyles as Styles } from "./skillsCategory.style";
-import { storageServices } from "../../services/storage.services";
 import { API } from "../../services/api.services";
-import { Input } from "../../Components/Input/Input";
 
 const SkillsCategory = (props) => {
   const [skills, setSkills] = useState([]);

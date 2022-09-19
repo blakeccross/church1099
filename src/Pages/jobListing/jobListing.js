@@ -1,26 +1,18 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Alert,
   ActionSheetIOS,
-  SafeAreaView,
-  Text,
-  View,
   TouchableOpacity,
   RefreshControl,
   ScrollView,
 } from "react-native";
-import fontFamily from "../../Assets/config/fontFamily";
 import { Header } from "../../Components/header/header";
 import { HP, WP } from "../../Assets/config/screen-ratio";
-import { JobListingStyle as Styles } from "./jobListing.style";
-import { GlobalStyles } from "../../global/global.styles";
-import AlertService from "../../services/alertService";
 import { API } from "../../services/api.services";
 import RenderJob from "../../Components/renderMethods/job";
 import JobModal from "../../Components/modals/jobModal";
 
 const JobListing = (props) => {
-  const [mod, setMod] = useState(false);
   const [job, setJob] = useState([]);
   const [selectedJob, setSelectedJob] = useState({});
   const [refreshing, setRefreshing] = useState(false);

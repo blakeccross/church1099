@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
-  SafeAreaView,
   Text,
   Image,
   View,
@@ -14,11 +13,8 @@ import { ProfileViewStyle as Styles } from "./profileView.style";
 import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles } from "../../global/global.styles";
 import { API } from "../../services/api.services";
-import Dropdown from "../../Components/dropdown/dropdown";
-import { Button } from "../../Components/Button/Button";
 import moment from "moment";
 import SkeletonLoader from "expo-skeleton-loader";
-import { storageServices } from "../../services/storage.services";
 import { MoreOrLess } from "@rntext/more-or-less";
 
 const ProfileView = (props) => {

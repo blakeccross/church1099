@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   Text,
-  Image,
   View,
   TouchableOpacity,
   ActivityIndicator,
@@ -10,11 +9,9 @@ import {
 
 import fontFamily from "../../Assets/config/fontFamily";
 import { HP } from "../../Assets/config/screen-ratio";
-//import SvgComponent from '../../Assets/Svgs';
 import { Button } from "../../Components/Button/Button";
 import { ForgotModal } from "../../Components/forgotModal/forgotModal";
 import { Input } from "../../Components/Input/Input";
-import { GlobalStyles } from "../../global/global.styles";
 import AlertService from "../../services/alertService";
 import { API } from "../../services/api.services";
 import { loginStyle as Styles } from "./loginStyles";

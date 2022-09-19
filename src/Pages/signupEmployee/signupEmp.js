@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   SafeAreaView,
   Switch,
   Text,
-  Image,
   View,
   TouchableOpacity,
   ScrollView,
-  TextInput,
 } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { SVGS } from "../../Assets/Svgs";
@@ -15,7 +13,7 @@ import { Input } from "../../Components/Input/Input";
 import { GlobalStyles } from "../../global/global.styles";
 import { SignupEmpStyle as Styles } from "./signupEmp.style";
 import { Button } from "../../Components/Button/Button";
-import { API } from "../../services/api.services";
+
 const SignupEmp = (props) => {
   const [img, setImg] = useState("https://reactjs.org/logo-og.png");
   const [name, setName] = useState("");

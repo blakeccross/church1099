@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActionSheetIOS,
   Alert,
@@ -6,19 +6,14 @@ import {
   SafeAreaView,
   TouchableOpacity,
   RefreshControl,
-  ScrollView,
 } from "react-native";
-//import ActionSheet from "react-native-actionsheet";
 import { Header } from "../../Components/header/header";
-import { HP, WP } from "../../Assets/config/screen-ratio";
-import { userExperience as Styles } from "./userExperience.style";
 import RenderExperience from "../../Components/flatlistRenders/renderExperience";
 import { API } from "../../services/api.services";
 
 const UserExperience = (props) => {
   const [loading, setLoading] = useState(false);
   const [experience, setExperience] = useState([]);
-  const [selectedExp, setSelectedExp] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   useEffect(() => {
     getData();

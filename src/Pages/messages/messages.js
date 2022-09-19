@@ -12,7 +12,6 @@ import { MessageStyle as styles } from "./messages.style";
 import { LinearGradient } from "expo-linear-gradient";
 import { createShimmerPlaceholder } from "react-native-shimmer-placeholder";
 import { API } from "../../services/api.services";
-import Icon from "react-native-vector-icons/Ionicons";
 import { GlobalStyles } from "../../global/global.styles";
 import moment from "moment";
 import Material from "react-native-vector-icons/MaterialCommunityIcons";
@@ -71,7 +70,6 @@ const Messages = (props) => {
     props.navigation.navigate("Convo", { data: item });
   };
   const renderItem = (item) => {
-    //console.log(item);
     return (
       <Pressable
         onPress={() => Conversation(item)}

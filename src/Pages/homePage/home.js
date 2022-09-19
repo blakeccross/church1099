@@ -1,16 +1,7 @@
-import React, { useEffect, useState } from "react";
-import {
-  SafeAreaView,
-  Text,
-  Image,
-  View,
-  StatusBar,
-  TouchableOpacity,
-} from "react-native";
-import fontFamily from "../../Assets/config/fontFamily";
+import React, { useState } from "react";
+import { Text, View, TouchableOpacity } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { Button } from "../../Components/Button/Button";
-import { LoginModal } from "../../Components/loginModal/loginModal";
 import { HomeStyle as Styles } from "./home.style";
 import { Video } from "expo-av";
 
@@ -18,11 +9,6 @@ const Home = (props) => {
   const [mod, setMod] = useState(false);
   return (
     <View style={Styles.mainContainer}>
-      {/*}
-        <Image
-          source={require('../../Assets/Imgs/Worship.jpeg')}
-          style={Styles.image}
-  />*/}
       <Video
         source={{
           uri: "https://s3.amazonaws.com/appforest_uf/f1663107285275x207534264490968580/Church1099_BG.mp4",

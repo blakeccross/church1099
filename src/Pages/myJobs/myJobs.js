@@ -1,21 +1,14 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   ActivityIndicator,
-  Image,
   RefreshControl,
-  SafeAreaView,
-  Text,
   View,
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import fontFamily from "../../Assets/config/fontFamily";
 import JobModal from "../../Components/modals/jobModal";
 import { Header } from "../../Components/header/header";
 import { HP, WP } from "../../Assets/config/screen-ratio";
-import { MyJobsStyle as Styles } from "./myJobs.style";
-import { MaterialIcons } from "@expo/vector-icons";
-import { GlobalStyles } from "../../global/global.styles";
 import { API } from "../../services/api.services";
 import RenderJob from "../../Components/renderMethods/job";
 const MyJobs = (props) => {
@@ -25,7 +18,7 @@ const MyJobs = (props) => {
   const [Loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [userData, setuserData] = useState([]);
+
   useEffect(() => {
     getJobList();
   }, []);

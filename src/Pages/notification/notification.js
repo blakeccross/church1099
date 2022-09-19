@@ -6,10 +6,7 @@ import {
   View,
   RefreshControl,
   TouchableOpacity,
-  Switch,
-  ScrollView,
 } from "react-native";
-import { CONST } from "../../Assets/config/constants";
 import fontFamily from "../../Assets/config/fontFamily";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import Material from "react-native-vector-icons/MaterialCommunityIcons";

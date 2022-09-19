@@ -1,13 +1,5 @@
-import React, { useEffect, useState } from "react";
-import {
-  SafeAreaView,
-  Text,
-  Image,
-  View,
-  TouchableOpacity,
-  Switch,
-  ScrollView,
-} from "react-native";
+import React, { useState } from "react";
+import { SafeAreaView, Text, View, ScrollView } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { Button } from "../../Components/Button/Button";
 import styles from "./jobApply.styles";
@@ -19,7 +11,7 @@ const JobApply = ({ navigation, route }) => {
   const [loading, setloading] = useState(false);
   const applyForJob = async () => {
     setloading(true);
-    let res = await API.jobApply(data._id);
+    await API.jobApply(data._id);
     AlertService.show("Your application has been send");
     props.navigation.goBack();
     setloading(false);

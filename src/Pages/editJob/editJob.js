@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-  SafeAreaView,
   Text,
   View,
-  TextInput,
-  ScrollView,
   TouchableOpacity,
   Switch,
 } from "react-native";

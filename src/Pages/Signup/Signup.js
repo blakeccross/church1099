@@ -1,17 +1,13 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState } from "react";
 import {
-  Animated,
   SafeAreaView,
   FlatList,
-  Switch,
   Text,
   Image,
   View,
   TouchableOpacity,
   Linking,
   Pressable,
-  ScrollView,
-  TextInput,
 } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { Input } from "../../Components/Input/Input";
@@ -25,8 +21,6 @@ import { API } from "../../services/api.services";
 import AlertService from "../../services/alertService";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import * as ImagePicker from "expo-image-picker";
-import { storageServices } from "../../services/storage.services";
-import { getApp } from "firebase/app";
 import { firebaseServices } from "../../services/firebase.services";
 
 const Signup = (props) => {
@@ -56,7 +50,7 @@ const Signup = (props) => {
     { id: "Bass Guitar", name: "Bass Guitar" },
     { id: "Video Editing", name: "Video Editing" },
   ];
-  const [formStep, setFormStep] = useState(0);
+  const [formStep, setFormStep] = useState(1);
   const completeFormStep = () => {
     setFormStep((cur) => cur + 1);
   };

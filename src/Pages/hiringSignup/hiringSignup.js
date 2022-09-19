@@ -3,11 +3,9 @@ import {
   SafeAreaView,
   Switch,
   Text,
-  Image,
   View,
   TouchableOpacity,
   ScrollView,
-  TextInput,
 } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { SVGS } from "../../Assets/Svgs";
@@ -17,6 +15,7 @@ import { HiringStyles as Styles } from "./hiringSignup.styles";
 import { Button } from "../../Components/Button/Button";
 import { API } from "../../services/api.services";
 import AlertService from "../../services/alertService";
+
 const HiringSignup = (props) => {
   const [img, setImg] = useState("https://reactjs.org/logo-og.png");
   const [name, setName] = useState("");

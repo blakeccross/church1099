@@ -1,18 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
-import {
-  Alert,
-  FlatList,
-  SafeAreaView,
-  TouchableOpacity,
-  RefreshControl,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { TouchableOpacity, Text, View } from "react-native";
 import { Header } from "../../Components/header/header";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { skillsStyle as Styles } from "./skills.style";
-import { storageServices } from "../../services/storage.services";
 import { API } from "../../services/api.services";
 import { Input } from "../../Components/Input/Input";
 

@@ -1,11 +1,7 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState} from "react";
 import {
   Alert,
-  FlatList,
-  SafeAreaView,
   TouchableOpacity,
-  RefreshControl,
-  ScrollView,
   Text,
   View,
 } from "react-native";

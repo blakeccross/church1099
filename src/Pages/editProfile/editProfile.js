@@ -1,76 +1,92 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
-  SafeAreaView,
   Text,
   Image,
   View,
   TouchableOpacity,
-  TextInput,
   ScrollView,
   Alert,
-  Modal,
-  Switch,
 } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { Imgs } from "../../Assets/Imgs";
 import { EditStyle as Styles } from "./edit.style";
-import Icon from "react-native-vector-icons/Ionicons";
 import { Input } from "../../Components/Input/Input";
 import { Button } from "../../Components/Button/Button";
-import { GlobalStyles } from "../../global/global.styles";
 import { Header } from "../../Components/header/header";
 import { API } from "../../services/api.services";
 import AlertService from "../../services/alertService";
-import { ChangeBackgroundColor, GetUser } from "../../root/action";
-import { connect } from "react-redux";
 import { Picker } from "@react-native-picker/picker";
 import ReactNativeModal from "react-native-modal";
 import * as ImagePicker from "expo-image-picker";
+import { useDispatch } from "react-redux";
+import { firebaseServices } from "../../services/firebase.services";
+import { getUser } from "../../root/reducer";
+import { storageServices } from "../../services/storage.services";
+import { manipulateAsync } from "expo-image-manipulator";
+import { useSelector } from "react-redux";
 
 const EditProfile = (props) => {
-  const [img, setImg] = useState(props?.route?.params?.userData.profilePhoto);
-  const [name, setName] = useState(props?.route?.params?.userData.name);
-  const [email, setEmail] = useState(
-    props?.route?.params?.userData.authentication?.email.email
-  );
-  const [phone, setPhone] = useState(props?.route?.params?.userData.phone);
-  const [loc, setLoc] = useState(props?.route?.params?.userData?.location);
-  const [bio, setBio] = useState(props?.route?.params?.userData.header);
-  const [open, setOpen] = useState(false);
-  const [gender, setGender] = useState(
-    props?.route?.params?.userData.gender
-      ? props?.route?.params?.userData.gender
-      : ""
-  );
+  const user = useSelector((state) => state.user.data);
+  const [img, setImg] = useState("https:" + user.profilePhoto);
+  const prevImg = "https:" + user.profilePhoto;
+  const [name, setName] = useState(user.name);
+  const [phone, setPhone] = useState(user.phone);
+  const [loc, setLoc] = useState(user.location);
+  const [bio, setBio] = useState(user.header);
+  const [gender, setGender] = useState(user.gender ? user.gender : "");
   const [genderMod, setGenderMod] = useState(false);
+  const dispatch = useDispatch();
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
-      quality: 0.2,
+      aspect: [1, 1],
+      quality: 1,
     });
-
+    const manipResult = await manipulateAsync(result.uri, [
+      { resize: { height: 1080, width: 1080 } },
+    ]);
     if (!result.cancelled) {
-      setImg(result.uri);
+      setImg(manipResult.uri);
     }
   };
 
   const updateProfile = async () => {
-    let obj = {
-      Name: name,
-      ["Profile Photo"]: img,
-      Bio: bio,
-      Gender: gender,
-      ["Phone Number"]: phone,
-      Location: loc,
-    };
-    await API.editProfile(obj);
-    let user = await API.getUser();
-    props.getUser(user);
+    if (img !== prevImg) {
+      let imageName = Date.now().toString();
+      await firebaseServices.updateProfileImage(
+        imageName,
+        img,
+        async (image) => {
+          let obj = {
+            Name: name,
+            ["Profile Photo"]: image,
+            Bio: bio,
+            Gender: gender,
+            ["Phone Number"]: phone,
+            Location: loc,
+          };
+          await API.editProfile(obj);
+        }
+      );
+    } else {
+      let obj = {
+        Name: name,
+        ["Profile Photo"]: img,
+        Bio: bio,
+        Gender: gender,
+        ["Phone Number"]: phone,
+        Location: loc,
+      };
+      await API.editProfile(obj);
+    }
+    const userID = await storageServices.fetchKey("id");
+    let user = await API.getUserData(userID);
+    dispatch(getUser(user));
     props.navigation.goBack();
   };
+
   const onSubmit = async () => {
     if (name != "" && bio != "" && gender != "" && phone != "") {
       Alert.alert("Update", "Would you like to submit changes", [
@@ -112,10 +128,7 @@ const EditProfile = (props) => {
               }}
             >
               {img ? (
-                <Image
-                  source={{ uri: "https:" + img }}
-                  style={{ ...Styles.dp }}
-                />
+                <Image source={{ uri: img }} style={{ ...Styles.dp }} />
               ) : (
                 <Image source={Imgs.dp} style={{ ...Styles.dp }} />
               )}
@@ -221,16 +234,5 @@ const EditProfile = (props) => {
     </>
   );
 };
-const mapStateToProps = (state) => {
-  const { backgroundColor } = state;
-  const { user } = state;
 
-  return state;
-};
-const mapDispatchToProps = (dispatch) => {
-  return {
-    changeBackgroundColor: (bg) => dispatch(ChangeBackgroundColor(bg)),
-    getUser: (userInfo) => dispatch(GetUser(userInfo)),
-  };
-};
-export default connect(mapStateToProps, mapDispatchToProps)(EditProfile);
+export default EditProfile;
