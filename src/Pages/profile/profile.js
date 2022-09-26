@@ -43,6 +43,7 @@ const Profile = (props) => {
   const getData = async () => {
     const userID = await storageServices.fetchKey("id");
     let user = await API.getUserData(userID);
+    console.log(user);
     dispatch(getUser(user));
     setExperience(user.experience);
     setPorts(user.posts);
@@ -77,7 +78,7 @@ const Profile = (props) => {
         } else if (buttonIndex === 1) {
           props.navigation.navigate("AddPhoto");
         } else if (buttonIndex === 2) {
-          console.log("Video pressed");
+          props.navigation.navigate("AddVideo");
         }
       }
     );
@@ -195,15 +196,17 @@ const Profile = (props) => {
             >
               <Text style={Styles.userInfoTxt}>{user.data.location}</Text>
             </View>
-            <Text
-              style={{
-                ...Styles.userInfoTxt,
-                textAlign: "center",
-                marginTop: HP(1),
-              }}
-            >
-              {user.data.header}
-            </Text>
+            {user.data.header ? (
+              <Text
+                style={{
+                  ...Styles.userInfoTxt,
+                  textAlign: "center",
+                  marginTop: HP(1),
+                }}
+              >
+                {user.data.header}
+              </Text>
+            ) : null}
             <View
               style={{
                 width: WP(30),
@@ -226,7 +229,7 @@ const Profile = (props) => {
                 justifyContent: "space-between",
               }}
             >
-              <Text style={{ ...GlobalStyles.H3 }}>Skills</Text>
+              <Text style={Styles.sectionHeader}>Skills</Text>
               <View style={GlobalStyles.row}>
                 <TouchableOpacity
                   style={{ marginRight: 20 }}
@@ -280,7 +283,7 @@ const Profile = (props) => {
                 justifyContent: "space-between",
               }}
             >
-              <Text style={{ ...GlobalStyles.H3 }}>Portfolio</Text>
+              <Text style={Styles.sectionHeader}>Portfolio</Text>
               <TouchableOpacity onPress={() => showActionSheet()}>
                 <Ionicons name="ios-add-sharp" size={30} color="black" />
               </TouchableOpacity>
@@ -288,7 +291,7 @@ const Profile = (props) => {
             {user?.data.posts && user.data.posts?.length ? (
               <TouchableOpacity
                 onPress={() =>
-                  props.navigation.navigate("Portfolio", { Portfolio: ports })
+                  props.navigation.navigate("Portfolio", user.data)
                 }
               >
                 <FlatList
@@ -322,7 +325,7 @@ const Profile = (props) => {
                 justifyContent: "space-between",
               }}
             >
-              <Text style={{ ...GlobalStyles.H3 }}>Experience</Text>
+              <Text style={Styles.sectionHeader}>Experience</Text>
               <View style={GlobalStyles.row}>
                 <TouchableOpacity
                   style={{ marginRight: 20 }}
@@ -338,10 +341,10 @@ const Profile = (props) => {
               </View>
             </View>
             {experience && experience.length ? (
-              <View style={Styles.experienceList}>
+              <>
                 {experience.map((item, i) => {
                   return (
-                    <View key={i} style={Styles.item}>
+                    <View key={i} style={Styles.experienceItem}>
                       <View style={{ flexDirection: "row" }}>
                         <Image source={{ uri: item["Company Image"] }} />
                         <Text style={Styles.headingText}>{item?.title}</Text>
@@ -372,7 +375,7 @@ const Profile = (props) => {
                     </View>
                   );
                 })}
-              </View>
+              </>
             ) : (
               <View style={Styles.empty}>
                 <Text style={Styles.emptyTxt}>

@@ -5,12 +5,15 @@ import {
   TouchableOpacity,
   RefreshControl,
   ScrollView,
+  View,
+  Text,
 } from "react-native";
 import { Header } from "../../Components/header/header";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { API } from "../../services/api.services";
 import RenderJob from "../../Components/renderMethods/job";
 import JobModal from "../../Components/modals/jobModal";
+import { JobListingStyle as styles } from "./jobListing.style";
 
 const JobListing = (props) => {
   const [job, setJob] = useState([]);
@@ -52,7 +55,7 @@ const JobListing = (props) => {
         } else if (buttonIndex === 1) {
           setShowModal(true);
         } else if (buttonIndex === 2) {
-          props.navigation.navigate("JobApplicant", item);
+          props.navigation.navigate("JobApplicants", item);
         } else if (buttonIndex === 3) {
           props.navigation.navigate("EditJob", item);
         } else if (buttonIndex === 4) {
@@ -90,18 +93,31 @@ const JobListing = (props) => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {job.map((item, i) => (
-          <TouchableOpacity
-            onPress={() => {
-              setSelectedJob(item);
-              showActionSheet(item);
-              //actionSheet.current.show();
+        {job.length ? (
+          job.map((item, i) => (
+            <TouchableOpacity
+              onPress={() => {
+                setSelectedJob(item);
+                showActionSheet(item);
+                //actionSheet.current.show();
+              }}
+              key={i}
+            >
+              <RenderJob item={item} hideBook={true} />
+            </TouchableOpacity>
+          ))
+        ) : (
+          <View
+            style={{
+              marginTop: HP(35),
+              width: WP(60),
+              alignSelf: "center",
             }}
-            key={i}
           >
-            <RenderJob item={item} hideBook={true} />
-          </TouchableOpacity>
-        ))}
+            <Text style={styles.H1}>No Job Listings</Text>
+            <Text style={styles.H2}>Post a new job on the Jobs page</Text>
+          </View>
+        )}
       </ScrollView>
       <JobModal
         show={showModal}

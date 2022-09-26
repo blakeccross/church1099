@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  Switch,
-} from "react-native";
+import { Text, View, TouchableOpacity, Switch } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { Header } from "../../Components/header/header";
 import { CreateJobStyle as Styles } from "./createJob.style";
@@ -31,7 +26,6 @@ const CreateJob = (props) => {
   const [empModal, setEmpModal] = useState(false);
 
   const onPost = async () => {
-    console.log(isRemote);
     if (
       title != "" &&
       church != "" &&
@@ -52,7 +46,6 @@ const CreateJob = (props) => {
       );
     } else {
       AlertService.show("Missing", "Enter all required data");
-      console.log(title);
     }
   };
   return (

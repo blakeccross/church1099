@@ -89,6 +89,17 @@ export const MessageStyle = StyleSheet.create({
     fontSize: 12,
     color: "gray",
   },
+  H1: {
+    fontSize: 30,
+    fontFamily: fontFamily.bold,
+    textAlign: "center",
+  },
+  H2: {
+    color: "grey",
+    fontSize: 15,
+    fontFamily: fontFamily.bold,
+    textAlign: "center",
+  },
   addbutton: {
     width: WP(16),
     height: WP(16),

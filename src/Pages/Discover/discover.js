@@ -101,14 +101,13 @@ const Discover = (props) => {
           renderItem={({ item, index }) => renderPort(item, index)}
         />
       )}
-      {selectedPost ? (
-        <PostModal
-          show={showModal}
-          setShow={setShowModal}
-          selectedPost={selectedPost}
-          props={props}
-        />
-      ) : null}
+      <PostModal
+        show={showModal}
+        setShow={setShowModal}
+        selectedPost={selectedPost}
+        props={props}
+        onPress={() => setShow(false)}
+      />
     </SafeAreaView>
   );
 };

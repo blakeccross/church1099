@@ -15,29 +15,7 @@ async function getHeaderConfig() {
 }
 
 const getUrl = (rel) => `${base_url}${rel}`;
-const signup = (url, props, ImageProfile) => {
-  axios
-    .post(
-      `${base_url}signup?email=${email}&password=${password}&profilephoto=${ImageProfile}&bio=${bio}&gender=${gender}&resume=${cv}&location=${location}&phone=${phone}&name=${name}&employer=${employer}`
-    )
-    .then(async (res) => {
-      // console.log(res);
-      await AsyncStorage.setItem("id", res?.data?.response?.user_id);
-      await AsyncStorage.setItem("token", res?.data?.response?.token);
-
-      props?.navigation?.dispatch(
-        CommonActions?.reset({
-          index: 0,
-          routes: [{ name: "TabNavigator" }],
-        })
-      );
-    })
-    .catch((err) => {
-      // console.log('error', err);
-      AlertService.show("Error", "Again signup & provide required data!");
-    });
-};
-const userSignup = async (url, props) => {
+const signup = async (url, props) => {
   let response = "";
   const config = {
     method: "POST",
@@ -61,19 +39,21 @@ const userSignup = async (url, props) => {
     })
     .catch((error) => {
       console.log("error", error);
-      AlertService.show("Error", "Again signup & provide required data!");
+      AlertService.show(
+        "Wait, do I know you?",
+        "Have you already created an account with this email?"
+      );
     });
   return response;
 };
-const login = (email, password, props) => {
+const login = (email, password, token, props) => {
   axios
-    .post(`${base_url}login?email=${email}&password=${password}`)
+    .post(`${base_url}login?email=${email}&password=${password}&token=${token}`)
     .then(async (res) => {
       await AsyncStorage.setItem("id", res?.data?.response?.user_id);
       await AsyncStorage.setItem("token", res?.data?.response?.token);
       await AsyncStorage.setItem("email", email);
-      // console.log('user info ', res?.data?.response);
-      // await AsyncStorage.setItem("employer", false);
+
       props.navigation.dispatch(
         CommonActions.reset({
           index: 0,
@@ -82,7 +62,6 @@ const login = (email, password, props) => {
       );
     })
     .catch((err) => {
-      // console.log(err.response.status);
       AlertService.show("That's weird", "Have you made an account yet?");
     });
 };
@@ -93,7 +72,6 @@ const forgot = (email) => {
       AlertService.show("Email sent!", "Kindly check your provided email");
     })
     .catch((err) => {
-      // console.log(err.response.status);
       AlertService.show("Not Found", "Please enter correct data!");
     });
 };
@@ -162,6 +140,10 @@ const MyJobs = async () => {
       response = res.data.myJobs;
     })
     .catch((error) => {
+      AlertService.show(
+        "Sorry",
+        "It looks like something went wrong. Please try again."
+      );
       console.log("error", error);
     });
   return response;
@@ -449,32 +431,6 @@ const getConversationList = async () => {
     });
   return response;
 };
-const getConversationListDetails = async (userID) => {
-  const token = await AsyncStorage.getItem("token");
-  const url = `https://church1099.com/api/1.1/wf/convo_details?UserID=${userID}`;
-  let response = "";
-  const config = {
-    method: "POST",
-    url: url,
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    data: {},
-  };
-  await axios(config)
-    .then((res) => {
-      //console.log('res', res.data.response.convos);
-      response = res.data.response.convos;
-    })
-    .catch((error) => {
-      // console.log('error', error);
-      if (error?.response?.status == 400) {
-      }
-    });
-  return response;
-};
 const getExperienceList = async () => {
   const token = await AsyncStorage.getItem("token");
   let url = `${base_url}experience`;
@@ -623,7 +579,6 @@ const saveJob = async (job) => {
   await axios(config)
     .then((res) => {
       response = res;
-      console.log(res.data);
     })
     .catch((error) => {
       console.log(error);
@@ -725,7 +680,7 @@ const deletePost = async (postId) => {
 };
 const createPost = async (img, description, video) => {
   video ? video : null;
-  console.log(video);
+  console.log("IMG", img, "VIDEO", video);
   const token = await AsyncStorage.getItem("token");
   let response = [];
   let url = `${base_url}post?image=${img}&video=${
@@ -852,7 +807,7 @@ const getApplicantList = async (jobId) => {
   };
   await axios(config)
     .then((res) => {
-      response = res.data?.response?.applicants;
+      response = res.data?.applicants;
     })
     .catch((error) => {});
   return response;
@@ -1020,13 +975,11 @@ export const API = {
   updateJobInfo,
   getMessages,
   getConversationList,
-  getConversationListDetails,
   getUserList,
   getExperienceList,
   addExperience,
   getSkills,
   addSkill,
-  userSignup,
   getApplicantList,
   deleteNotification,
   deleteConversation,

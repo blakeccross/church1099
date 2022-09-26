@@ -17,28 +17,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import YoutubePlayer from "react-native-youtube-iframe";
 import Post from "../renderMethods/post";
 
-const PostModal = ({ show, setShow, selectedPost, user, props }) => {
-  const [loading, setLoading] = useState(false);
-  const [saved, setSaved] = useState("");
-  const [video, setVideo] = useState("");
-
-  const getYouTubeVideoIdFromUrl = (selectedPost) => {
-    const URL = selectedPost.videoURL;
-    // Our regex pattern to look for a youTube ID
-    const regExp =
-      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    //Match the url with the regex
-    const match = URL.match(regExp);
-    //console.log(match[2]);
-    setVideo(match && match[2].length === 11 ? match[2] : undefined);
-    //Return the result
-    //return match && match[2].length === 11 ? match[2] : undefined;
-  };
-
-  useEffect(() => {
-    getYouTubeVideoIdFromUrl(selectedPost);
-  }, [selectedPost]);
-
+const PostModal = ({ show, setShow, selectedPost, user, props, onPress }) => {
   return (
     <Modal
       animationType={"slide"}
@@ -66,7 +45,17 @@ const PostModal = ({ show, setShow, selectedPost, user, props }) => {
             <Icon name={"chevron-back"} color={"black"} size={24} />
           </TouchableOpacity>
         </View>
-        <Post selectedPost={selectedPost} props={props} setShow={setShow} />
+        <Post
+          selectedPost={selectedPost}
+          props={props}
+          setShow={setShow}
+          onPress={() => {
+            setShow(false),
+              props.navigation.navigate("ProfileView", {
+                user: selectedPost,
+              });
+          }}
+        />
       </SafeAreaView>
     </Modal>
   );

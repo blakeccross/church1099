@@ -62,4 +62,15 @@ export const NotiStyle = StyleSheet.create({
     alignSelf: "center",
     //marginHorizontal: 10,
   },
+  H1: {
+    fontSize: 30,
+    fontFamily: fontFamily.bold,
+    textAlign: "center",
+  },
+  H2: {
+    color: "grey",
+    fontSize: 15,
+    fontFamily: fontFamily.bold,
+    textAlign: "center",
+  },
 });

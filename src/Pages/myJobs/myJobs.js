@@ -5,12 +5,14 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
+  Text,
 } from "react-native";
 import JobModal from "../../Components/modals/jobModal";
 import { Header } from "../../Components/header/header";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { API } from "../../services/api.services";
 import RenderJob from "../../Components/renderMethods/job";
+import { MyJobsStyle as styles } from "./myJobs.style";
 const MyJobs = (props) => {
   const [mod, setMod] = useState(false);
   const [job, setJob] = useState([]);
@@ -60,17 +62,30 @@ const MyJobs = (props) => {
               paddingBottom: HP(5),
             }}
           >
-            {job.map((item, i) => (
-              <TouchableOpacity
-                onPress={() => {
-                  setSelectedJob(item);
-                  setShowModal(true);
+            {job.length > 0 ? (
+              job.map((item, i) => (
+                <TouchableOpacity
+                  onPress={() => {
+                    setSelectedJob(item);
+                    setShowModal(true);
+                  }}
+                  key={i}
+                >
+                  <RenderJob item={item} refresh={() => getJobList()} />
+                </TouchableOpacity>
+              ))
+            ) : (
+              <View
+                style={{
+                  marginTop: HP(35),
+                  width: WP(60),
+                  alignSelf: "center",
                 }}
-                key={i}
               >
-                <RenderJob item={item} refresh={() => getJobList()} />
-              </TouchableOpacity>
-            ))}
+                <Text style={styles.H1}>No Saved Jobs</Text>
+                <Text style={styles.H2}>Saved listings will show up here</Text>
+              </View>
+            )}
           </View>
         </ScrollView>
       )}

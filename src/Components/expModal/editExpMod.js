@@ -78,7 +78,6 @@ export const EditExpModal = ({ exp, show, setShow, onPress, pressSave }) => {
       ...(endDate.length > 0 && { ["End Date"]: endDate }),
       Description: description,
     };
-    console.log(obj);
     let id = exp._id;
 
     await API.editExperience(obj, id);

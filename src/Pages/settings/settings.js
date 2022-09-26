@@ -26,7 +26,7 @@ const Settings = (props) => {
           props.navigation.dispatch(
             CommonActions.reset({
               index: 0,
-              routes: [{ name: "Login" }],
+              routes: [{ name: "Home" }],
             })
           );
         }

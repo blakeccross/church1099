@@ -4,23 +4,22 @@
     "slug": "church1099",
     "owner": "blakecross",
     "privacy": "public",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#2b47fc"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "enabled": true,
+      "url": "https://u.expo.dev/43d9a921-7b3b-4fb4-834f-316c16f947b4"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.blakecross.church1099",
-      "buildNumber": "1.0.1"
+      "buildNumber": "1.0.3"
     },
     "android": {
       "adaptiveIcon": {
@@ -35,6 +34,17 @@
       "eas": {
         "projectId": "43d9a921-7b3b-4fb4-834f-316c16f947b4"
       }
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./local/assets/notification-icon.png"
+        }
+      ]
+    ],
+    "runtimeVersion": {
+      "policy": "sdkVersion"
     }
   }
 }

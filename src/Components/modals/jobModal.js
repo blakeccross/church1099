@@ -13,7 +13,6 @@ import { HP, WP } from "../../Assets/config/screen-ratio";
 import * as Haptics from "expo-haptics";
 import { Button } from "../Button/Button";
 import fontFamily from "../../Assets/config/fontFamily";
-import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles } from "../../global/global.styles";
 import { useEffect } from "react";
 import moment from "moment";
@@ -22,17 +21,20 @@ const JobModal = ({ show, setShow, selectedJob }) => {
   const [loading, setLoading] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [applied, setApplied] = useState(false);
 
   useEffect(() => {
     setSaved(selectedJob.saved);
+    setApplied(selectedJob.applied);
   }, [selectedJob]);
 
   const applyForJob = async (selectedJob) => {
     setLoading(true);
     let jobId = selectedJob.id;
     await API.apply(jobId);
+    setApplied("yes");
+    console.log(applied);
     setLoading(false);
-    setShow(false);
   };
   const removeApp = async (selectedJob) => {
     setLoading(true);
@@ -120,15 +122,8 @@ const JobModal = ({ show, setShow, selectedJob }) => {
               justifyContent: "space-between",
             }}
           >
-            {console.log(selectedJob)}
-            {selectedJob.applied == "yes" ? (
-              <Button
-                btnStyle={{ alignSelf: "center", width: WP(45) }}
-                btnCol="grey"
-                onPress={() => removeApp(selectedJob)}
-                btnTxt={"Remove Application"}
-                disable={loading}
-              />
+            {applied == "yes" ? (
+              <Text style={styles.appliedTxt}>Application sent!</Text>
             ) : (
               <Button
                 btnStyle={{ alignSelf: "center", width: WP(45) }}
@@ -188,6 +183,13 @@ const styles = StyleSheet.create({
   subTxt: {
     fontSize: 16,
     color: "#333333",
+  },
+  appliedTxt: {
+    fontSize: 16,
+    color: "#2b47fc",
+    fontFamily: fontFamily.bold,
+    textAlign: "center",
+    width: WP(45),
   },
   modView: {
     backgroundColor: "white",

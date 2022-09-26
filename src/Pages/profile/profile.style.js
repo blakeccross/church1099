@@ -56,6 +56,11 @@ export const ProfileStyle = StyleSheet.create({
     fontFamily: fontFamily.bold,
     fontSize: 20,
   },
+  sectionHeader: {
+    color: "black",
+    fontFamily: fontFamily.bold,
+    fontSize: 22,
+  },
   inp: {
     height: 40,
     marginTop: -HP(1),
@@ -80,21 +85,19 @@ export const ProfileStyle = StyleSheet.create({
     //marginBottom: 5,
     justifyContent: "center",
   },
-  item: {
+  experienceItem: {
     width: WP(100),
     alignSelf: "center",
     backgroundColor: "white",
     marginVertical: 0,
-    borderRadius: 0,
     paddingHorizontal: WP(4),
-    paddingTop: 10,
-    paddingBottom: 10,
+    paddingVertical: 25,
     borderBottomWidth: 1,
     borderBottomColor: "#F2F2F2",
   },
   headingText: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: 20,
+    fontFamily: fontFamily.bold,
     color: "black",
   },
   description: {

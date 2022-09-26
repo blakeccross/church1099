@@ -1,9 +1,9 @@
+import { Video } from "expo-av";
 import React, { useState } from "react";
-import { Text, View, TouchableOpacity } from "react-native";
+import { Image, Text, View } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { Button } from "../../Components/Button/Button";
 import { HomeStyle as Styles } from "./home.style";
-import { Video } from "expo-av";
 
 const Home = (props) => {
   const [mod, setMod] = useState(false);
@@ -21,28 +21,40 @@ const Home = (props) => {
         shouldPlay={true}
       />
       <View style={Styles.absluteContainer}>
-        <Text style={Styles.welcomechurchTxt}>
+        <Image
+          resizeMode={"contain"}
+          source={require("../../Assets/Imgs/church1099_LogoWht.png")}
+          style={{ height: "100%", width: WP(60), alignSelf: "center" }}
+        />
+        {/* <Text style={Styles.welcomechurchTxt}>
           Welcome to the future of church contracting.
-        </Text>
+        </Text> */}
       </View>
       <View
-        style={{ position: "absolute", bottom: HP(7), alignSelf: "center" }}
+        style={{
+          position: "absolute",
+          bottom: HP(0),
+          paddingBottom: HP(7),
+          paddingTop: HP(4),
+          width: WP(100),
+          alignSelf: "center",
+        }}
       >
         <Button
-          btnStyle={Styles.btnStyle}
-          btnTxt={"Get Started"}
-          btnCol={"#2B47FC"}
+          btnStyle={Styles.loginBtn}
+          btnTxt={"Login"}
+          btnCol={"white"}
+          textCol={"black"}
+          onPress={() => props.navigation.navigate("Login")}
+        />
+        <Button
+          btnStyle={Styles.signupBtn}
+          btnTxt={"Sign Up"}
+          btnCol={"null"}
+          textCol={"white"}
+          //textCol={"#2B47FC"}
           onPress={() => props.navigation.navigate("Signup")}
         />
-        <TouchableOpacity
-          onPress={() => props.navigation.navigate("Login")}
-          style={Styles.loginBtn}
-        >
-          <Text style={Styles.loginText}>
-            Already have an account?{" "}
-            <Text style={{ color: "#2B47FC" }}>Login</Text>
-          </Text>
-        </TouchableOpacity>
       </View>
     </View>
   );

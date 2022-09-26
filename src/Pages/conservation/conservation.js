@@ -1,24 +1,27 @@
+import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  SafeAreaView,
-  Text,
+  FlatList,
   Image,
   KeyboardAvoidingView,
-  View,
+  SafeAreaView,
+  Text,
   TouchableOpacity,
-  FlatList,
+  View,
 } from "react-native";
-import { ConvoStyle as Styles } from "./conservation.style";
-import { API } from "../../services/api.services";
-import { GlobalStyles } from "../../global/global.styles";
-import { HP, WP } from "../../Assets/config/screen-ratio";
-import IconBack from "react-native-vector-icons/Ionicons";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { storageServices } from "../../services/storage.services";
-import { commonServices } from "../../services/commonServices";
-import RenderMessages from "../../Components/renderMethods/renderMessage";
 import { AutoGrowingTextInput } from "react-native-autogrow-textinput";
+import {
+  default as IconBack,
+  default as Ionicons,
+} from "react-native-vector-icons/Ionicons";
+import { HP, WP } from "../../Assets/config/screen-ratio";
+import RenderMessages from "../../Components/renderMethods/renderMessage";
+import { GlobalStyles } from "../../global/global.styles";
+import { API } from "../../services/api.services";
+import { commonServices } from "../../services/commonServices";
+import { storageServices } from "../../services/storage.services";
+import { ConvoStyle as Styles } from "./conservation.style";
 
 const Convo = (props) => {
   let data = props?.route?.params?.data;
@@ -29,21 +32,24 @@ const Convo = (props) => {
   const [message, setmessage] = useState("");
   const [Loading, setLoading] = useState(true);
 
-  function onError(error) {
-    console.error(error);
-  }
-
   useEffect(() => {
     getMessages();
+    let interval = setInterval(() => {
+      getMessages();
+    }, 8000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   const sendMessage = async () => {
+    setmessage("");
     let res = await API.sendMessage(
       `https://church1099.com/api/1.1/wf/sendmessage/?convoID=${
         data.convoId
       }&content=${(obj, message.trim())}`
     );
-    setmessage("");
     await getMessages();
   };
 
@@ -58,6 +64,7 @@ const Convo = (props) => {
 
   return (
     <>
+      <StatusBar style="dark" />
       <SafeAreaView style={{ flex: 0, backgroundColor: "white" }} />
       <SafeAreaView style={{ ...Styles.container }}>
         <View
@@ -102,18 +109,18 @@ const Convo = (props) => {
         >
           <View style={Styles.flatlistContainer}>
             {Loading ? (
-              <ActivityIndicator color={"black"} size="small" />
+              <View
+                style={{
+                  marginTop: HP(35),
+                }}
+              >
+                <ActivityIndicator color={"black"} size="small" />
+              </View>
             ) : (
               <FlatList
-                ref={scrollRef}
-                onContentSizeChange={() => scrollRef.current.scrollToEnd()}
-                onLayout={() => scrollRef.current.scrollToEnd()}
+                inverted={true}
                 keyExtractor={(item, index) => index.toString()}
                 data={allMessages || []}
-                contentContainerStyle={{
-                  flex: 1,
-                  flexDirection: "column-reverse",
-                }}
                 renderItem={({ item }) => {
                   return (
                     <View>

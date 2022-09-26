@@ -21,11 +21,11 @@ const Notification = (props) => {
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    getAllNotification();
+    getAllNotifications();
   }, []);
-  const getAllNotification = async () => {
-    let notification = await API.getNotifications();
 
+  const getAllNotifications = async () => {
+    let notification = await API.getNotifications();
     setallNotification(notification);
   };
   const onRefresh = React.useCallback(() => {
@@ -56,18 +56,28 @@ const Notification = (props) => {
       </View>
     );
   };
-  const EmptyListMessage = ({ item }) => {
+  const EmptyListMessage = () => {
     return (
-      <Text style={Styles.emptyListStyle} onPress={() => onRefresh}>
-        No new notifications
-      </Text>
+      <View
+        style={{
+          marginTop: HP(35),
+          width: WP(60),
+          alignSelf: "center",
+        }}
+      >
+        <Text style={Styles.H1}>No Notifications</Text>
+        <Text style={Styles.H2}>
+          All of your notifications will show up here
+        </Text>
+      </View>
     );
   };
+
   const deleteItem = async (item) => {
     let res = await API.deleteNotification(
       `https://church1099.com/api/1.1/obj/notification/${item._id}`
     );
-    await getAllNotification();
+    await getAllNotifications();
   };
   const QuickActions = (item) => {
     return (

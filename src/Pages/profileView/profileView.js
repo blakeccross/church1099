@@ -233,9 +233,7 @@ const ProfileView = (props) => {
                   <Text style={{ ...GlobalStyles.H3 }}>Portfolio</Text>
                 </View>
                 <TouchableOpacity
-                  onPress={() =>
-                    props.navigation.navigate("Portfolio", { Portfolio: ports })
-                  }
+                  onPress={() => props.navigation.navigate("Portfolio", user)}
                 >
                   <FlatList
                     horizontal={true}

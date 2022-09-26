@@ -49,8 +49,7 @@ export const SignupStyle = StyleSheet.create({
     padding: 10,
   },
   stepContainer: {
-    paddingTop: HP(7),
-    height: HP(100),
+    paddingHorizontal: WP(5),
   },
   titleTxt: {
     fontSize: 25,

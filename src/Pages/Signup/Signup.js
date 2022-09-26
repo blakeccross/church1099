@@ -6,7 +6,6 @@ import {
   Image,
   View,
   TouchableOpacity,
-  Linking,
   Pressable,
 } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
@@ -15,13 +14,13 @@ import { GlobalStyles } from "../../global/global.styles";
 import { SignupStyle as Styles } from "./signup.style";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import IconCam from "react-native-vector-icons/SimpleLineIcons";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Button } from "../../Components/Button/Button";
 import { API } from "../../services/api.services";
 import AlertService from "../../services/alertService";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import * as ImagePicker from "expo-image-picker";
 import { firebaseServices } from "../../services/firebase.services";
+import PagerView from "react-native-pager-view";
 
 const Signup = (props) => {
   const [img, setImg] = useState("");
@@ -30,10 +29,13 @@ const Signup = (props) => {
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
-  const [bio, setBio] = useState("");
+  const [header, setHeader] = useState("");
   const [skills, setSkills] = useState([]);
   const [gender, setGender] = useState(null);
   const [loading, setloading] = useState(false);
+  const [formStep, setFormStep] = useState(0);
+  const ref = React.useRef(PagerView);
+
   const skill = [
     { id: "Worship Leading", name: "Worship Leading" },
     { id: "Speaking", name: "Speaking" },
@@ -50,27 +52,17 @@ const Signup = (props) => {
     { id: "Bass Guitar", name: "Bass Guitar" },
     { id: "Video Editing", name: "Video Editing" },
   ];
-  const [formStep, setFormStep] = useState(1);
-  const completeFormStep = () => {
-    setFormStep((cur) => cur + 1);
-  };
+
   const validateEmailInput = () => {
     let reg = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
     if (reg.test(email) === false) {
       AlertService.show("Email Error", "hmmm... that doesn't look quite right");
       return false;
     } else {
-      setFormStep((cur) => cur + 1);
+      ref.current.setPage(1);
     }
   };
-  const validateTextInput = () => {
-    if (!name.trim()) {
-      AlertService.show("Error", "hmmm... that doesn't look quite right");
-      return false;
-    } else {
-      setFormStep((cur) => cur + 1);
-    }
-  };
+
   const validatePassword = () => {
     let reg = /^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
     if (reg.test(password) === false) {
@@ -80,7 +72,7 @@ const Signup = (props) => {
       );
       return false;
     } else {
-      setFormStep((cur) => cur + 1);
+      ref.current.setPage(3);
     }
   };
   const validatePhoneInput = () => {
@@ -89,7 +81,7 @@ const Signup = (props) => {
       AlertService.show("Error", "hmmm... that doesn't look quite right");
       return false;
     } else {
-      setFormStep((cur) => cur + 1);
+      ref.current.setPage(4);
     }
   };
   const pickImage = async () => {
@@ -111,6 +103,7 @@ const Signup = (props) => {
 
     return (
       <Pressable
+        key={index}
         style={{
           ...Styles.skillItem,
           backgroundColor: isSelected ? "#2b47fc" : "#F4F4F5",
@@ -156,8 +149,8 @@ const Signup = (props) => {
             location != ""
           ) {
             setloading(true);
-            let res = await API.userSignup(
-              `https://church1099.com/api/1.1/wf/signup?email=${email}&password=${password}&profilephoto=${ImageProfile}&bio=${bio}&location=${location}&gender=${gender}&phone=${phone}&skills=${JSON.stringify(
+            let res = await API.signup(
+              `https://church1099.com/api/1.1/wf/signup?email=${email}&password=${password}&profilephoto=${ImageProfile}&header=${header}&location=${location}&gender=${gender}&phone=${phone}&skills=${JSON.stringify(
                 skills
               )}&name=${name}&employer?=no`,
               props,
@@ -187,237 +180,199 @@ const Signup = (props) => {
   };
   return (
     <SafeAreaView style={{ ...Styles.container, paddingTop: HP(2) }}>
-      <View
-        style={{ width: "90%", alignSelf: "center", justifyContent: "center" }}
+      <PagerView
+        style={{ flex: 1 }}
+        ref={ref}
+        scrollEnabled={false}
+        initialPage={0}
       >
-        {formStep === 0 && (
-          <View style={Styles.stepContainer}>
-            <Text style={Styles.titleTxt}>Choose Account Type</Text>
-            <View
-              style={{
-                ...GlobalStyles.row,
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-              }}
-            >
-              <TouchableOpacity style={Styles.box} onPress={completeFormStep}>
-                <Ionicons
-                  name="person"
-                  size={WP(17)}
-                  color="#333333"
-                  style={{ alignSelf: "center" }}
-                />
-                <Text style={{ ...Styles.subTxt }}>Finding Work</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={Styles.box}
-                onPress={() => {
-                  Linking.openURL("https://church1099.com/join");
-                }}
-              >
-                <MaterialCommunityIcons
-                  name="briefcase"
-                  size={WP(17)}
-                  color="#333333"
-                  style={{ alignSelf: "center" }}
-                />
-                <Text style={{ ...Styles.subTxt }}>Hiring</Text>
-              </TouchableOpacity>
-            </View>
-            <Text style={{ ...Styles.infoTxt }}>
-              What are you looking to do?
-            </Text>
-          </View>
-        )}
-        {formStep === 1 && (
-          <View style={Styles.stepContainer}>
-            <TouchableOpacity
-              onPress={() => setFormStep((cur) => cur - 1)}
-              style={{ paddingRight: WP(2) }}
-            >
-              <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
-            </TouchableOpacity>
-            <Text style={Styles.titleTxt}>Get Started</Text>
-            <Input
-              setValue={setEmail}
-              placeTxt={"Enter your email address"}
-              value={email}
-              keyboard={"email-address"}
-              onSubmit={(email) => validateEmailInput(email)}
-              returnKeyLabel={"done"}
-            />
-            <Text style={{ ...Styles.infoTxt }}>
-              You'll use this email to sign in and if you ever need to reset
-              your password
-            </Text>
-          </View>
-        )}
-        {formStep === 2 && (
-          <View style={{ ...Styles.stepContainer }}>
-            <TouchableOpacity
-              onPress={() => setFormStep((cur) => cur - 1)}
-              style={{ paddingRight: WP(2) }}
-            >
-              <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
-            </TouchableOpacity>
-            <Text style={Styles.titleTxt}>What's Your Name?</Text>
-            <Input
-              value={name}
-              setValue={setName}
-              placeTxt={"Enter your full name"}
-              onSubmit={completeFormStep}
-              returnKeyLabel={"done"}
-            />
-          </View>
-        )}
-        {formStep === 3 && (
-          <View style={Styles.stepContainer}>
-            <TouchableOpacity
-              onPress={() => setFormStep((cur) => cur - 1)}
-              style={{ paddingRight: WP(2) }}
-            >
-              <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
-            </TouchableOpacity>
-            <Text style={Styles.titleTxt}>Set Your Password</Text>
-            <Input
-              value={password}
-              setValue={setPassword}
-              placeTxt={"Enter your password"}
-              pass
-              onSubmit={(password) => validatePassword(password)}
-              returnKeyLabel={"done"}
-            />
-          </View>
-        )}
-        {formStep === 4 && (
-          <View style={Styles.stepContainer}>
-            <TouchableOpacity
-              onPress={() => setFormStep((cur) => cur - 1)}
-              style={{ paddingRight: WP(2) }}
-            >
-              <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
-            </TouchableOpacity>
-            <Text style={Styles.titleTxt}>Phone Number?</Text>
-            <Input
-              value={phone}
-              setValue={setPhone}
-              placeTxt={"Enter your phone number"}
-              keyboard={"phone-pad"}
-              type={"telephoneNumber"}
-            />
-            <Text style={{ ...Styles.infoTxt }}>
-              Don't worry. We won't bother you, but this will be helpful in case
-              you get locked out of your account!
-            </Text>
-            <Button
-              btnStyle={{ marginTop: 15 }}
-              onPress={(phone) => validatePhoneInput(phone)}
-              btnTxt={"Continue"}
-            />
-          </View>
-        )}
-        {formStep === 5 && (
-          <View style={Styles.stepContainer}>
-            <TouchableOpacity
-              onPress={() => setFormStep((cur) => cur - 1)}
-              style={{ paddingRight: WP(2) }}
-            >
-              <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
-            </TouchableOpacity>
-            <Text style={Styles.titleTxt}>Where Are You Located?</Text>
-            <GooglePlacesAutocomplete
-              styles={{
-                textInput: {
-                  height: 45,
-                  backgroundColor: "rgba(247,247,247,1)",
-                  fontSize: 16,
-                },
-              }}
-              placeholder="Search"
-              onPress={(data, details = null) => {
-                completeFormStep(setLocation(data.description));
-              }}
-              query={{
-                key: "AIzaSyCqfZsYioXmmp-FpCdAEZjnw8uJ4dwsYFo",
-                language: "en",
-              }}
-            />
-            <Text style={{ ...Styles.infoTxt }}>
-              This will help Churches see how far you are from them.
-            </Text>
-          </View>
-        )}
-        {formStep === 6 && (
-          <View style={Styles.stepContainer}>
-            <TouchableOpacity
-              onPress={() => setFormStep((cur) => cur - 1)}
-              style={{ paddingRight: WP(2) }}
-            >
-              <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
-            </TouchableOpacity>
-            <Text style={Styles.titleTxt}>What Is Your Gender?</Text>
-            <Button
-              btnCol={"white"}
-              textCol={"black"}
-              btnStyle={{ backgroundColor: "rgba(247,247,247,1)" }}
-              btnTxt={"Male"}
-              onPress={() => {
-                setFormStep((cur) => cur + 1), setGender("Male");
-              }}
-            />
-            <Button
-              btnCol={"white"}
-              textCol={"black"}
-              btnTxt={"Female"}
-              setGender={"Female"}
-              btnStyle={{
-                marginTop: 10,
-                backgroundColor: "rgba(247,247,247,1)",
-              }}
-              onPress={() => {
-                setFormStep((cur) => cur + 1), setGender("Female");
-              }}
-            />
-          </View>
-        )}
-        {formStep === 7 && (
-          <View style={Styles.stepContainer}>
-            <TouchableOpacity
-              onPress={() => setFormStep((cur) => cur - 1)}
-              style={{ paddingRight: WP(2) }}
-            >
-              <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
-            </TouchableOpacity>
-            <Text style={Styles.titleTxt}>What Are You Interested In?</Text>
+        <View style={Styles.stepContainer} key="0">
+          <TouchableOpacity
+            onPress={() => props.navigation.goBack()}
+            style={{ paddingRight: WP(2) }}
+          >
+            <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
+          </TouchableOpacity>
+          <Text style={Styles.titleTxt}>Get Started</Text>
+          <Input
+            setValue={setEmail}
+            placeTxt={"Enter your email address"}
+            value={email}
+            keyboard={"email-address"}
+            onSubmit={(email) => validateEmailInput(email)}
+            returnKeyLabel={"done"}
+          />
+          <Text style={{ ...Styles.infoTxt }}>
+            You'll use this email to sign in and if you ever need to reset your
+            password
+          </Text>
+        </View>
 
-            <FlatList
-              data={skill}
-              renderItem={renderSkills}
-              columnWrapperStyle={{
-                flexDirection: "row",
-                flexWrap: "wrap",
-                justifyContent: "center",
-              }}
-              numColumns={3}
-            />
-            {/*}
-              {skill.map((item, i) => {
-                return [renderSkills];
-              })}
-            </View>
-            
-        />*/}
-            <Button
-              btnStyle={{ position: "absolute", bottom: HP(10) }}
-              onPress={completeFormStep}
-              btnTxt={"Continue"}
-            />
-          </View>
-        )}
-        {formStep === 8 && (
-          <View style={Styles.stepContainer}>
+        <View style={Styles.stepContainer} key="1">
+          <TouchableOpacity
+            onPress={() => ref.current.setPage(0)}
+            style={{ paddingRight: WP(2) }}
+          >
+            <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
+          </TouchableOpacity>
+          <Text style={Styles.titleTxt}>What's Your Full Name?</Text>
+          <Input
+            value={name}
+            setValue={setName}
+            placeTxt={"Enter your full name"}
+            onSubmit={() => ref.current.setPage(2)}
+            returnKeyLabel={"done"}
+          />
+        </View>
+
+        <View style={Styles.stepContainer} key="2">
+          <TouchableOpacity
+            onPress={() => ref.current.setPage(1)}
+            style={{ paddingRight: WP(2) }}
+          >
+            <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
+          </TouchableOpacity>
+          <Text style={Styles.titleTxt}>Set Your Password</Text>
+          <Input
+            value={password}
+            setValue={setPassword}
+            placeTxt={"Enter your password"}
+            pass
+            onSubmit={(password) => validatePassword(password)}
+            returnKeyLabel={"done"}
+          />
+        </View>
+
+        <View style={Styles.stepContainer} key="3">
+          <TouchableOpacity
+            onPress={() => ref.current.setPage(2)}
+            style={{ paddingRight: WP(2) }}
+          >
+            <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
+          </TouchableOpacity>
+          <Text style={Styles.titleTxt}>Phone Number?</Text>
+          <Input
+            value={phone}
+            setValue={setPhone}
+            placeTxt={"Enter your phone number"}
+            keyboard={"phone-pad"}
+            type={"telephoneNumber"}
+          />
+          <Text style={{ ...Styles.infoTxt }}>
+            Don't worry. We won't bother you, but this will be helpful in case
+            you get locked out of your account!
+          </Text>
+          <Button
+            btnStyle={{ marginTop: 15 }}
+            onPress={(phone) => validatePhoneInput(phone)}
+            btnTxt={"Continue"}
+          />
+        </View>
+
+        <View style={Styles.stepContainer} key="4">
+          <TouchableOpacity
+            onPress={() => ref.current.setPage(3)}
+            style={{ paddingRight: WP(2) }}
+          >
+            <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
+          </TouchableOpacity>
+          <Text style={Styles.titleTxt}>Where Are You Located?</Text>
+          <GooglePlacesAutocomplete
+            enablePoweredByContainer={false}
+            styles={{
+              textInput: {
+                height: 45,
+                backgroundColor: "rgba(247,247,247,1)",
+                fontSize: 16,
+              },
+            }}
+            placeholder="Search"
+            onPress={(data, details = null) => {
+              ref.current.setPage(5);
+              setLocation(data.description);
+            }}
+            query={{
+              key: "AIzaSyCqfZsYioXmmp-FpCdAEZjnw8uJ4dwsYFo",
+              language: "en",
+            }}
+          />
+          <Text style={{ ...Styles.infoTxt }}>
+            This will help Churches see how far you are from them.
+          </Text>
+        </View>
+
+        <View style={Styles.stepContainer} key="5">
+          <TouchableOpacity
+            onPress={() => ref.current.setPage(4)}
+            style={{ paddingRight: WP(2) }}
+          >
+            <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
+          </TouchableOpacity>
+          <Text style={Styles.titleTxt}>What Is Your Gender?</Text>
+          <Button
+            btnCol={"white"}
+            textCol={"black"}
+            btnStyle={{ backgroundColor: "rgba(247,247,247,1)" }}
+            btnTxt={"Male"}
+            onPress={() => {
+              ref.current.setPage(6);
+              setGender("Male");
+            }}
+          />
+          <Button
+            btnCol={"white"}
+            textCol={"black"}
+            btnTxt={"Female"}
+            setGender={"Female"}
+            btnStyle={{
+              marginTop: 10,
+              backgroundColor: "rgba(247,247,247,1)",
+            }}
+            onPress={() => {
+              ref.current.setPage(6);
+              setGender("Female");
+            }}
+          />
+        </View>
+
+        <View style={Styles.stepContainer} key="6">
+          <TouchableOpacity
+            onPress={() => ref.current.setPage(5)}
+            style={{ paddingRight: WP(2) }}
+          >
+            <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
+          </TouchableOpacity>
+          <Text style={Styles.titleTxt}>What Are You Interested In?</Text>
+
+          <FlatList
+            data={skill}
+            renderItem={renderSkills}
+            columnWrapperStyle={{
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "center",
+            }}
+            numColumns={3}
+          />
+          <Button
+            btnStyle={{ position: "absolute", bottom: HP(10) }}
+            onPress={() => ref.current.setPage(7)}
+            btnTxt={"Continue"}
+          />
+        </View>
+
+        <View
+          style={{
+            ...Styles.stepContainer,
+            flex: 1,
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+          key="7"
+        >
+          <View>
             <TouchableOpacity
-              onPress={() => setFormStep((cur) => cur - 1)}
+              onPress={() => ref.current.setPage(6)}
               style={{ paddingRight: WP(2) }}
             >
               <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
@@ -446,27 +401,27 @@ const Signup = (props) => {
               )}
             </TouchableOpacity>
             <Text style={{ ...Styles.infoTxt }}>Say Cheese.</Text>
-            <View style={{ position: "absolute", bottom: HP(7) }}>
-              <Button
-                disable={loading}
-                onPress={() => onApply()}
-                btnTxt={"Apply"}
-              />
-              <View style={{ ...GlobalStyles.row, paddingTop: HP(1) }}>
-                <Text style={{ ...Styles.createTxt }}>
-                  By creating an account, it means that you agree with our{" "}
-                  <Text
-                    onPress={() => console.log("ss")}
-                    style={{ color: "#0000FF" }}
-                  >
-                    Terms of Use
-                  </Text>
+          </View>
+          <View>
+            <Button
+              disable={loading}
+              onPress={() => onApply()}
+              btnTxt={"Apply"}
+            />
+            <View style={{ ...GlobalStyles.row, paddingTop: HP(1) }}>
+              <Text style={{ ...Styles.createTxt }}>
+                By creating an account, it means that you agree with our{" "}
+                <Text
+                  onPress={() => console.log("ss")}
+                  style={{ color: "#0000FF" }}
+                >
+                  Terms of Use
                 </Text>
-              </View>
+              </Text>
             </View>
           </View>
-        )}
-      </View>
+        </View>
+      </PagerView>
     </SafeAreaView>
   );
 };

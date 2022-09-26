@@ -24,7 +24,7 @@ import { useSelector } from "react-redux";
 
 const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 
-const Post = ({ show, setShow, selectedPost, loading, props }) => {
+const Post = ({ selectedPost, loading, props, onPress, handleDelete }) => {
   const [video, setVideo] = useState("");
   const user = useSelector((state) => state.user);
 
@@ -43,6 +43,7 @@ const Post = ({ show, setShow, selectedPost, loading, props }) => {
   const deletePost = async (selectedPost) => {
     let postId = selectedPost.id;
     await API.deletePost(postId);
+    handleDelete();
   };
 
   const showActionSheet = (selectedPost) => {
@@ -122,12 +123,7 @@ const Post = ({ show, setShow, selectedPost, loading, props }) => {
                 ...GlobalStyles.row,
                 paddingVertical: HP(1),
               }}
-              onPress={() => {
-                setShow(false);
-                props.navigation.navigate("ProfileView", {
-                  user: selectedPost,
-                });
-              }}
+              onPress={onPress}
             >
               <Image
                 style={{
@@ -165,7 +161,7 @@ const Post = ({ show, setShow, selectedPost, loading, props }) => {
               }}
             />
           ) : (
-            <YoutubePlayer height={500} videoId={video} />
+            <YoutubePlayer height={WP(60)} videoId={video} />
           )}
           <Text style={Styles.description}>{selectedPost.description}</Text>
         </View>

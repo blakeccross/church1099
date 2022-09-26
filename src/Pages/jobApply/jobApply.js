@@ -6,7 +6,6 @@ import styles from "./jobApply.styles";
 import { API } from "../../services/api.services";
 import AlertService from "../../services/alertService";
 const JobApply = ({ navigation, route }) => {
-  console.log(route);
   let data = route?.params;
   const [loading, setloading] = useState(false);
   const applyForJob = async () => {

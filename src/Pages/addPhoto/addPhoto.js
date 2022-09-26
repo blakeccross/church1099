@@ -15,7 +15,7 @@ import { API } from "../../services/api.services";
 import * as ImagePicker from "expo-image-picker";
 import IconCam from "react-native-vector-icons/SimpleLineIcons";
 import { firebaseServices } from "../../services/firebase.services";
-import { manipulateAsync, FlipType, SaveFormat } from "expo-image-manipulator";
+import { manipulateAsync } from "expo-image-manipulator";
 
 const AddPhoto = (props) => {
   const [img, setImg] = useState("");
@@ -41,7 +41,7 @@ const AddPhoto = (props) => {
     await firebaseServices.updateProfileImage(imageName, img, async (image) => {
       await API.createPost(image, description);
     });
-    props.navigation.goBack();
+    props.navigation.replace("Profile");
   };
 
   return (

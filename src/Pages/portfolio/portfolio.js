@@ -9,12 +9,7 @@ import {
   Switch,
   ScrollView,
 } from "react-native";
-import { CONST } from "../../Assets/config/constants";
-import fontFamily from "../../Assets/config/fontFamily";
 import { HP, WP } from "../../Assets/config/screen-ratio";
-import { Ionicons } from "@expo/vector-icons";
-import { GlobalStyles } from "../../global/global.styles";
-import { NotiStyle as Styles } from "./port.style";
 import { API } from "../../services/api.services";
 import { Header } from "../../Components/header/header";
 import Post from "../../Components/renderMethods/post";
@@ -23,16 +18,20 @@ import { storageServices } from "../../services/storage.services";
 const Portfolio = (props) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const userId = props.route.params._id;
 
   useEffect(() => {
     getData();
   }, []);
 
   const getData = async () => {
-    const userId = await storageServices.fetchKey("id");
     let res = await API.portfolio(userId);
     setPosts(res);
     setLoading(false);
+  };
+
+  const handleDelete = () => {
+    getData();
   };
 
   const renderPort = (item) => {
@@ -42,6 +41,12 @@ const Portfolio = (props) => {
         props={props}
         setLoading={setLoading}
         loading={loading}
+        handleDelete={handleDelete}
+        onPress={() =>
+          props.navigation.navigate("ProfileView", {
+            user: item,
+          })
+        }
       />
     );
   };

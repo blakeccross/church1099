@@ -66,6 +66,21 @@ const Messages = (props) => {
     );
   };
 
+  const emptyMessages = () => {
+    return (
+      <View
+        style={{
+          marginTop: HP(35),
+          width: WP(50),
+          alignSelf: "center",
+        }}
+      >
+        <Text style={styles.H1}>No Messages</Text>
+        <Text style={styles.H2}>You currenly don't have any messages</Text>
+      </View>
+    );
+  };
+
   const Conversation = async (item) => {
     props.navigation.navigate("Convo", { data: item });
   };
@@ -111,7 +126,7 @@ const Messages = (props) => {
             <Text style={styles.userName}>{item.name}</Text>
             <Text style={styles.time}>
               {item?.lastMessageTime &&
-                moment(item?.lastMessageTime, "MMM DD YYYY hh:mm").fromNow()}
+                moment(item?.lastMessageTime, moment.ISO_8601).fromNow()}
             </Text>
           </View>
           <Text
@@ -174,6 +189,7 @@ const Messages = (props) => {
             renderQuickActions={({ item }) => QuickActions(item)}
             renderItem={({ item }) => renderItem(item)}
             keyExtractor={(item, index) => index.toString()}
+            ListEmptyComponent={emptyMessages}
           />
         )}
       </View>

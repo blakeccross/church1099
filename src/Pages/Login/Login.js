@@ -1,20 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   SafeAreaView,
   Text,
   View,
   TouchableOpacity,
   ActivityIndicator,
+  KeyboardAvoidingView,
 } from "react-native";
-
 import fontFamily from "../../Assets/config/fontFamily";
-import { HP } from "../../Assets/config/screen-ratio";
+import { HP, WP } from "../../Assets/config/screen-ratio";
 import { Button } from "../../Components/Button/Button";
 import { ForgotModal } from "../../Components/forgotModal/forgotModal";
 import { Input } from "../../Components/Input/Input";
 import AlertService from "../../services/alertService";
 import { API } from "../../services/api.services";
 import { loginStyle as Styles } from "./loginStyles";
+import * as Notifications from "expo-notifications";
+import * as Device from "expo-device";
 
 const Login = (props) => {
   const [mod, setMod] = useState(false);
@@ -22,14 +24,37 @@ const Login = (props) => {
   const [email, setEmail] = useState("");
   const [forgotEmail, setForgotEmail] = useState("");
   const [password, setPassword] = useState("");
-  useEffect(() => {}, [load]);
+
+  async function registerForPushNotificationsAsync() {
+    let token;
+    if (Device.isDevice) {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") {
+        alert("Failed to get push token for push notification!");
+        return;
+      }
+      token = (await Notifications.getExpoPushTokenAsync()).data;
+    } else {
+      null;
+    }
+    return token;
+  }
+
+  //useEffect(() => {}, [load]);
   const onLogin = async () => {
     if (email != "" && password != "") {
       let reg =
         /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
       if (reg.test(email)) {
         setLoad(true);
-        await API.login(email, password, props);
+        let token = await registerForPushNotificationsAsync();
+        API.login(email, password, token, props);
         setLoad(false);
       } else {
         AlertService.show("Invalid Email");
@@ -41,47 +66,60 @@ const Login = (props) => {
   };
   return (
     <SafeAreaView style={{ ...Styles.container }}>
-      <Text style={{ ...Styles.titleTxt }}>Welcome Back!</Text>
-      <Text style={{ ...Styles.emailTxt }}>Please sign into your account</Text>
-      <View style={{ width: "80%", paddingTop: HP(2) }}>
-        <Text style={{ ...Styles.emailTxt }}>Email</Text>
-        <Input
-          setValue={setEmail}
-          placeTxt={""}
-          keyboard={"email-address"}
-          autoCorrect={false}
-        />
-      </View>
-      <View style={{ width: "80%", paddingTop: HP(2) }}>
-        <Text style={{ ...Styles.emailTxt }}>Password</Text>
-        <Input setValue={setPassword} placeTxt={""} pass />
-      </View>
-      <View style={{ width: "80%", paddingTop: HP(2) }}>
-        <Button
-          onPress={() => {
-            onLogin();
-          }}
-          btnTxt={"Login"}
-        />
-      </View>
-      <TouchableOpacity onPress={() => setMod(!mod)} style={{}}>
-        <Text style={{ ...Styles.forgotTxt, paddingVertical: HP(1) }}>
-          Forgot Password
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => {
-          props.navigation.navigate("Signup");
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          paddingHorizontal: WP(10),
         }}
-        style={{}}
       >
-        <Text style={{ ...Styles.forgotTxt, paddingVertical: HP(1) }}>
-          <Text style={{ fontFamily: fontFamily.light }}>
-            Don't have an account?{" "}
+        <View>
+          <Text style={{ ...Styles.titleTxt }}>Welcome Back!</Text>
+          <Text style={{ ...Styles.subTxt }}>
+            Please sign into your account
           </Text>
-          Sign Up
-        </Text>
-      </TouchableOpacity>
+        </View>
+        <View style={{ paddingTop: HP(2) }}>
+          <Text style={{ ...Styles.txt }}>Email</Text>
+          <Input
+            setValue={setEmail}
+            placeTxt={""}
+            keyboard={"email-address"}
+            autoCorrect={false}
+          />
+        </View>
+        <View style={{ paddingTop: HP(2) }}>
+          <Text style={{ ...Styles.txt }}>Password</Text>
+          <Input setValue={setPassword} placeTxt={""} pass />
+        </View>
+        <View style={{ paddingTop: HP(2) }}>
+          <Button
+            onPress={() => {
+              onLogin();
+            }}
+            btnTxt={"Login"}
+          />
+        </View>
+        <TouchableOpacity onPress={() => setMod(!mod)} style={{}}>
+          <Text style={{ ...Styles.forgotTxt, paddingVertical: HP(2) }}>
+            Forgot Password
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            props.navigation.navigate("Signup");
+          }}
+          style={{}}
+        >
+          <Text style={{ ...Styles.forgotTxt }}>
+            <Text style={{ fontFamily: fontFamily.light }}>
+              Don't have an account?{" "}
+            </Text>
+            Sign Up
+          </Text>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
       <ForgotModal
         mod={mod}
         onPress={() => setMod(false)}

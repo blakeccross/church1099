@@ -33,7 +33,6 @@ const AddExp = ({ route, navigation }) => {
   };
 
   const handleConfirm = (date) => {
-    console.log(date);
     if (dateType == "start") {
       setStart(moment(date).format("YYYY-MM-DD"));
     } else {
@@ -62,10 +61,7 @@ const AddExp = ({ route, navigation }) => {
 
   return (
     <>
-      <Header
-        title="Add Experience"
-        onPress={() => props.navigation.goBack()}
-      />
+      <Header title="Add Experience" onPress={() => navigation.goBack()} />
       <View style={{ ...Styles.container }}>
         <KeyboardAwareScrollView
           extraScrollHeight={100}
