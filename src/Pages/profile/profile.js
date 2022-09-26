@@ -43,7 +43,6 @@ const Profile = (props) => {
   const getData = async () => {
     const userID = await storageServices.fetchKey("id");
     let user = await API.getUserData(userID);
-    console.log(user);
     dispatch(getUser(user));
     setExperience(user.experience);
     setPorts(user.posts);

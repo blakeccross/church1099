@@ -121,9 +121,9 @@ const getJobs = async () => {
     });
   return response;
 };
-const MyJobs = async () => {
+const MyJobs = async (option) => {
   const token = await AsyncStorage.getItem("token");
-  const url = `${base_url}myJobs`;
+  const url = `${base_url}myJobs?option=${option}`;
   let response = "";
   const config = {
     method: "POST",

@@ -36,13 +36,13 @@ const JobModal = ({ show, setShow, selectedJob }) => {
     console.log(applied);
     setLoading(false);
   };
-  const removeApp = async (selectedJob) => {
-    setLoading(true);
-    let jobId = selectedJob.id;
-    await API.removeApply(jobId);
-    setLoading(false);
-    setShow(false);
-  };
+  // const removeApp = async (selectedJob) => {
+  //   setLoading(true);
+  //   let jobId = selectedJob.id;
+  //   await API.removeApply(jobId);
+  //   setLoading(false);
+  //   setShow(false);
+  // };
   const saveJob = async (selectedJob) => {
     setSaveLoading(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);

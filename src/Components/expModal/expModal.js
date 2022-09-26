@@ -9,7 +9,6 @@ import {
   Switch,
   ScrollView,
 } from "react-native";
-//import ReactNativeModal from 'react-native-modal';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import fontFamily from "../../Assets/config/fontFamily";
 import { HP, WP } from "../../Assets/config/screen-ratio";
@@ -66,10 +65,7 @@ export const ExpModal = ({
     <Modal
       animationType={"slide"}
       visible={show}
-      //transparent={true}
       presentationStyle={"pageSheet"}
-      //selectedJob={selectedJob}
-      //style={{margin: 0}}
       onRequestClose={() => setShow(false)}
       onBackButtonPress={() => setShow(false)}
       onBackdropPress={() => setShow(false)}

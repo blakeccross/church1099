@@ -8,7 +8,6 @@ import { GlobalStyles } from "../../global/global.styles";
 export const MyJobsStyle = StyleSheet.create({
   container: {
     ...GlobalStyles.container,
-    backgroundColor: "white",
   },
   createTxt: {
     color: "#333333",
@@ -19,6 +18,17 @@ export const MyJobsStyle = StyleSheet.create({
     color: "#333333",
     fontSize: 18,
     fontFamily: fontFamily.bold,
+  },
+  optionTag: {
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 10,
+    margin: 5,
+    marginRight: 3,
+    marginBottom: 5,
+    justifyContent: "center",
+    borderColor: "#F4F4F5",
+    borderWidth: 1,
   },
   input: {
     borderWidth: 0,

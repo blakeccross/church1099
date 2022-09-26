@@ -7,7 +7,7 @@ import fontFamily from "../Assets/config/fontFamily";
 import Profile from "../Pages/profile/profile";
 import Notification from "../Pages/notification/notification";
 import Messages from "../Pages/messages/messages";
-import Discover from "../Pages/Discover/discover";
+import Discover from "../Pages/discover/discover";
 import { Icons } from "../Assets/Icons";
 import * as Haptics from "expo-haptics";
 

@@ -30,10 +30,10 @@ import AddExp from "../Pages/addExperience/addExp";
 import SkillsCategory from "../Pages/skillsCategory/skillsCategory";
 import Skills from "../Pages/Skills/skills";
 import AddPhoto from "../Pages/addPhoto/addPhoto";
-import EditSkills from "../Pages/Edit Skills/editSkills";
+import EditSkills from "../Pages/editSkills/editSkills";
 import ProfileView from "../Pages/profileView/profileView";
-import Discover from "../Pages/Discover/discover";
-import EditExp from "../Pages/Edit Experience/editExp";
+import Discover from "../Pages/discover/discover";
+import EditExp from "../Pages/editExperience/editExp";
 import AddVideo from "../Pages/addVideo/addVideo";
 
 const Stack = createStackNavigator();
