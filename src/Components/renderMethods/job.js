@@ -35,7 +35,7 @@ const RenderJob = ({ item, hideBook, refresh }) => {
   return (
     <View style={Styles.item}>
       <View style={GlobalStyles.row}>
-        {item?.image.length > 2 && (
+        {item?.image?.length > 2 && (
           <Image
             source={{ uri: "https:" + item?.image }}
             style={{ ...Styles.dp }}

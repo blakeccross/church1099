@@ -54,4 +54,15 @@ export const SearchStyle = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 10,
   },
+  H1: {
+    fontSize: 30,
+    fontFamily: fontFamily.bold,
+    textAlign: "center",
+  },
+  H2: {
+    color: "grey",
+    fontSize: 15,
+    fontFamily: fontFamily.bold,
+    textAlign: "center",
+  },
 });

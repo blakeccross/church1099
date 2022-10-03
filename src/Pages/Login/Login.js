@@ -15,6 +15,7 @@ import { Input } from "../../Components/Input/Input";
 import AlertService from "../../services/alertService";
 import { API } from "../../services/api.services";
 import { loginStyle as Styles } from "./loginStyles";
+import { BlurView } from "expo-blur";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 
@@ -46,7 +47,6 @@ const Login = (props) => {
     return token;
   }
 
-  //useEffect(() => {}, [load]);
   const onLogin = async () => {
     if (email != "" && password != "") {
       let reg =
@@ -61,7 +61,6 @@ const Login = (props) => {
       }
     } else {
       AlertService.show("Missing", "Please provide all required data!");
-      // console.log("mail::"+email,"pa::"+password, name, phone, img, cv, gender, bio, location);
     }
   };
   return (
@@ -75,7 +74,7 @@ const Login = (props) => {
         }}
       >
         <View>
-          <Text style={{ ...Styles.titleTxt }}>Welcome Back!</Text>
+          <Text style={{ ...Styles.titleTxt }}>Welcome Back</Text>
           <Text style={{ ...Styles.subTxt }}>
             Please sign into your account
           </Text>
@@ -119,6 +118,19 @@ const Login = (props) => {
             Sign Up
           </Text>
         </TouchableOpacity>
+        {load && (
+          <BlurView
+            intensity={10}
+            style={{
+              width: WP(100),
+              height: HP(100),
+              position: "absolute",
+              justifyContent: "center",
+            }}
+          >
+            <ActivityIndicator size={"large"} color={"black"} />
+          </BlurView>
+        )}
       </KeyboardAvoidingView>
       <ForgotModal
         mod={mod}
@@ -126,11 +138,6 @@ const Login = (props) => {
         email={forgotEmail}
         setEmail={setForgotEmail}
       />
-      {load && (
-        <View style={{ position: "absolute" }}>
-          <ActivityIndicator size={"large"} color={"black"} />
-        </View>
-      )}
     </SafeAreaView>
   );
 };

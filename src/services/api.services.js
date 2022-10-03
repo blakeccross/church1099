@@ -62,6 +62,7 @@ const login = (email, password, token, props) => {
       );
     })
     .catch((err) => {
+      console.log(err);
       AlertService.show("That's weird", "Have you made an account yet?");
     });
 };
@@ -455,7 +456,7 @@ const getExperienceList = async () => {
   return response;
 };
 const searchJob = async (query) => {
-  const token = await AsyncStorage.getItem("id");
+  const token = await AsyncStorage.getItem("token");
   let url = `${base_url}searchJob?query=${query}`;
   let response = [];
   const config = {
@@ -464,12 +465,13 @@ const searchJob = async (query) => {
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     data: {},
   };
   await axios(config)
     .then((res) => {
-      response = res.data.response.jobs;
+      response = res.data.jobs;
     })
     .catch((error) => {});
   return response;

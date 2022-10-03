@@ -5,7 +5,7 @@ import fontFamily from "../Assets/config/fontFamily";
 export const GlobalStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f4f4f5",
+    backgroundColor: "#F4F4F5",
   },
   row: {
     flexDirection: "row",

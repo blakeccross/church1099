@@ -25,6 +25,11 @@ export const ProfileViewStyle = StyleSheet.create({
     fontSize: 15,
     fontFamily: fontFamily.regular,
   },
+  sectionHeader: {
+    color: "black",
+    fontFamily: fontFamily.bold,
+    fontSize: 22,
+  },
   dp: {
     width: WP(30),
     height: WP(30),

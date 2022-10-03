@@ -23,14 +23,17 @@ const NewConvo = (props) => {
   const [query, setQuery] = useState("");
   const [userlist, setUserlist] = useState([]);
   const [Loading, setLoading] = useState(true);
+
   useEffect(() => {
     getUsersList();
   }, []);
+
   const getUsersList = async () => {
     let data = await API.searchUsers(query);
     setUserlist(data);
     setLoading(false);
   };
+
   const onSearch = () => {
     setLoading(true);
     getUsersList();
@@ -40,7 +43,6 @@ const NewConvo = (props) => {
     let id = await storageServices.fetchKey("id");
     let convoUsers = [item.id, id];
     let res = await API.createConvo(convoUsers);
-    //let data = { ...item, ...res };
     props.navigation.replace("Convo", { data: res });
   };
 

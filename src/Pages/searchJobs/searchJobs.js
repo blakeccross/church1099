@@ -16,19 +16,22 @@ import { GlobalStyles } from "../../global/global.styles";
 import { API } from "../../services/api.services";
 import { MaterialIcons } from "@expo/vector-icons";
 import AlertService from "../../services/alertService";
+import RenderJob from "../../Components/renderMethods/job";
+import JobModal from "../../Components/modals/jobModal";
 
 const SearchJobs = ({ route, navigation }) => {
-  const [mod, setMod] = useState(false);
   const [job, setJob] = useState([]);
-  const [query, setQuery] = useState(route?.params?.searchTxt);
-  const [searchTxt, setSearchTxt] = useState("");
+  const [searchTxt, setSearchTxt] = useState(route?.params?.searchTxt);
   const [Loading, setLoading] = useState(true);
+  const [selectedJob, setSelectedJob] = useState("");
+  const [showModal, setShowModal] = useState(false);
+
   useEffect(() => {
     searchJob();
   }, []);
 
   const searchJob = async () => {
-    setQuery(searchTxt);
+    const query = searchTxt;
     let j = await API.searchJob(query);
     setJob(j);
     setLoading(false);
@@ -71,7 +74,8 @@ const SearchJobs = ({ route, navigation }) => {
               placeholderTextColor="#666666"
               returnKeyType={"search"}
               placeholder="Search"
-              onChangeText={setQuery}
+              onChangeText={setSearchTxt}
+              value={searchTxt}
               onSubmitEditing={() => onSearch()}
             />
           </View>
@@ -85,129 +89,39 @@ const SearchJobs = ({ route, navigation }) => {
             <ActivityIndicator color={"black"} size="small" />
           </View>
         ) : (
-          <ScrollView
-            contentContainerStyle={{
-              paddingHorizontal: WP(6),
-              paddingBottom: HP(5),
-            }}
-          >
+          <>
             {job.length > 0 ? null : (
-              <Text style={{ ...Styles.createTxt }}>No Jobs Available</Text>
+              <View
+                style={{
+                  marginTop: HP(35),
+                  width: WP(60),
+                  alignSelf: "center",
+                }}
+              >
+                <Text style={Styles.H1}>No Jobs Found</Text>
+                <Text style={Styles.H2}>Try searching something else</Text>
+              </View>
             )}
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{}}
-            >
+            <ScrollView showsVerticalScrollIndicator={false}>
               {job.map((item, i) => (
                 <TouchableOpacity
                   onPress={() => {
-                    toggleBottomNavigationView(item);
+                    setSelectedJob(item);
+                    setShowModal(true);
                   }}
-                  //props.navigation.navigate('JobApply', {data: item})}
                   key={i}
-                  style={{
-                    marginTop: HP(2),
-                    borderBottomColor: "#e0e0e0",
-                    borderBottomWidth: 1,
-                  }}
                 >
-                  <View style={Styles.item}>
-                    <Text style={{ ...Styles.keyTxt }}>
-                      {item["Job Title"]}
-                    </Text>
-                    <Text
-                      style={{
-                        ...Styles.conTxt,
-                        color: "#666666",
-                        fontSize: 16,
-                        paddingHorizontal: 0,
-                        fontSize: 14,
-                        marginTop: 2,
-                      }}
-                    >
-                      {item?.Church}
-                    </Text>
-                    <Text
-                      numberOfLines={3}
-                      style={{
-                        ...Styles.conTxt,
-                        paddingHorizontal: 0,
-                        fontSize: 14,
-                        color: "#666666",
-                        marginTop: 6,
-                      }}
-                    >
-                      {item["Job Description"]}
-                    </Text>
-                    <View
-                      style={{ ...GlobalStyles.row, marginVertical: HP(1) }}
-                    >
-                      <View
-                        style={{
-                          ...GlobalStyles.row,
-                          backgroundColor: "white",
-                          alignSelf: "flex-start",
-                          paddingHorizontal: WP(3),
-                          paddingVertical: HP(1),
-                          borderRadius: 10,
-                          justifyContent: "center",
-                          backgroundColor: "#F5F5F5",
-                        }}
-                      >
-                        <MaterialIcons
-                          name="location-on"
-                          size={15}
-                          color={"#666666"}
-                        />
-                        <Text
-                          style={{
-                            ...Styles.conTxt,
-                            paddingHorizontal: 3,
-                            fontSize: 14,
-                            color: "rgb(102, 102, 102)",
-                          }}
-                        >
-                          {item?.State}
-                        </Text>
-                      </View>
-                      {item["Remote Friendly"] && (
-                        <View
-                          style={{
-                            ...GlobalStyles.row,
-                            backgroundColor: "white",
-                            alignSelf: "flex-start",
-                            paddingHorizontal: WP(3),
-                            paddingVertical: HP(1),
-                            borderRadius: 10,
-                            justifyContent: "center",
-                            backgroundColor: "#F5F5F5",
-                            marginLeft: 7,
-                          }}
-                        >
-                          <MaterialIcons
-                            name="wifi"
-                            size={15}
-                            color="#666666"
-                          />
-                          <Text
-                            style={{
-                              ...Styles.conTxt,
-                              paddingHorizontal: 3,
-                              fontSize: 14,
-                              color: "rgb(102, 102, 102)",
-                            }}
-                          >
-                            Remote Friendly
-                          </Text>
-                        </View>
-                      )}
-                    </View>
-                  </View>
+                  <RenderJob item={item} refresh={() => searchJob()} />
                 </TouchableOpacity>
               ))}
             </ScrollView>
-          </ScrollView>
+          </>
         )}
+        <JobModal
+          show={showModal}
+          setShow={setShowModal}
+          selectedJob={selectedJob}
+        />
       </SafeAreaView>
     </>
   );

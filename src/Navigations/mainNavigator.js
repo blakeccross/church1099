@@ -2,7 +2,7 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import Splash from "../Pages/SplashScreen/splashScreen";
 import { NavigationContainer } from "@react-navigation/native";
-import Login from "../Pages/Login/Login";
+import Login from "../Pages/login/login";
 import Signup from "../Pages/signup/Signup";
 import Profile from "../Pages/profile/profile";
 import Settings from "../Pages/settings/settings";

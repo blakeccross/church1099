@@ -6,9 +6,7 @@ import { GlobalStyles } from "../../global/global.styles";
 export const loginStyle = StyleSheet.create({
   container: {
     ...GlobalStyles.container,
-    //justifyContent: "center",
     backgroundColor: "white",
-    //alignItems: "center",
   },
   titleTxt: {
     color: "black",

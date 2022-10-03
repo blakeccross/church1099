@@ -86,23 +86,6 @@ const Settings = (props) => {
               }}
               onPress={() => props.navigation.navigate("Subscription")}
             >
-              <Ionicons name="md-help-buoy-sharp" size={24} color="black" />
-              <Text style={{ ...Styles.setTxt }}>Help</Text>
-              <Icon
-                name={"chevron-forward"}
-                style={{ position: "absolute", right: 0 }}
-                size={24}
-                color="black"
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                ...GlobalStyles.row,
-                ...Styles.settingItem,
-                width: "100%",
-              }}
-              onPress={() => props.navigation.navigate("Subscription")}
-            >
               <Ionicons
                 name="information-circle-sharp"
                 size={24}

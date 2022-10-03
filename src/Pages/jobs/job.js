@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
 import JobModal from "../../Components/modals/jobModal";
-import { BlurView } from "expo-blur";
 import {
   ActivityIndicator,
   RefreshControl,
@@ -22,14 +21,9 @@ import { useSelector } from "react-redux";
 import RenderJob from "../../Components/renderMethods/job";
 
 const Job = (props) => {
-  const [isEnabled, setIsEnabled] = useState(false);
   const [searchTxt, setSearchTxt] = useState("");
   const [job, setJob] = useState([]);
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
-  const [open, setOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [subscribeModal, setSubscribeModal] = useState(true);
-  const [value, setValue] = useState(null);
   const [items, setItems] = useState([
     { label: "None", value: "" },
     { label: "Communication", value: "Communication" },
@@ -37,7 +31,6 @@ const Job = (props) => {
     { label: "Design", value: "Design" },
     { label: "Production", value: "Production" },
   ]);
-  const [userData, setuserData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedJob, setSelectedJob] = useState("");
@@ -71,12 +64,9 @@ const Job = (props) => {
     getJobList();
   };
   const onSearch = () => {
-    if (searchTxt != "" || value != "") {
+    if (searchTxt != "") {
       let filteredData = job.filter(function (item) {
-        if (
-          item.title.toLowerCase().includes(searchTxt?.toLowerCase()) // &&
-          //item["Category"].toLowerCase().includes(value?.toLowerCase())
-        )
+        if (item.title.toLowerCase().includes(searchTxt?.toLowerCase()))
           return item;
       });
       props.navigation.navigate("SearchJobs", {
@@ -87,7 +77,7 @@ const Job = (props) => {
   };
   return (
     <View style={{ ...Styles.container }}>
-      <BlurView intensity={0} style={{ backgroundColor: "#2b47fc" }}>
+      <View intensity={0} style={{ backgroundColor: "#2b47fc" }}>
         <View
           style={{
             ...GlobalStyles.row,
@@ -152,7 +142,7 @@ const Job = (props) => {
             <Text style={Styles.myJobsTxt}>Saved</Text>
           </TouchableOpacity>
         </View>
-      </BlurView>
+      </View>
       {loading ? (
         <View
           style={{
