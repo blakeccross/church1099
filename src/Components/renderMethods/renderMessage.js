@@ -2,10 +2,12 @@ import React from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import moment from "moment";
+import Animated, { Layout } from "react-native-reanimated";
 
 const RenderMessages = ({ item, myid, profilePhoto }) => {
   return (
-    <View
+    <Animated.View
+      layout={Layout.springify()}
       style={{
         ...styles.container,
         alignSelf: item["Created By"] == myid ? "flex-end" : "flex-start",
@@ -95,7 +97,7 @@ const RenderMessages = ({ item, myid, profilePhoto }) => {
           </Text>
         </View>
       )}
-    </View>
+    </Animated.View>
   );
 };
 

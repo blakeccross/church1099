@@ -34,7 +34,7 @@ export const MessageStyle = StyleSheet.create({
     color: "black",
   },
   swipeAbleButton: {
-    width: WP(20),
+    width: 90,
     height: HP(10),
     backgroundColor: "#ff0000",
     alignSelf: "center",
@@ -65,7 +65,6 @@ export const MessageStyle = StyleSheet.create({
     marginRight: 10,
   },
   infoContainer: {
-    //justifyContent: "space-between",
     borderBottomColor: "#e0e0e0",
     borderBottomWidth: 1,
     height: HP(10),
@@ -75,8 +74,6 @@ export const MessageStyle = StyleSheet.create({
   lastMessageTime: {
     flexDirection: "row",
     justifyContent: "space-between",
-    //alignItems: "center",
-    //paddingTop: 5,
     paddingRight: 10,
   },
   lastMessage: {

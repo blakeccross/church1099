@@ -51,18 +51,6 @@ const Job = (props) => {
     getJobList().then(() => setRefreshing(false));
   }, []);
 
-  const bookmark = async (item) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    let job = item.id;
-    await API.saveJob(job);
-    getJobList();
-  };
-  const removeJob = async (item) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    let job = item.id;
-    await API.removeJob(job);
-    getJobList();
-  };
   const onSearch = () => {
     if (searchTxt != "") {
       let filteredData = job.filter(function (item) {
@@ -73,8 +61,9 @@ const Job = (props) => {
         obj: filteredData,
         searchTxt: searchTxt,
       });
-    } else AlertService.show("", "Enter Text to Search Something");
+    } else AlertService.show("Not so fast", "Enter Text to Search Something");
   };
+
   return (
     <View style={{ ...Styles.container }}>
       <View intensity={0} style={{ backgroundColor: "#2b47fc" }}>

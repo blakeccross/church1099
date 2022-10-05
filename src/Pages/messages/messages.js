@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
   SafeAreaView,
   Text,
@@ -7,6 +7,7 @@ import {
   Pressable,
   RefreshControl,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
 import { MessageStyle as styles } from "./messages.style";
 import { LinearGradient } from "expo-linear-gradient";
@@ -17,18 +18,23 @@ import moment from "moment";
 import Material from "react-native-vector-icons/MaterialCommunityIcons";
 import Entypo from "react-native-vector-icons/Entypo";
 import { WP, HP } from "../../Assets/config/screen-ratio";
-import SwipeableFlatList from "react-native-swipeable-list";
-import { storageServices } from "../../services/storage.services";
+import Animated, { Layout, FadeIn, FadeOut } from "react-native-reanimated";
+import Swipeable from "react-native-gesture-handler/Swipeable";
 
 const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 const Messages = (props) => {
   const [messagesListDetails, setmessagesListDetails] = useState([]);
-  const [myid, setmyid] = useState("");
   const [Loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     getConvoList();
+
+    const willFocusSubscription = props.navigation.addListener("focus", () => {
+      getConvoList();
+    });
+
+    return willFocusSubscription;
   }, []);
 
   const getConvoList = async () => {
@@ -38,8 +44,6 @@ const Messages = (props) => {
   };
 
   const deleteItem = async (data) => {
-    let id = await storageServices.fetchKey("id");
-    setmyid(id);
     await API.deleteConversation(
       `https://church1099.com/api/1.1/wf/archiveconvo?convo=${data.convoId}`
     );
@@ -51,18 +55,14 @@ const Messages = (props) => {
     getConvoList().then(() => setRefreshing(false));
   }, []);
 
-  const QuickActions = (item) => {
+  const renderRightActions = (item) => {
     return (
-      <View>
-        <View style={styles.swipeAbleButtonContainer}>
-          <TouchableOpacity
-            style={styles.swipeAbleButton}
-            onPress={() => deleteItem(item)}
-          >
-            <Material name={"trash-can-outline"} color="white" size={26} />
-          </TouchableOpacity>
-        </View>
-      </View>
+      <TouchableOpacity
+        style={styles.swipeAbleButton}
+        onPress={() => deleteItem(item)}
+      >
+        <Material name={"trash-can-outline"} color="white" size={26} />
+      </TouchableOpacity>
     );
   };
 
@@ -84,60 +84,81 @@ const Messages = (props) => {
   const Conversation = async (item) => {
     props.navigation.navigate("Convo", { data: item });
   };
+
+  let rowRefs = new Map();
+
   const renderItem = (item) => {
     return (
-      <Pressable
-        onPress={() => Conversation(item)}
-        style={({ pressed }) => [
-          {
-            backgroundColor: pressed ? "rgb(210, 230, 255)" : "white",
-          },
-          styles.item,
-        ]}
-      >
-        {item.read == "false" && (
-          <View
-            style={{
-              position: "absolute",
-              backgroundColor: "blue",
-              height: 10,
-              width: 10,
-              borderRadius: 10,
-              left: 5,
-            }}
-          />
-        )}
-        {item.profilePhoto ? (
-          <Image
-            source={{
-              uri: "https:" + item.profilePhoto,
-            }}
-            resizeMode="cover"
-            style={styles.image}
-          />
-        ) : (
-          <Image
-            style={styles.image}
-            source={require("../../Assets/Imgs/dp.jpg")}
-          />
-        )}
-        <View key={item.key} style={styles.infoContainer}>
-          <View style={styles.lastMessageTime}>
-            <Text style={styles.userName}>{item.name}</Text>
-            <Text style={styles.time}>
-              {item?.lastMessageTime &&
-                moment(item?.lastMessageTime, moment.ISO_8601).fromNow()}
-            </Text>
-          </View>
-          <Text
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            style={styles.lastMessage}
+      <Animated.View entering={FadeIn} exiting={FadeOut}>
+        <Swipeable
+          key={item.convoId}
+          ref={(ref) => {
+            if (ref && !rowRefs.get(item.convoId)) {
+              rowRefs.set(item.convoId, ref);
+            }
+          }}
+          renderRightActions={() => renderRightActions(item)}
+          rightThreshold={10}
+          onSwipeableWillOpen={() => {
+            [...rowRefs.entries()].forEach(([key, ref]) => {
+              if (key !== item.convoId && ref) ref.close();
+            });
+          }}
+        >
+          <Pressable
+            onPress={() => Conversation(item)}
+            style={({ pressed }) => [
+              {
+                backgroundColor: pressed ? "#fafafa" : "white",
+              },
+              styles.item,
+            ]}
           >
-            {item?.lastMessage}
-          </Text>
-        </View>
-      </Pressable>
+            {item.read == "false" && (
+              <View
+                style={{
+                  position: "absolute",
+                  backgroundColor: "blue",
+                  height: 10,
+                  width: 10,
+                  borderRadius: 10,
+                  left: 5,
+                }}
+              />
+            )}
+            {item.profilePhoto ? (
+              <Image
+                source={{
+                  uri: "https:" + item.profilePhoto,
+                }}
+                resizeMode="cover"
+                style={styles.image}
+              />
+            ) : (
+              <Image
+                style={styles.image}
+                source={require("../../Assets/Imgs/dp.jpg")}
+              />
+            )}
+            <View key={item.key} style={styles.infoContainer}>
+              <View style={styles.lastMessageTime}>
+                <Text style={styles.userName}>{item.name}</Text>
+                <Text style={styles.time}>
+                  {item?.lastMessageTime &&
+                    moment(item?.lastMessageTime, moment.ISO_8601).fromNow()}
+                </Text>
+              </View>
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={styles.lastMessage}
+              >
+                {item?.lastMessage}
+              </Text>
+            </View>
+          </Pressable>
+        </Swipeable>
+      </Animated.View>
     );
   };
 
@@ -178,15 +199,12 @@ const Messages = (props) => {
             ))}
           </>
         ) : (
-          <SwipeableFlatList
+          <FlatList
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
-            shouldBounceOnMount={false}
             showsVerticalScrollIndicator={false}
-            maxSwipeDistance={WP(20)}
             data={messagesListDetails}
-            renderQuickActions={({ item }) => QuickActions(item)}
             renderItem={({ item }) => renderItem(item)}
             keyExtractor={(item, index) => index.toString()}
             ListEmptyComponent={emptyMessages}

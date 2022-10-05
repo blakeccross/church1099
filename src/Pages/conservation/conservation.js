@@ -36,7 +36,7 @@ const Convo = (props) => {
     getMessages();
     let interval = setInterval(() => {
       getMessages();
-    }, 8000);
+    }, 3000);
 
     return () => {
       clearInterval(interval);
@@ -123,13 +123,11 @@ const Convo = (props) => {
                 data={allMessages || []}
                 renderItem={({ item }) => {
                   return (
-                    <View>
-                      <RenderMessages
-                        item={item}
-                        myid={myid}
-                        profilePhoto={props?.route?.params?.data.profilePhoto}
-                      />
-                    </View>
+                    <RenderMessages
+                      item={item}
+                      myid={myid}
+                      profilePhoto={props?.route?.params?.data.profilePhoto}
+                    />
                   );
                 }}
               />
