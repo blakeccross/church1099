@@ -45,7 +45,7 @@ const EditProfile = (props) => {
       quality: 1,
     });
     const manipResult = await manipulateAsync(result.uri, [
-      { resize: { height: 1080, width: 1080 } },
+      { resize: { height: 320, width: 320 } },
     ]);
     if (!result.cancelled) {
       setImg(manipResult.uri);

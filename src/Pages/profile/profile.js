@@ -2,11 +2,10 @@ import React, { useEffect, useState, useCallback } from "react";
 import {
   ActionSheetIOS,
   Text,
-  Image,
   View,
+  Image,
   TouchableOpacity,
   ScrollView,
-  FlatList,
   RefreshControl,
   SafeAreaView,
 } from "react-native";
@@ -17,10 +16,10 @@ import { GlobalStyles } from "../../global/global.styles";
 import { API } from "../../services/api.services";
 import moment from "moment";
 import SkeletonLoader from "expo-skeleton-loader";
-import { storageServices } from "../../services/storage.services";
 import { MoreOrLess } from "@rntext/more-or-less";
 import { useSelector, useDispatch } from "react-redux";
 import { getUser } from "../../root/reducer";
+import { FlashList } from "@shopify/flash-list";
 
 const Profile = (props) => {
   const [experience, setExperience] = useState([]);
@@ -42,8 +41,7 @@ const Profile = (props) => {
   }, []);
 
   const getData = async () => {
-    const userID = await storageServices.fetchKey("id");
-    let user = await API.getUserData(userID);
+    let user = await API.getUserData();
     dispatch(getUser(user));
     setExperience(user.experience);
     setPorts(user.posts);
@@ -300,7 +298,8 @@ const Profile = (props) => {
                       props.navigation.navigate("Portfolio", user.data)
                     }
                   >
-                    <FlatList
+                    <FlashList
+                      estimatedItemSize={3}
                       horizontal={true}
                       showsHorizontalScrollIndicator={false}
                       data={ports}

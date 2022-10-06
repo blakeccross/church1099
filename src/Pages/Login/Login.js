@@ -55,7 +55,6 @@ const Login = (props) => {
         setLoad(true);
         let token = await registerForPushNotificationsAsync();
         API.login(email, password, token, props);
-        setLoad(false);
       } else {
         AlertService.show("Invalid Email");
       }

@@ -6,8 +6,7 @@ import Animated, { Layout } from "react-native-reanimated";
 
 const RenderMessages = ({ item, myid, profilePhoto }) => {
   return (
-    <Animated.View
-      layout={Layout.springify()}
+    <View
       style={{
         ...styles.container,
         alignSelf: item["Created By"] == myid ? "flex-end" : "flex-start",
@@ -58,7 +57,7 @@ const RenderMessages = ({ item, myid, profilePhoto }) => {
                 width: 40,
                 marginHorizontal: 10,
                 borderRadius: 20,
-                backgroundColor: "grey",
+                backgroundColor: "#F4F4F5",
               }}
             />
             <View>
@@ -97,7 +96,7 @@ const RenderMessages = ({ item, myid, profilePhoto }) => {
           </Text>
         </View>
       )}
-    </Animated.View>
+    </View>
   );
 };
 

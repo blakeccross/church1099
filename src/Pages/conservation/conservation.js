@@ -1,14 +1,15 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   ActivityIndicator,
-  FlatList,
   Image,
   KeyboardAvoidingView,
   SafeAreaView,
   Text,
   TouchableOpacity,
   View,
+  FlatList,
+  LayoutAnimation,
 } from "react-native";
 import { AutoGrowingTextInput } from "react-native-autogrow-textinput";
 import {
@@ -21,16 +22,18 @@ import { GlobalStyles } from "../../global/global.styles";
 import { API } from "../../services/api.services";
 import { commonServices } from "../../services/commonServices";
 import { storageServices } from "../../services/storage.services";
+import { FlashList } from "@shopify/flash-list";
 import { ConvoStyle as Styles } from "./conservation.style";
 
 const Convo = (props) => {
   let data = props?.route?.params?.data;
-  let scrollRef = React.useRef(null);
   const [obj, setObj] = useState(props.route.params.obj);
   const [myid, setmyid] = useState("");
   const [allMessages, setallMessages] = useState();
   const [message, setmessage] = useState("");
   const [Loading, setLoading] = useState(true);
+
+  const list = useRef();
 
   useEffect(() => {
     getMessages();
@@ -51,6 +54,9 @@ const Convo = (props) => {
       }&content=${(obj, message.trim())}`
     );
     await getMessages();
+    list.current?.prepareForLayoutAnimationRender();
+
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   };
 
   const getMessages = async () => {
@@ -117,9 +123,13 @@ const Convo = (props) => {
                 <ActivityIndicator color={"black"} size="small" />
               </View>
             ) : (
-              <FlatList
+              <FlashList
+                ref={list}
+                estimatedItemSize={100}
                 inverted={true}
-                keyExtractor={(item, index) => index.toString()}
+                keyExtractor={(item) => {
+                  return item._id;
+                }}
                 data={allMessages || []}
                 renderItem={({ item }) => {
                   return (

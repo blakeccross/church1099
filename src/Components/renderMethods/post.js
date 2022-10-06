@@ -127,10 +127,11 @@ const Post = ({ selectedPost, loading, props, onPress, handleDelete }) => {
             >
               <Image
                 style={{
-                  width: 30,
+                  width: 40,
                   height: undefined,
                   aspectRatio: 1 / 1,
-                  borderRadius: 20,
+                  borderRadius: 25,
+                  backgroundColor: "#F4F4F5",
                 }}
                 source={{ uri: "https:" + selectedPost.profilePhoto }}
               />

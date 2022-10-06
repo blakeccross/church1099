@@ -13,7 +13,9 @@ import { HP, WP } from "../../Assets/config/screen-ratio";
 import { skillsStyle as Styles } from "./discover.style";
 import { API } from "../../services/api.services";
 import { MaterialIcons } from "@expo/vector-icons";
+import AlertService from "../../services/alertService";
 import PostModal from "../../Components/modals/postModal";
+import { FlashList } from "@shopify/flash-list";
 
 const Discover = (props) => {
   const [posts, setPosts] = useState([]);
@@ -35,7 +37,9 @@ const Discover = (props) => {
   };
 
   const onSearch = () => {
-    props.navigation.navigate("SearchUsers", { search: query });
+    if (query != "") {
+      props.navigation.navigate("SearchUsers", { search: query });
+    } else AlertService.show("Not so fast", "Enter Text to Search Something");
   };
 
   const onRefresh = useCallback(() => {
@@ -63,22 +67,25 @@ const Discover = (props) => {
   };
 
   return (
-    <SafeAreaView style={Styles.container}>
-      <View style={{ ...Styles.searchSection }}>
-        <MaterialIcons
-          style={{ padding: 10 }}
-          name="search"
-          size={20}
-          color="#666666"
-        />
-        <TextInput
-          style={{ ...Styles.input }}
-          placeholderTextColor="#666666"
-          returnKeyType={"search"}
-          placeholder="Search Church1099"
-          onChangeText={setQuery}
-          onSubmitEditing={() => onSearch()}
-        />
+    <>
+      <SafeAreaView style={{ flex: 0, backgroundColor: "#2b47fc" }} />
+      <View style={{ backgroundColor: "#2b47fc" }}>
+        <View style={{ ...Styles.searchSection }}>
+          <MaterialIcons
+            style={{ padding: 10 }}
+            name="search"
+            size={20}
+            color="#666666"
+          />
+          <TextInput
+            style={{ ...Styles.input }}
+            placeholderTextColor="#666666"
+            returnKeyType={"search"}
+            placeholder="Search Church1099"
+            onChangeText={setQuery}
+            onSubmitEditing={() => onSearch()}
+          />
+        </View>
       </View>
       {loading ? (
         <View
@@ -89,14 +96,15 @@ const Discover = (props) => {
           <ActivityIndicator color={"black"} size="small" />
         </View>
       ) : (
-        <FlatList
+        <FlashList
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
+          estimatedItemSize={100}
           data={posts}
           windowSize={2}
           numColumns={3}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item) => item.id}
           contentContainerStyle={Styles.grid}
           renderItem={({ item, index }) => renderPort(item, index)}
         />
@@ -108,7 +116,7 @@ const Discover = (props) => {
         props={props}
         onPress={() => setShow(false)}
       />
-    </SafeAreaView>
+    </>
   );
 };
 export default Discover;

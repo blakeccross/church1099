@@ -225,20 +225,6 @@ const editProfile = async (obj) => {
     });
   return response;
 };
-const getUser = async (user) => {
-  const tok = await AsyncStorage.getItem("token");
-  let value = {};
-  await axios
-    .get(`${base_url1}user/${user}`)
-    .then(async (res) => {
-      value = res?.data?.response;
-    })
-    .catch((err) => {
-      // console.log(err);
-      // AlertService.show("Not Found", "Please enter correct data!")
-    });
-  return value;
-};
 const changePassword = async (relativeUrl, props) => {
   const token = await AsyncStorage.getItem("token");
   const url = getUrl(relativeUrl);
@@ -925,7 +911,7 @@ const portfolio = async (user) => {
 const getUserData = async (userId) => {
   const token = await AsyncStorage.getItem("token");
   let response = [];
-  let url = `${base_url}user?userId=${userId}`;
+  let url = `${base_url}user?userId=${userId ? userId : ""}`;
   const config = {
     method: "POST",
     url: url,
@@ -961,7 +947,6 @@ export const API = {
   portfolio,
   editProfile,
   getJobs,
-  getUser,
   changePassword,
   getNotifications,
   sendMessage,

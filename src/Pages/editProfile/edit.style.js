@@ -28,6 +28,7 @@ export const EditStyle = StyleSheet.create({
     width: WP(25),
     height: WP(25),
     borderRadius: WP(20),
+    backgroundColor: "#F4F4F5",
   },
   icon: {
     position: "absolute",

@@ -20,6 +20,7 @@ import AlertService from "../../services/alertService";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import * as ImagePicker from "expo-image-picker";
 import { firebaseServices } from "../../services/firebase.services";
+import { manipulateAsync } from "expo-image-manipulator";
 import PagerView from "react-native-pager-view";
 
 const Signup = (props) => {
@@ -33,7 +34,6 @@ const Signup = (props) => {
   const [skills, setSkills] = useState([]);
   const [gender, setGender] = useState(null);
   const [loading, setloading] = useState(false);
-  const [formStep, setFormStep] = useState(0);
   const ref = React.useRef(PagerView);
 
   const skill = [
@@ -88,12 +88,15 @@ const Signup = (props) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [4, 3],
-      quality: 0.2,
+      aspect: [1, 1],
+      quality: 1,
     });
+    const manipResult = await manipulateAsync(result.uri, [
+      { resize: { height: 320, width: 320 } },
+    ]);
 
     if (!result.cancelled) {
-      setImg(result.uri);
+      setImg(manipResult.uri);
     }
   };
 

@@ -63,6 +63,7 @@ export const MessageStyle = StyleSheet.create({
     borderRadius: 25,
     resizeMode: "cover",
     marginRight: 10,
+    backgroundColor: "#F4F4F5",
   },
   infoContainer: {
     borderBottomColor: "#e0e0e0",

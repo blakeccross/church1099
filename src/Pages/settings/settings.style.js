@@ -37,5 +37,6 @@ export const SettingsStyle = StyleSheet.create({
     width: WP(15),
     height: WP(15),
     borderRadius: WP(15),
+    backgroundColor: "#F4F4F5",
   },
 });

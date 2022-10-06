@@ -6,6 +6,7 @@ import {
   View,
   RefreshControl,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
 import fontFamily from "../../Assets/config/fontFamily";
 import { HP, WP } from "../../Assets/config/screen-ratio";
@@ -13,8 +14,9 @@ import Material from "react-native-vector-icons/MaterialCommunityIcons";
 import { GlobalStyles } from "../../global/global.styles";
 import { NotiStyle as Styles } from "./noti.style";
 import { API } from "../../services/api.services";
-import SwipeableFlatList from "react-native-swipeable-list";
+import Swipeable from "react-native-gesture-handler/Swipeable";
 import moment from "moment";
+import { FlashList } from "@shopify/flash-list";
 
 const Notification = (props) => {
   const [allNotification, setallNotification] = useState([]);
@@ -30,30 +32,49 @@ const Notification = (props) => {
   };
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    getAllNotification().then(() => setRefreshing(false));
+    getAllNotifications().then(() => setRefreshing(false));
   }, []);
+
+  let rowRefs = new Map();
+
   const renderItem = (item, index) => {
     return (
-      <View style={Styles.item}>
-        <Image source={{ uri: item?.Thumbnail }} style={{ ...Styles.dp }} />
-        <View style={{ marginHorizontal: WP(4) }}>
-          <Text style={{ ...Styles.nameTxt }}>
-            {item.Sender}{" "}
-            <Text
-              style={{
-                fontFamily: fontFamily.regular,
-                fontSize: 15,
-                paddingLeft: WP(5),
-              }}
-            >
-              {item.Message}
+      <Swipeable
+        key={item._id}
+        ref={(ref) => {
+          if (ref && !rowRefs.get(item._id)) {
+            rowRefs.set(item._id, ref);
+          }
+        }}
+        renderRightActions={() => renderRightActions(item)}
+        rightThreshold={10}
+        onSwipeableWillOpen={() => {
+          [...rowRefs.entries()].forEach(([key, ref]) => {
+            if (key !== item._id && ref) ref.close();
+          });
+        }}
+      >
+        <View style={Styles.item}>
+          <Image source={{ uri: item?.Thumbnail }} style={{ ...Styles.dp }} />
+          <View style={{ marginHorizontal: WP(4) }}>
+            <Text style={{ ...Styles.nameTxt }}>
+              {item.Sender}{" "}
+              <Text
+                style={{
+                  fontFamily: fontFamily.regular,
+                  fontSize: 15,
+                  paddingLeft: WP(5),
+                }}
+              >
+                {item.Message}
+              </Text>
             </Text>
-          </Text>
-          <Text style={{ ...Styles.lastTxt, paddingTop: HP(0.5) }}>
-            {moment(item["Created Date"]).startOf("hour").fromNow("MMM YYYY")}
-          </Text>
+            <Text style={{ ...Styles.lastTxt, paddingTop: HP(0.5) }}>
+              {moment(item["Created Date"], moment.ISO_8601).fromNow()}
+            </Text>
+          </View>
         </View>
-      </View>
+      </Swipeable>
     );
   };
   const EmptyListMessage = () => {
@@ -74,12 +95,13 @@ const Notification = (props) => {
   };
 
   const deleteItem = async (item) => {
-    let res = await API.deleteNotification(
+    await API.deleteNotification(
       `https://church1099.com/api/1.1/obj/notification/${item._id}`
     );
     await getAllNotifications();
   };
-  const QuickActions = (item) => {
+
+  const renderRightActions = (item) => {
     return (
       <View>
         <View style={Styles.swipeAbleButtonContainer}>
@@ -110,18 +132,15 @@ const Notification = (props) => {
             Notifications
           </Text>
         </View>
-        <SwipeableFlatList
+        <FlashList
+          estimatedItemSize={90}
           data={allNotification}
           renderItem={({ item, index }) => renderItem(item)}
           keyExtractor={(item, index) => index.toString()}
-          maxSwipeDistance={90}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          renderQuickActions={({ item }) => QuickActions(item)}
           ListEmptyComponent={EmptyListMessage}
-          shouldBounceOnMount={false}
-          bounces={false}
         />
       </SafeAreaView>
     </>

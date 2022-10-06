@@ -37,6 +37,7 @@ export const skillsStyle = StyleSheet.create({
   },
   grid: {
     backgroundColor: "#F4F4F5",
+    paddingBottom: HP(10),
   },
   input: {
     flex: 1,

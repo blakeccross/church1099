@@ -16,25 +16,15 @@ import { JobStyle as Styles } from "./job.style";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { API } from "../../services/api.services";
 import AlertService from "../../services/alertService";
-import * as Haptics from "expo-haptics";
-import { useSelector } from "react-redux";
 import RenderJob from "../../Components/renderMethods/job";
 
 const Job = (props) => {
   const [searchTxt, setSearchTxt] = useState("");
   const [job, setJob] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [items, setItems] = useState([
-    { label: "None", value: "" },
-    { label: "Communication", value: "Communication" },
-    { label: "Video", value: "Video" },
-    { label: "Design", value: "Design" },
-    { label: "Production", value: "Production" },
-  ]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedJob, setSelectedJob] = useState("");
-  const user = useSelector((state) => state.user);
 
   useEffect(() => {
     getJobList();
@@ -66,7 +56,7 @@ const Job = (props) => {
 
   return (
     <View style={{ ...Styles.container }}>
-      <View intensity={0} style={{ backgroundColor: "#2b47fc" }}>
+      <View style={{ backgroundColor: "#2b47fc" }}>
         <View
           style={{
             ...GlobalStyles.row,
