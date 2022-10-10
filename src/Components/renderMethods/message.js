@@ -2,9 +2,8 @@ import React from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import moment from "moment";
-import Animated, { Layout } from "react-native-reanimated";
 
-const RenderMessages = ({ item, myid, profilePhoto }) => {
+const Messages = ({ item, myid, profilePhoto }) => {
   return (
     <View
       style={{
@@ -122,4 +121,4 @@ const styles = StyleSheet.create({
 });
 
 //make this component available to the app
-export default RenderMessages;
+export default Messages;

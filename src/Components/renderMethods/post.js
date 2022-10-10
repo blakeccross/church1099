@@ -2,11 +2,8 @@ import React, { useState, useEffect } from "react";
 import {
   ActionSheetIOS,
   Alert,
-  ActivityIndicator,
   Image,
-  RefreshControl,
   Text,
-  TextInput,
   View,
   TouchableOpacity,
   Share,
@@ -115,7 +112,7 @@ const Post = ({ selectedPost, loading, props, onPress, handleDelete }) => {
             style={{
               ...GlobalStyles.row,
               justifyContent: "space-between",
-              paddingHorizontal: WP(2),
+              //paddingHorizontal: WP(2),
             }}
           >
             <TouchableOpacity
@@ -127,7 +124,7 @@ const Post = ({ selectedPost, loading, props, onPress, handleDelete }) => {
             >
               <Image
                 style={{
-                  width: 40,
+                  width: 30,
                   height: undefined,
                   aspectRatio: 1 / 1,
                   borderRadius: 25,
@@ -151,14 +148,16 @@ const Post = ({ selectedPost, loading, props, onPress, handleDelete }) => {
               </TouchableOpacity>
             ) : null}
           </View>
-          {selectedPost.videoURL.length < 2 ? (
+          {selectedPost?.videoURL?.length < 2 ? (
             <Image
               source={{ uri: "https:" + selectedPost.Photo }}
               style={{
                 resizeMode: "cover",
-                width: WP(100),
-                height: WP(100),
+                width: "100%",
+                height: undefined,
+                aspectRatio: 1 / 1,
                 backgroundColor: "#F4F4F5",
+                borderRadius: 15,
               }}
             />
           ) : (
@@ -183,8 +182,8 @@ const Styles = StyleSheet.create({
     borderRadius: WP(8),
   },
   nameTxt: {
-    fontFamily: fontFamily.regular,
-    fontSize: 18,
+    fontFamily: fontFamily.medium,
+    fontSize: 16,
     color: "black",
     marginLeft: WP(2),
   },
@@ -192,7 +191,6 @@ const Styles = StyleSheet.create({
     fontFamily: fontFamily.regular,
     fontSize: 17,
     color: "black",
-    marginLeft: WP(5),
     paddingVertical: HP(1),
   },
   lastTxt: {
@@ -207,7 +205,7 @@ const Styles = StyleSheet.create({
     alignSelf: "center",
   },
   portItem: {
-    //flex: 1,
+    paddingHorizontal: 8,
   },
 });
 

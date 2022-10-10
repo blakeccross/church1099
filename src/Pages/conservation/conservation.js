@@ -8,7 +8,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-  FlatList,
   LayoutAnimation,
 } from "react-native";
 import { AutoGrowingTextInput } from "react-native-autogrow-textinput";
@@ -17,7 +16,7 @@ import {
   default as Ionicons,
 } from "react-native-vector-icons/Ionicons";
 import { HP, WP } from "../../Assets/config/screen-ratio";
-import RenderMessages from "../../Components/renderMethods/renderMessage";
+import Messages from "../../Components/renderMethods/message";
 import { GlobalStyles } from "../../global/global.styles";
 import { API } from "../../services/api.services";
 import { commonServices } from "../../services/commonServices";
@@ -133,7 +132,7 @@ const Convo = (props) => {
                 data={allMessages || []}
                 renderItem={({ item }) => {
                   return (
-                    <RenderMessages
+                    <Messages
                       item={item}
                       myid={myid}
                       profilePhoto={props?.route?.params?.data.profilePhoto}

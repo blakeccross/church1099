@@ -3,6 +3,7 @@ import {
   ActionSheetIOS,
   Text,
   View,
+  FlatList,
   Image,
   TouchableOpacity,
   ScrollView,
@@ -15,25 +16,27 @@ import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles } from "../../global/global.styles";
 import { API } from "../../services/api.services";
 import moment from "moment";
-import SkeletonLoader from "expo-skeleton-loader";
 import { MoreOrLess } from "@rntext/more-or-less";
 import { useSelector, useDispatch } from "react-redux";
 import { getUser } from "../../root/reducer";
-import { FlashList } from "@shopify/flash-list";
+import SegmentedControlTab from "react-native-segmented-control-tab";
+import Post from "../../Components/renderMethods/post";
+import EmptyProfile from "./emptyProfile";
 
 const Profile = (props) => {
   const [experience, setExperience] = useState([]);
   const [ports, setPorts] = useState([]);
   const [Loading, setLoading] = useState(true);
-  const [showResume, setShowResume] = useState(false);
+  const [scrollIndex, setScrollIndex] = useState(0);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+  const scrollViewRef = React.useRef();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
 
   useEffect(() => {
     getData();
   }, []);
-
-  const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -42,24 +45,46 @@ const Profile = (props) => {
 
   const getData = async () => {
     let user = await API.getUserData();
+    let res = await API.portfolio(user._id);
+    setPorts(res);
     dispatch(getUser(user));
     setExperience(user.experience);
-    setPorts(user.posts);
     setLoading(false);
   };
 
-  const openLink = (url) => {
-    setShowResume(true);
+  const handleIndexChange = (index) => {
+    setPageIndex(index);
+    scrollViewRef.current?.scrollTo({
+      x: index * WP(100),
+      animation: false,
+    });
+  };
+
+  const handleOnScroll = (event) => {
+    let scrollIndex = event.nativeEvent.contentOffset.x / WP(100);
+    setScrollIndex(scrollIndex);
+    if (scrollIndex === 0) {
+      setPageIndex(0);
+    }
+    if (scrollIndex === 1) {
+      setPageIndex(1);
+    }
   };
 
   const renderPort = (item) => {
     return (
-      <View style={Styles.portItem}>
-        <Image
-          source={{ uri: "https:" + item.image, cache: "force-cache" }}
-          style={{ width: WP(29), height: HP(20), borderRadius: 10 }}
-        />
-      </View>
+      <Post
+        selectedPost={item}
+        props={props}
+        setLoading={setLoading}
+        //loading={loading}
+        //handleDelete={handleDelete}
+        onPress={() =>
+          props.navigation.navigate("ProfileView", {
+            user: item,
+          })
+        }
+      />
     );
   };
 
@@ -96,7 +121,7 @@ const Profile = (props) => {
               tintColor="white"
             />
           }
-          contentContainerStyle={{ paddingBottom: HP(12) }}
+          contentContainerStyle={{ paddingBottom: HP(12), minHeight: HP(100) }}
         >
           <TouchableOpacity
             onPress={() => props.navigation.navigate("Settings", { user })}
@@ -113,53 +138,7 @@ const Profile = (props) => {
             <Text>Settings</Text>
           </TouchableOpacity>
           {Loading ? (
-            <SkeletonLoader boneColor="#fbfbfb" highlightColor="#f2f2f2">
-              <SkeletonLoader.Container
-                style={[
-                  {
-                    flex: 1,
-                    paddingTop: HP(7),
-                    flexDirection: "column",
-                    alignItems: "center",
-                    alignContent: "center",
-                    justifyContent: "center",
-                    backgroundColor: "white",
-                  },
-                ]}
-              >
-                <SkeletonLoader.Item
-                  style={{
-                    width: WP(30),
-                    height: WP(30),
-                    alignSelf: "center",
-                    marginTop: HP(4),
-                    borderRadius: WP(15),
-                    alignSelf: "center",
-                  }}
-                />
-                <SkeletonLoader.Container
-                  style={{
-                    paddingTop: 10,
-                    alignItems: "center",
-                    alignContent: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <SkeletonLoader.Item
-                    style={{ width: 220, height: 20, marginBottom: 5 }}
-                  />
-                  <SkeletonLoader.Item
-                    style={{ width: 220, height: 20, marginBottom: 50 }}
-                  />
-                  <SkeletonLoader.Item
-                    style={{ width: WP(100), height: HP(20), marginBottom: 10 }}
-                  />
-                  <SkeletonLoader.Item
-                    style={{ width: WP(100), height: HP(20), marginBottom: 10 }}
-                  />
-                </SkeletonLoader.Container>
-              </SkeletonLoader.Container>
-            </SkeletonLoader>
+            <EmptyProfile />
           ) : (
             <>
               <View
@@ -217,189 +196,237 @@ const Profile = (props) => {
                     alignSelf: "center",
                   }}
                 />
-              </View>
 
-              {/*SKILLS*/}
-
-              <View style={{ ...Styles.panelView }}>
-                <View
-                  style={{
+                <SegmentedControlTab
+                  values={["About", "Portfolio"]}
+                  borderRadius={20}
+                  tabsContainerStyle={{
+                    width: WP(50),
+                    alignSelf: "center",
+                    height: 40,
                     marginBottom: HP(2),
-                    ...GlobalStyles.row,
-                    justifyContent: "space-between",
                   }}
-                >
-                  <Text style={Styles.sectionHeader}>Skills</Text>
-                  <View style={GlobalStyles.row}>
-                    <TouchableOpacity
-                      style={{ marginRight: 20 }}
-                      onPress={() => props.navigation.navigate("Skills")}
+                  tabStyle={{
+                    borderWidth: 0,
+                    borderColor: "white",
+                  }}
+                  tabTextStyle={{ color: "#666666" }}
+                  activeTabStyle={{
+                    borderRadius: 20,
+                    backgroundColor: "#2b47fc",
+                    color: "black",
+                  }}
+                  selectedIndex={pageIndex}
+                  onTabPress={(index) => handleIndexChange(index)}
+                />
+              </View>
+              {/*SKILLS*/}
+              <ScrollView
+                ref={scrollViewRef}
+                contentContainerStyle={{ flexGrow: 1 }}
+                horizontal
+                pagingEnabled
+                scrollEventThrottle={16}
+                onScroll={(e) => handleOnScroll(e)}
+                showsHorizontalScrollIndicator={false}
+              >
+                <View style={{ width: WP(100) }}>
+                  <View style={{ ...Styles.panelView }}>
+                    <View
+                      style={{
+                        marginBottom: HP(2),
+                        ...GlobalStyles.row,
+                        justifyContent: "space-between",
+                      }}
                     >
-                      <Ionicons name="ios-add-sharp" size={30} color="black" />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() =>
-                        props.navigation.navigate("EditSkills", { data: user })
-                      }
-                    >
-                      <Ionicons
-                        name="ios-pencil-sharp"
-                        size={23}
-                        color="black"
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </View>
+                      <Text style={Styles.sectionHeader}>Skills</Text>
+                      <View style={GlobalStyles.row}>
+                        <TouchableOpacity
+                          style={{ marginRight: 20 }}
+                          onPress={() => props.navigation.navigate("Skills")}
+                        >
+                          <Ionicons
+                            name="ios-add-sharp"
+                            size={30}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() =>
+                            props.navigation.navigate("EditSkills", {
+                              data: user,
+                            })
+                          }
+                        >
+                          <Ionicons
+                            name="ios-pencil-sharp"
+                            size={23}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
 
-                {user?.data.skills && user?.data.skills?.length ? (
+                    {user?.data.skills && user?.data.skills?.length ? (
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          flexWrap: "wrap",
+                          justifyContent: "flex-start",
+                        }}
+                      >
+                        {user?.data.skills?.map((item, i) => {
+                          return (
+                            <View key={i} style={Styles.skillItem}>
+                              <Text
+                                style={{ color: "black", textAlign: "center" }}
+                              >
+                                {item}
+                              </Text>
+                            </View>
+                          );
+                        })}
+                      </View>
+                    ) : (
+                      <View style={Styles.empty}>
+                        <Text style={Styles.emptyTxt}>
+                          Add skills so employers can see what you're good at
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+
+                  {/*EXPERIENCE*/}
                   <View
                     style={{
-                      flexDirection: "row",
-                      flexWrap: "wrap",
-                      justifyContent: "flex-start",
+                      ...Styles.panelView,
                     }}
                   >
-                    {user?.data.skills?.map((item, i) => {
-                      return (
-                        <View key={i} style={Styles.skillItem}>
-                          <Text style={{ color: "black", textAlign: "center" }}>
-                            {item}
-                          </Text>
-                        </View>
-                      );
-                    })}
-                  </View>
-                ) : (
-                  <View style={Styles.empty}>
-                    <Text style={Styles.emptyTxt}>
-                      Add skills so employers can see what you're good at
-                    </Text>
-                  </View>
-                )}
-              </View>
-
-              {/*PORTFOLIO*/}
-              <View style={{ ...Styles.panelView }}>
-                <View
-                  style={{
-                    marginBottom: HP(2),
-                    ...GlobalStyles.row,
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Text style={Styles.sectionHeader}>Portfolio</Text>
-                  <TouchableOpacity onPress={() => showActionSheet()}>
-                    <Ionicons name="ios-add-sharp" size={30} color="black" />
-                  </TouchableOpacity>
-                </View>
-                {user?.data.posts && user.data.posts?.length ? (
-                  <TouchableOpacity
-                    onPress={() =>
-                      props.navigation.navigate("Portfolio", user.data)
-                    }
-                  >
-                    <FlashList
-                      estimatedItemSize={3}
-                      horizontal={true}
-                      showsHorizontalScrollIndicator={false}
-                      data={ports}
-                      renderItem={({ item }) => renderPort(item)}
-                      keyExtractor={(item, index) => index.toString()}
-                    />
-                  </TouchableOpacity>
-                ) : (
-                  <View style={Styles.empty}>
-                    <Text style={Styles.emptyTxt}>
-                      Show off something you've done or created
-                    </Text>
-                  </View>
-                )}
-              </View>
-              {/*EXPERIENCE*/}
-              <View
-                style={{
-                  ...Styles.panelView,
-                }}
-              >
-                <View
-                  style={{
-                    marginBottom: HP(0),
-                    ...GlobalStyles.row,
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Text style={Styles.sectionHeader}>Experience</Text>
-                  <View style={GlobalStyles.row}>
-                    <TouchableOpacity
-                      style={{ marginRight: 20 }}
-                      onPress={() => props.navigation.navigate("AddExp")}
+                    <View
+                      style={{
+                        marginBottom: HP(0),
+                        ...GlobalStyles.row,
+                        justifyContent: "space-between",
+                      }}
                     >
+                      <Text style={Styles.sectionHeader}>Experience</Text>
+                      <View style={GlobalStyles.row}>
+                        <TouchableOpacity
+                          style={{ marginRight: 20 }}
+                          onPress={() => props.navigation.navigate("AddExp")}
+                        >
+                          <Ionicons
+                            name="ios-add-sharp"
+                            size={30}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() =>
+                            props.navigation.navigate("UserExperience")
+                          }
+                        >
+                          <Ionicons
+                            name="ios-pencil-sharp"
+                            size={23}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    {experience && experience.length ? (
+                      <>
+                        {experience.map((item, i) => {
+                          return (
+                            <View key={i} style={Styles.experienceItem}>
+                              <View style={{ flexDirection: "row" }}>
+                                <Image
+                                  source={{ uri: item["Company Image"] }}
+                                />
+                                <Text style={Styles.headingText}>
+                                  {item?.title}
+                                </Text>
+                              </View>
+                              <View
+                                style={{ flexDirection: "row", marginTop: 0 }}
+                              >
+                                <Text style={Styles.description}>
+                                  {item.employer}
+                                </Text>
+                                <Text style={Styles.description}>
+                                  {" "}
+                                  · {item?.type}
+                                </Text>
+                              </View>
+                              <View
+                                style={{ flexDirection: "row", marginTop: 0 }}
+                              >
+                                <Text style={Styles.description}>
+                                  {moment(
+                                    item.startDate,
+                                    "MMM DD, YYYY"
+                                  ).format("MMM YYYY")}
+                                </Text>
+                                {item.current ? null : (
+                                  <Text style={Styles.description}>
+                                    {moment(
+                                      item.endDate,
+                                      "MMM DD, YYYY"
+                                    ).format(" - MMM YYYY")}
+                                  </Text>
+                                )}
+                              </View>
+                              <View style={{ marginTop: HP(1) }}>
+                                <MoreOrLess
+                                  numberOfLines={2}
+                                  textButtonStyle={{ color: "black" }}
+                                >
+                                  {item?.description}
+                                </MoreOrLess>
+                              </View>
+                            </View>
+                          );
+                        })}
+                      </>
+                    ) : (
+                      <View style={Styles.empty}>
+                        <Text style={Styles.emptyTxt}>
+                          Show some relevant work experience
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                </View>
+
+                <View
+                  style={{
+                    ...Styles.panelView,
+                    paddingHorizontal: 0,
+                    width: WP(100),
+                    maxHeight: scrollIndex > 0 ? null : 150,
+                  }}
+                >
+                  <View
+                    style={{
+                      paddingHorizontal: WP(4),
+                      marginBottom: HP(2),
+                      ...GlobalStyles.row,
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text style={Styles.sectionHeader}>Portfolio</Text>
+                    <TouchableOpacity onPress={() => showActionSheet()}>
                       <Ionicons name="ios-add-sharp" size={30} color="black" />
                     </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() =>
-                        props.navigation.navigate("UserExperience")
-                      }
-                    >
-                      <Ionicons
-                        name="ios-pencil-sharp"
-                        size={23}
-                        color="black"
-                      />
-                    </TouchableOpacity>
                   </View>
+                  <FlatList
+                    data={ports}
+                    scrollEnabled={false}
+                    renderItem={({ item }) => renderPort(item)}
+                    keyExtractor={(item, index) => index.toString()}
+                  />
                 </View>
-                {experience && experience.length ? (
-                  <>
-                    {experience.map((item, i) => {
-                      return (
-                        <View key={i} style={Styles.experienceItem}>
-                          <View style={{ flexDirection: "row" }}>
-                            <Image source={{ uri: item["Company Image"] }} />
-                            <Text style={Styles.headingText}>
-                              {item?.title}
-                            </Text>
-                          </View>
-                          <View style={{ flexDirection: "row", marginTop: 0 }}>
-                            <Text style={Styles.description}>
-                              {item.employer}
-                            </Text>
-                            <Text style={Styles.description}>
-                              {" "}
-                              · {item?.type}
-                            </Text>
-                          </View>
-                          <View style={{ flexDirection: "row", marginTop: 0 }}>
-                            <Text style={Styles.description}>
-                              {moment(item.startDate, "MMM DD, YYYY").format(
-                                "MMM YYYY"
-                              )}
-                            </Text>
-                            {item.current ? null : (
-                              <Text style={Styles.description}>
-                                {moment(item.endDate, "MMM DD, YYYY").format(
-                                  " - MMM YYYY"
-                                )}
-                              </Text>
-                            )}
-                          </View>
-                          <View style={{ marginTop: HP(1) }}>
-                            <MoreOrLess numberOfLines={2}>
-                              {item?.description}
-                            </MoreOrLess>
-                          </View>
-                        </View>
-                      );
-                    })}
-                  </>
-                ) : (
-                  <View style={Styles.empty}>
-                    <Text style={Styles.emptyTxt}>
-                      Show some relevant work experience
-                    </Text>
-                  </View>
-                )}
-              </View>
+              </ScrollView>
             </>
           )}
         </ScrollView>

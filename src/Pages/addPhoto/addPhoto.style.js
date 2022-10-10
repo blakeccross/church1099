@@ -27,7 +27,7 @@ export const addPhotoStyle = StyleSheet.create({
   input: {
     borderWidth: 0,
     borderRadius: 10,
-    width: WP(100),
+    //width: WP(100),
   },
   skillItem: {
     backgroundColor: "#F4F4F5",
