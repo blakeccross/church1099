@@ -66,14 +66,18 @@ const login = (email, password, token, props) => {
       AlertService.show("That's weird", "Have you made an account yet?");
     });
 };
-const forgot = (email) => {
+const forgot = (email, props) => {
   axios
     .post(`${base_url}forgot?email=${email}`)
     .then(async (res) => {
-      AlertService.show("Email sent!", "Kindly check your provided email");
+      AlertService.show(
+        "Email sent!",
+        "Check your email to reset your password"
+      );
+      props.navigation.navigate("Home");
     })
     .catch((err) => {
-      AlertService.show("Not Found", "Please enter correct data!");
+      AlertService.show("Not Found", "Are you sure you've made an account?");
     });
 };
 const myJobListings = async () => {

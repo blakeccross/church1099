@@ -84,7 +84,6 @@ const AddPhoto = (props) => {
               numberOfLines={8}
               textAlignVertical={"top"}
               autoCapitalize={"none"}
-              //placeholderTextColor={"#666666"}
               placeholder="Enter a description"
               style={Styles.input}
             />

@@ -19,11 +19,11 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { API } from "../../services/api.services";
 import { useSelector } from "react-redux";
 
-const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
-
 const Post = ({ selectedPost, loading, props, onPress, handleDelete }) => {
   const [video, setVideo] = useState("");
   const user = useSelector((state) => state.user);
+
+  const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 
   const getYouTubeVideoIdFromUrl = (selectedPost) => {
     const URL = selectedPost.videoURL;
@@ -112,13 +112,13 @@ const Post = ({ selectedPost, loading, props, onPress, handleDelete }) => {
             style={{
               ...GlobalStyles.row,
               justifyContent: "space-between",
-              //paddingHorizontal: WP(2),
+              alignItems: "center",
+              paddingBottom: HP(1),
             }}
           >
             <TouchableOpacity
               style={{
                 ...GlobalStyles.row,
-                paddingVertical: HP(1),
               }}
               onPress={onPress}
             >
@@ -161,7 +161,7 @@ const Post = ({ selectedPost, loading, props, onPress, handleDelete }) => {
               }}
             />
           ) : (
-            <YoutubePlayer height={WP(60)} videoId={video} />
+            <YoutubePlayer height={WP(50)} videoId={video} />
           )}
           <Text style={Styles.description}>{selectedPost.description}</Text>
         </View>
@@ -205,7 +205,11 @@ const Styles = StyleSheet.create({
     alignSelf: "center",
   },
   portItem: {
-    paddingHorizontal: 8,
+    backgroundColor: "white",
+    borderRadius: 15,
+    padding: 15,
+    marginHorizontal: 8,
+    marginBottom: 8,
   },
 });
 

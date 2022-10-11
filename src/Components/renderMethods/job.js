@@ -33,81 +33,62 @@ const RenderJob = ({ item, hideBook, refresh }) => {
     //getJobList();
   };
   return (
-    <View style={Styles.item}>
-      <View style={GlobalStyles.row}>
-        {item?.image?.length > 2 && (
-          <Image
-            source={{ uri: "https:" + item?.image }}
-            style={{ ...Styles.dp }}
-          />
-        )}
-        <View style={{ marginRight: WP(4), flex: 1 }}>
-          <Text style={{ ...Styles.keyTxt }}>{item.title}</Text>
-          <Text
-            style={{
-              ...Styles.conTxt,
-              color: "#666666",
-              fontSize: 16,
-              paddingHorizontal: 0,
-              fontSize: 14,
-              marginTop: 2,
-            }}
-          >
-            {item?.church}
-          </Text>
-        </View>
-        {hideBook ? null : (
-          <View style={{ position: "absolute", right: 0 }}>
-            {item.saved == "true" ? (
-              <TouchableOpacity onPress={() => removeJob(item)}>
-                <MaterialIcons name="bookmark" size={28} color="blue" />
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity onPress={() => bookmark(item)}>
-                <MaterialIcons name="bookmark-outline" size={28} color="grey" />
-              </TouchableOpacity>
-            )}
-          </View>
-        )}
-      </View>
-      <View style={{ marginRight: WP(4) }}>
-        <Text
-          numberOfLines={3}
-          style={{
-            ...Styles.conTxt,
-            paddingHorizontal: 0,
-            fontSize: 14,
-            color: "#666666",
-            marginTop: 6,
-          }}
-        >
-          {item.description}
-        </Text>
-        <View style={{ ...GlobalStyles.row, marginVertical: HP(1) }}>
-          <View
-            style={{
-              ...GlobalStyles.row,
-              alignSelf: "flex-start",
-              paddingHorizontal: WP(3),
-              paddingVertical: HP(1),
-              borderRadius: 10,
-              justifyContent: "center",
-              backgroundColor: "#F5F5F5",
-            }}
-          >
-            <MaterialIcons name="location-on" size={15} color={"#666666"} />
+    <View style={{ marginHorizontal: 8 }}>
+      <View style={Styles.item}>
+        <View style={GlobalStyles.row}>
+          {item?.image?.length > 2 && (
+            <Image
+              source={{ uri: "https:" + item?.image }}
+              style={{ ...Styles.dp }}
+            />
+          )}
+          <View style={{ marginRight: WP(4), flex: 1 }}>
+            <Text style={{ ...Styles.keyTxt }}>{item.title}</Text>
             <Text
               style={{
                 ...Styles.conTxt,
-                paddingHorizontal: 3,
+                color: "#666666",
+                fontSize: 16,
+                paddingHorizontal: 0,
                 fontSize: 14,
-                color: "rgb(102, 102, 102)",
+                marginTop: 2,
               }}
             >
-              {item?.location}
+              {item?.church}
             </Text>
           </View>
-          {item.remote == "yes" && (
+          {hideBook ? null : (
+            <View style={{ position: "absolute", right: 0 }}>
+              {item.saved == "true" ? (
+                <TouchableOpacity onPress={() => removeJob(item)}>
+                  <MaterialIcons name="bookmark" size={28} color="blue" />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={() => bookmark(item)}>
+                  <MaterialIcons
+                    name="bookmark-outline"
+                    size={28}
+                    color="grey"
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+        </View>
+        <View style={{ marginRight: WP(4) }}>
+          <Text
+            numberOfLines={3}
+            style={{
+              ...Styles.conTxt,
+              paddingHorizontal: 0,
+              fontSize: 14,
+              color: "#666666",
+              marginTop: 6,
+            }}
+          >
+            {item.description}
+          </Text>
+          <View style={{ ...GlobalStyles.row, marginVertical: HP(1) }}>
             <View
               style={{
                 ...GlobalStyles.row,
@@ -117,10 +98,9 @@ const RenderJob = ({ item, hideBook, refresh }) => {
                 borderRadius: 10,
                 justifyContent: "center",
                 backgroundColor: "#F5F5F5",
-                marginLeft: 7,
               }}
             >
-              <MaterialIcons name="wifi" size={15} color="#666666" />
+              <MaterialIcons name="location-on" size={15} color={"#666666"} />
               <Text
                 style={{
                   ...Styles.conTxt,
@@ -129,23 +109,49 @@ const RenderJob = ({ item, hideBook, refresh }) => {
                   color: "rgb(102, 102, 102)",
                 }}
               >
-                Remote Friendly
+                {item?.location}
               </Text>
             </View>
+            {item.remote == "yes" && (
+              <View
+                style={{
+                  ...GlobalStyles.row,
+                  alignSelf: "flex-start",
+                  paddingHorizontal: WP(3),
+                  paddingVertical: HP(1),
+                  borderRadius: 10,
+                  justifyContent: "center",
+                  backgroundColor: "#F5F5F5",
+                  marginLeft: 7,
+                }}
+              >
+                <MaterialIcons name="wifi" size={15} color="#666666" />
+                <Text
+                  style={{
+                    ...Styles.conTxt,
+                    paddingHorizontal: 3,
+                    fontSize: 14,
+                    color: "rgb(102, 102, 102)",
+                  }}
+                >
+                  Remote Friendly
+                </Text>
+              </View>
+            )}
+          </View>
+          {item["Applicants"]?.length && (
+            <Text
+              style={{
+                ...Styles.applicants,
+                paddingHorizontal: 3,
+                marginBottom: HP(1),
+                fontSize: 14,
+              }}
+            >
+              {item["Applicants"]?.length} applicants
+            </Text>
           )}
         </View>
-        {item["Applicants"]?.length && (
-          <Text
-            style={{
-              ...Styles.applicants,
-              paddingHorizontal: 3,
-              marginBottom: HP(1),
-              fontSize: 14,
-            }}
-          >
-            {item["Applicants"]?.length} applicants
-          </Text>
-        )}
       </View>
     </View>
   );
@@ -223,27 +229,11 @@ const Styles = StyleSheet.create({
     flexDirection: "column",
     alignSelf: "center",
     paddingHorizontal: WP(5),
-    width: WP(100),
+    width: "100%",
+    marginTop: 8,
+    borderRadius: 15,
     paddingVertical: HP(2),
-    borderBottomColor: "#e0e0e0",
-    borderBottomWidth: 1,
     backgroundColor: "white",
-  },
-  myJobsTxt: {
-    color: "white",
-    fontSize: 16,
-    fontFamily: fontFamily.bold,
-    marginLeft: 3,
-  },
-  descriptionTex: {
-    marginTop: HP(3),
-    color: "#333333",
-    fontSize: 17,
-    fontFamily: fontFamily.light,
-    textAlign: "left",
-  },
-  blurContainer: {
-    flex: 1,
   },
 });
 

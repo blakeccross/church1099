@@ -15,13 +15,13 @@ import { ProfileStyle as Styles } from "./profile.style";
 import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles } from "../../global/global.styles";
 import { API } from "../../services/api.services";
-import moment from "moment";
-import { MoreOrLess } from "@rntext/more-or-less";
 import { useSelector, useDispatch } from "react-redux";
 import { getUser } from "../../root/reducer";
 import SegmentedControlTab from "react-native-segmented-control-tab";
 import Post from "../../Components/renderMethods/post";
 import EmptyProfile from "./emptyProfile";
+import RenderExp from "../../Components/renderMethods/experience";
+import { StatusBar } from "expo-status-bar";
 
 const Profile = (props) => {
   const [experience, setExperience] = useState([]);
@@ -109,6 +109,7 @@ const Profile = (props) => {
 
   return (
     <>
+      <StatusBar style="dark" />
       <SafeAreaView style={{ flex: 1, backgroundColor: "white" }} />
       <SafeAreaView>
         <ScrollView
@@ -337,55 +338,7 @@ const Profile = (props) => {
                     {experience && experience.length ? (
                       <>
                         {experience.map((item, i) => {
-                          return (
-                            <View key={i} style={Styles.experienceItem}>
-                              <View style={{ flexDirection: "row" }}>
-                                <Image
-                                  source={{ uri: item["Company Image"] }}
-                                />
-                                <Text style={Styles.headingText}>
-                                  {item?.title}
-                                </Text>
-                              </View>
-                              <View
-                                style={{ flexDirection: "row", marginTop: 0 }}
-                              >
-                                <Text style={Styles.description}>
-                                  {item.employer}
-                                </Text>
-                                <Text style={Styles.description}>
-                                  {" "}
-                                  · {item?.type}
-                                </Text>
-                              </View>
-                              <View
-                                style={{ flexDirection: "row", marginTop: 0 }}
-                              >
-                                <Text style={Styles.description}>
-                                  {moment(
-                                    item.startDate,
-                                    "MMM DD, YYYY"
-                                  ).format("MMM YYYY")}
-                                </Text>
-                                {item.current ? null : (
-                                  <Text style={Styles.description}>
-                                    {moment(
-                                      item.endDate,
-                                      "MMM DD, YYYY"
-                                    ).format(" - MMM YYYY")}
-                                  </Text>
-                                )}
-                              </View>
-                              <View style={{ marginTop: HP(1) }}>
-                                <MoreOrLess
-                                  numberOfLines={2}
-                                  textButtonStyle={{ color: "black" }}
-                                >
-                                  {item?.description}
-                                </MoreOrLess>
-                              </View>
-                            </View>
-                          );
+                          return <RenderExp item={item} key={i} />;
                         })}
                       </>
                     ) : (
@@ -400,8 +353,7 @@ const Profile = (props) => {
 
                 <View
                   style={{
-                    ...Styles.panelView,
-                    paddingHorizontal: 0,
+                    paddingVertical: HP(2),
                     width: WP(100),
                     maxHeight: scrollIndex > 0 ? null : 150,
                   }}

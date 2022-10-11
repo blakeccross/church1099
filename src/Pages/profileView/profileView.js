@@ -21,6 +21,7 @@ import { storageServices } from "../../services/storage.services";
 import SegmentedControlTab from "react-native-segmented-control-tab";
 import EmptyProfile from "../profile/emptyProfile";
 import Post from "../../Components/renderMethods/post";
+import RenderExp from "../../Components/renderMethods/experience";
 
 const ProfileView = (props) => {
   const [experience, setExperience] = useState([]);
@@ -76,7 +77,6 @@ const ProfileView = (props) => {
   const contactUser = async () => {
     let id = await storageServices.fetchKey("id");
     let convoUsers = [user._id, id];
-    console.log(convoUsers);
     let res = await API.createConvo(convoUsers);
     props.navigation.replace("Convo", { data: res });
   };
@@ -281,48 +281,7 @@ const ProfileView = (props) => {
                       </View>
                       <View style={Styles.experienceList}>
                         {experience.map((item, i) => {
-                          return (
-                            <View key={i} style={Styles.item}>
-                              <View style={{ flexDirection: "row" }}>
-                                <Image
-                                  source={{ uri: item["Company Image"] }}
-                                />
-                                <Text style={Styles.headingText}>
-                                  {item?.title}
-                                </Text>
-                              </View>
-                              <View
-                                style={{ flexDirection: "row", marginTop: 0 }}
-                              >
-                                <Text style={Styles.description}>
-                                  {item.employer}
-                                </Text>
-                                <Text style={Styles.description}>
-                                  {" "}
-                                  · {item?.type}
-                                </Text>
-                              </View>
-                              <View
-                                style={{ flexDirection: "row", marginTop: 0 }}
-                              >
-                                <Text style={Styles.description}>
-                                  {moment(item["Start Date"]).format(
-                                    "MMM YYYY"
-                                  )}
-                                </Text>
-                                <Text style={Styles.description}>
-                                  {moment(item["End Date"]).format(
-                                    " - MMM YYYY"
-                                  )}
-                                </Text>
-                              </View>
-                              <View style={{ marginTop: HP(1) }}>
-                                <MoreOrLess numberOfLines={2}>
-                                  {item?.description}
-                                </MoreOrLess>
-                              </View>
-                            </View>
-                          );
+                          return <RenderExp item={item} key={i} />;
                         })}
                       </View>
                     </View>
@@ -332,8 +291,7 @@ const ProfileView = (props) => {
                 {user?.posts && user.posts?.length ? (
                   <View
                     style={{
-                      ...Styles.panelView,
-                      paddingHorizontal: 0,
+                      paddingVertical: HP(2),
                       width: WP(100),
                       maxHeight: scrollIndex > 0 ? null : 150,
                     }}

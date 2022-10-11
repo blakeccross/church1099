@@ -13,46 +13,23 @@ import { Button } from "../../Components/Button/Button";
 import { Input } from "../../Components/Input/Input";
 import AlertService from "../../services/alertService";
 import { API } from "../../services/api.services";
-import { loginStyle as Styles } from "./loginStyles";
+import { forgotPasswordStyle as Styles } from "./forgotPasswordStyles";
 import { BlurView } from "expo-blur";
+import Icon from "react-native-vector-icons/Ionicons";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 
-const Login = (props) => {
-  const [mod, setMod] = useState(false);
+const ForgotPassword = (props) => {
   const [load, setLoad] = useState(false);
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
-  async function registerForPushNotificationsAsync() {
-    let token;
-    if (Device.isDevice) {
-      const { status: existingStatus } =
-        await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-      if (existingStatus !== "granted") {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      }
-      if (finalStatus !== "granted") {
-        alert("Failed to get push token for push notification!");
-        return;
-      }
-      token = (await Notifications.getExpoPushTokenAsync()).data;
-    } else {
-      null;
-    }
-    return token;
-  }
-
-  const onLogin = async () => {
-    if (email != "" && password != "") {
+  const handlePress = async () => {
+    if (email != "") {
       let reg =
         /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
       if (reg.test(email)) {
         setLoad(true);
-        let token = await registerForPushNotificationsAsync();
-        API.login(email, password, token, props);
+        API.forgot(email, props);
       } else {
         AlertService.show("Invalid Email");
       }
@@ -60,6 +37,7 @@ const Login = (props) => {
       AlertService.show("Missing", "Please provide all required data!");
     }
   };
+
   return (
     <SafeAreaView style={{ ...Styles.container }}>
       <KeyboardAvoidingView
@@ -70,10 +48,22 @@ const Login = (props) => {
           paddingHorizontal: WP(10),
         }}
       >
+        <TouchableOpacity
+          onPress={() => props.navigation.goBack()}
+          style={{
+            paddingLeft: WP(5),
+            position: "absolute",
+            left: 0,
+            top: HP(4),
+          }}
+        >
+          <Icon name={"chevron-back"} color={"black"} size={30} />
+        </TouchableOpacity>
         <View>
-          <Text style={{ ...Styles.titleTxt }}>Welcome Back</Text>
+          <Text style={{ ...Styles.titleTxt }}>Reset Password</Text>
           <Text style={{ ...Styles.subTxt }}>
-            Please sign into your account
+            Enter the email associated with your account, and we'll email you a
+            link to reset your password.
           </Text>
         </View>
         <View style={{ paddingTop: HP(2) }}>
@@ -86,37 +76,14 @@ const Login = (props) => {
           />
         </View>
         <View style={{ paddingTop: HP(2) }}>
-          <Text style={{ ...Styles.txt }}>Password</Text>
-          <Input setValue={setPassword} placeTxt={""} pass />
-        </View>
-        <View style={{ paddingTop: HP(2) }}>
           <Button
             onPress={() => {
-              onLogin();
+              handlePress();
             }}
             btnTxt={"Login"}
           />
         </View>
-        <TouchableOpacity
-          onPress={() => props.navigation.navigate("ForgotPassword")}
-        >
-          <Text style={{ ...Styles.forgotTxt, paddingVertical: HP(2) }}>
-            Forgot Password
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            props.navigation.navigate("Signup");
-          }}
-          style={{}}
-        >
-          <Text style={{ ...Styles.forgotTxt }}>
-            <Text style={{ fontFamily: fontFamily.light }}>
-              Don't have an account?{" "}
-            </Text>
-            Sign Up
-          </Text>
-        </TouchableOpacity>
+
         {load && (
           <BlurView
             intensity={10}
@@ -134,4 +101,4 @@ const Login = (props) => {
     </SafeAreaView>
   );
 };
-export default Login;
+export default ForgotPassword;

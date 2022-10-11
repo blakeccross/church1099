@@ -1,6 +1,6 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import Splash from "../Pages/SplashScreen/splashScreen";
+import Splash from "../Pages/splashScreen/splashScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import Login from "../Pages/login/login";
 import Signup from "../Pages/signup/Signup";
@@ -28,13 +28,14 @@ import UserExperience from "../Pages/userExperience/userExperience";
 import Resume from "../Pages/Resume/Resume";
 import AddExp from "../Pages/addExperience/addExp";
 import SkillsCategory from "../Pages/skillsCategory/skillsCategory";
-import Skills from "../Pages/Skills/skills";
+import Skills from "../Pages/skills/skills";
 import AddPhoto from "../Pages/addPhoto/addPhoto";
 import EditSkills from "../Pages/editSkills/editSkills";
 import ProfileView from "../Pages/profileView/profileView";
 import Discover from "../Pages/discover/discover";
 import EditExp from "../Pages/editExperience/editExp";
 import AddVideo from "../Pages/addVideo/addVideo";
+import ForgotPassword from "../Pages/forgotPassword/forgotPassword";
 
 const Stack = createStackNavigator();
 export const MainNavigator = () => (
@@ -47,6 +48,7 @@ export const MainNavigator = () => (
       <Stack.Screen name="EditJob" component={EditJob} />
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
       <Stack.Screen name="Signup" component={Signup} />
       <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen name="UserExperience" component={UserExperience} />

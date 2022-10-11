@@ -106,7 +106,6 @@ const MyJobs = (props) => {
           >
             <View
               style={{
-                paddingHorizontal: WP(5),
                 paddingBottom: HP(5),
               }}
             >
