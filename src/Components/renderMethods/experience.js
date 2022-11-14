@@ -23,7 +23,6 @@ const RenderExp = ({ item }) => {
   return (
     <View style={Styles.experienceItem}>
       <View style={{ flexDirection: "row" }}>
-        <Image source={{ uri: item["Company Image"] }} />
         <Text style={Styles.headingText}>{item?.title}</Text>
       </View>
       <View style={{ flexDirection: "row", marginTop: 0 }}>

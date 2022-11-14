@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, TouchableOpacity, Switch } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import { Header } from "../../Components/header/header";
@@ -13,10 +13,14 @@ import { Picker } from "@react-native-picker/picker";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { AutoGrowingTextInput } from "react-native-autogrow-textinput";
+import { useSelector } from "react-redux";
+import { getUser } from "../../root/reducer";
 
 const CreateJob = (props) => {
   const [title, setTitle] = useState("");
-  const [church, setChurch] = useState("");
+  const [org, setOrg] = useState("");
+
+  const [churchModal, setChurchModal] = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
   const [position, setPosition] = useState("");
@@ -24,11 +28,21 @@ const CreateJob = (props) => {
   const [isRemote, setIsRemote] = useState(false);
   const [modal, setModal] = useState(false);
   const [empModal, setEmpModal] = useState(false);
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  const getUser = async () => {
+    let user = await API.getUserData();
+    setUser(user);
+  };
 
   const onPost = async () => {
     if (
       title != "" &&
-      church != "" &&
+      org != "" &&
       emp != "" &&
       description != "" &&
       location != "" &&
@@ -36,7 +50,7 @@ const CreateJob = (props) => {
     ) {
       await API.PostJob(
         title,
-        church,
+        org,
         location,
         position,
         emp,
@@ -65,7 +79,24 @@ const CreateJob = (props) => {
           </View>
           <View style={{ width: "100%" }}>
             <Text style={{ ...Styles.createTxt }}>Church / Ministry</Text>
-            <Input value={church} setValue={setChurch} />
+            <TouchableOpacity
+              onPress={() => {
+                setChurchModal(true);
+              }}
+            >
+              <View style={Styles.input}>
+                <Text
+                  style={{
+                    color: "black",
+                    fontSize: 15,
+                    paddingBottom: 2,
+                  }}
+                >
+                  {org.name}
+                </Text>
+              </View>
+            </TouchableOpacity>
+            {/* <Input value={church} setValue={setChurch} /> */}
           </View>
 
           <View style={{ width: "100%" }}>
@@ -159,6 +190,37 @@ const CreateJob = (props) => {
               minHeight={150}
             />
           </View>
+          <ReactNativeModal
+            isVisible={churchModal}
+            style={{ margin: 0 }}
+            onBackButtonPress={() => setChurchModal(false)}
+            onBackdropPress={() => setChurchModal(false)}
+          >
+            <View style={Styles.centeredView}>
+              <View style={Styles.rectangle} />
+
+              <Picker
+                selectedValue={org}
+                onValueChange={(org, index) => {
+                  let results = user.organizations.find((item) => {
+                    return item.name === org;
+                  });
+                  setOrg(results);
+                  console.log(results);
+                  setChurchModal(false);
+                }}
+                mode="dropdown"
+              >
+                {user?.organizations?.map((item, i) => (
+                  <Picker.Item
+                    label={item.name}
+                    value={item.name}
+                    key={item.id}
+                  />
+                ))}
+              </Picker>
+            </View>
+          </ReactNativeModal>
           <ReactNativeModal
             isVisible={modal}
             style={{ margin: 0 }}

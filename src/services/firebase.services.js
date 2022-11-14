@@ -18,7 +18,7 @@ const firebaseConfig = {
 
 initializeApp(firebaseConfig);
 
-const updateProfileImage = async (imageName, uri, callback) => {
+const uploadImage = async (imageName, uri, callback) => {
   const storageRef = ref(getStorage(), imageName);
 
   const img = await fetch(uri);
@@ -68,5 +68,5 @@ const updateProfileImage = async (imageName, uri, callback) => {
 };
 
 export const firebaseServices = {
-  updateProfileImage,
+  uploadImage,
 };

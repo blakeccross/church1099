@@ -26,7 +26,7 @@ const AddVideo = (props) => {
     console.log(img);
     let video = link;
     let imageName = Date.now().toString();
-    await firebaseServices.updateProfileImage(imageName, img, async (image) => {
+    await firebaseServices.uploadImage(imageName, img, async (image) => {
       await API.createPost(image, description, video);
     });
     props.navigation.goBack();

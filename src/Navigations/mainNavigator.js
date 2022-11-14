@@ -36,6 +36,7 @@ import Discover from "../Pages/discover/discover";
 import EditExp from "../Pages/editExperience/editExp";
 import AddVideo from "../Pages/addVideo/addVideo";
 import ForgotPassword from "../Pages/forgotPassword/forgotPassword";
+import CreateOrg from "../Pages/createOrg/createOrg";
 
 const Stack = createStackNavigator();
 export const MainNavigator = () => (
@@ -79,6 +80,7 @@ export const MainNavigator = () => (
       <Stack.Screen name="ProfileView" component={ProfileView} />
       <Stack.Screen name="Discover" component={Discover} />
       <Stack.Screen name="EditExp" component={EditExp} />
+      <Stack.Screen name="CreateOrg" component={CreateOrg} />
     </Stack.Navigator>
   </NavigationContainer>
 );

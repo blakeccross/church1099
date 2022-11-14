@@ -88,7 +88,13 @@ const RenderJob = ({ item, hideBook, refresh }) => {
           >
             {item.description}
           </Text>
-          <View style={{ ...GlobalStyles.row, marginVertical: HP(1) }}>
+          <View
+            style={{
+              ...GlobalStyles.row,
+
+              flexWrap: "wrap",
+            }}
+          >
             <View
               style={{
                 ...GlobalStyles.row,
@@ -98,6 +104,8 @@ const RenderJob = ({ item, hideBook, refresh }) => {
                 borderRadius: 10,
                 justifyContent: "center",
                 backgroundColor: "#F5F5F5",
+                marginRight: 7,
+                marginVertical: HP(1),
               }}
             >
               <MaterialIcons name="location-on" size={15} color={"#666666"} />
@@ -122,7 +130,7 @@ const RenderJob = ({ item, hideBook, refresh }) => {
                   borderRadius: 10,
                   justifyContent: "center",
                   backgroundColor: "#F5F5F5",
-                  marginLeft: 7,
+                  marginVertical: HP(1),
                 }}
               >
                 <MaterialIcons name="wifi" size={15} color="#666666" />

@@ -38,7 +38,7 @@ const AddPhoto = (props) => {
 
   const post = async () => {
     let imageName = Date.now().toString();
-    await firebaseServices.updateProfileImage(imageName, img, async (image) => {
+    await firebaseServices.uploadImage(imageName, img, async (image) => {
       await API.createPost(image, description);
     });
     props.navigation.replace("Profile");

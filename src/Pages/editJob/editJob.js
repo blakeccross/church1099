@@ -1,10 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  Switch,
-} from "react-native";
+import { Text, View, TouchableOpacity, Switch } from "react-native";
 import { HP, WP } from "../../Assets/config/screen-ratio";
 import Styles from "./editJob.styles";
 import { GlobalStyles } from "../../global/global.styles";
@@ -173,7 +168,6 @@ const EditJob = ({ navigation, route }) => {
             <Text style={{ ...Styles.createTxt }}>Job Description</Text>
             <AutoGrowingTextInput
               style={Styles.input}
-              //placeholder={"Message..."}
               onChangeText={(e) => setDescription(e)}
               value={description}
               maxHeight={500}

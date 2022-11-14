@@ -22,6 +22,7 @@ import SegmentedControlTab from "react-native-segmented-control-tab";
 import EmptyProfile from "../profile/emptyProfile";
 import Post from "../../Components/renderMethods/post";
 import RenderExp from "../../Components/renderMethods/experience";
+import { StatusBar } from "expo-status-bar";
 
 const ProfileView = (props) => {
   const [experience, setExperience] = useState([]);
@@ -100,6 +101,7 @@ const ProfileView = (props) => {
 
   return (
     <>
+      <StatusBar style="dark" />
       <SafeAreaView style={{ flex: 1, backgroundColor: "white" }} />
       <SafeAreaView>
         <TouchableOpacity
@@ -151,24 +153,27 @@ const ProfileView = (props) => {
                 >
                   {user?.name}
                 </Text>
-                <View
-                  style={{
-                    alignSelf: "center",
-                    marginTop: HP(1),
-                  }}
-                >
-                  <Text style={Styles.userInfoTxt}>{user?.location}</Text>
-                </View>
-                <Text
-                  style={{
-                    ...Styles.userInfoTxt,
-                    textAlign: "center",
-                    marginVertical: HP(1),
-                  }}
-                >
-                  {user?.header}
-                </Text>
-
+                {user.location && (
+                  <View
+                    style={{
+                      alignSelf: "center",
+                      marginTop: HP(1),
+                    }}
+                  >
+                    <Text style={Styles.userInfoTxt}>{user?.location}</Text>
+                  </View>
+                )}
+                {user.header && (
+                  <Text
+                    style={{
+                      ...Styles.userInfoTxt,
+                      textAlign: "center",
+                      marginVertical: HP(1),
+                    }}
+                  >
+                    {user?.header}
+                  </Text>
+                )}
                 <Button
                   btnStyle={{
                     width: 130,

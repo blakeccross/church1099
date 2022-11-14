@@ -22,6 +22,9 @@ import * as ImagePicker from "expo-image-picker";
 import { firebaseServices } from "../../services/firebase.services";
 import { manipulateAsync } from "expo-image-manipulator";
 import PagerView from "react-native-pager-view";
+import PhoneInput from "react-native-phone-input";
+import * as Notifications from "expo-notifications";
+import * as Device from "expo-device";
 
 const Signup = (props) => {
   const [img, setImg] = useState("");
@@ -35,6 +38,7 @@ const Signup = (props) => {
   const [gender, setGender] = useState(null);
   const [loading, setloading] = useState(false);
   const ref = React.useRef(PagerView);
+  const phoneRef = React.useRef();
 
   const skill = [
     { id: "Worship Leading", name: "Worship Leading" },
@@ -76,14 +80,13 @@ const Signup = (props) => {
     }
   };
   const validatePhoneInput = () => {
-    let reg = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
-    if (reg.test(phone) === false) {
-      AlertService.show("Error", "hmmm... that doesn't look quite right");
-      return false;
-    } else {
-      ref.current.setPage(4);
-    }
+    ref.current.setPage(4);
   };
+
+  const onPhoneInputChange = (value, iso2) => {
+    setPhone(value);
+  };
+
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -134,71 +137,77 @@ const Signup = (props) => {
     );
   };
 
-  const [isEnabled, setIsEnabled] = useState(true);
+  async function registerForPushNotificationsAsync() {
+    let token;
+    if (Device.isDevice) {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") {
+        alert("Failed to get push token for push notification!");
+        return;
+      }
+      token = (await Notifications.getExpoPushTokenAsync()).data;
+    } else {
+      null;
+    }
+    return token;
+  }
 
   const onApply = async () => {
-    if (isEnabled) {
-      let imageName = Date.now().toString();
-      await firebaseServices.updateProfileImage(
-        imageName,
-        img,
-        async (ImageProfile) => {
-          if (
-            email != "" &&
-            password != "" &&
-            name != "" &&
-            phone != "" &&
-            gender != null &&
-            location != ""
-          ) {
-            setloading(true);
-            let res = await API.signup(
-              `https://church1099.com/api/1.1/wf/signup?email=${email}&password=${password}&profilephoto=${ImageProfile}&header=${header}&location=${location}&gender=${gender}&phone=${phone}&skills=${JSON.stringify(
-                skills
-              )}&name=${name}&employer?=no`,
-              props,
-              ImageProfile
-            );
-            setloading(false);
-          } else {
-            AlertService.show("Missing", "Please provide all required data");
-            console.log(
-              "mail::" + email,
-              "pa::" + password,
-              name,
-              phone,
-              ImageProfile,
-              gender,
-              location
-            );
-          }
-        }
-      );
-    } else {
-      AlertService.show(
-        "Terms and Condition",
-        "Agree to terms and conditions to continue!"
-      );
-    }
+    let token = await registerForPushNotificationsAsync();
+    let imageName = Date.now().toString();
+    await firebaseServices.uploadImage(imageName, img, async (ImageProfile) => {
+      if (
+        email != "" &&
+        password != "" &&
+        name != "" &&
+        gender != null &&
+        location != ""
+      ) {
+        setloading(true);
+        await API.signup(
+          `https://church1099.com/api/1.1/wf/signup?email=${email}&password=${password}&profilephoto=${ImageProfile}&header=${header}&location=${location}&gender=${gender}&phone=${phone}&skills=${JSON.stringify(
+            skills
+          )}&name=${name}&expo_token=${token}`,
+          props,
+          ImageProfile
+        );
+        setloading(false);
+      } else {
+        AlertService.show("Missing", "Please provide all required data");
+        console.log(
+          "mail::" + email,
+          "pa::" + password,
+          name,
+          phone,
+          ImageProfile,
+          gender,
+          location
+        );
+      }
+    });
   };
   return (
-    <SafeAreaView style={{ ...Styles.container, paddingTop: HP(2) }}>
+    <SafeAreaView style={{ ...Styles.container }}>
       <PagerView
-        style={{ flex: 1 }}
+        style={{ flex: 1, marginTop: HP(2) }}
         ref={ref}
         scrollEnabled={false}
         initialPage={0}
       >
         <View style={Styles.stepContainer} key="0">
-          <TouchableOpacity
-            onPress={() => props.navigation.goBack()}
-            style={{ paddingRight: WP(2) }}
-          >
+          <TouchableOpacity onPress={() => props.navigation.goBack()}>
             <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
           </TouchableOpacity>
           <Text style={Styles.titleTxt}>Get Started</Text>
           <Input
             setValue={setEmail}
+            autoCorrect={false}
             placeTxt={"Enter your email address"}
             value={email}
             keyboard={"email-address"}
@@ -212,16 +221,14 @@ const Signup = (props) => {
         </View>
 
         <View style={Styles.stepContainer} key="1">
-          <TouchableOpacity
-            onPress={() => ref.current.setPage(0)}
-            style={{ paddingRight: WP(2) }}
-          >
+          <TouchableOpacity onPress={() => ref.current.setPage(0)}>
             <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
           </TouchableOpacity>
           <Text style={Styles.titleTxt}>What's Your Full Name?</Text>
           <Input
             value={name}
             setValue={setName}
+            autoCorrect={false}
             placeTxt={"Enter your full name"}
             onSubmit={() => ref.current.setPage(2)}
             returnKeyLabel={"done"}
@@ -229,10 +236,7 @@ const Signup = (props) => {
         </View>
 
         <View style={Styles.stepContainer} key="2">
-          <TouchableOpacity
-            onPress={() => ref.current.setPage(1)}
-            style={{ paddingRight: WP(2) }}
-          >
+          <TouchableOpacity onPress={() => ref.current.setPage(1)}>
             <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
           </TouchableOpacity>
           <Text style={Styles.titleTxt}>Set Your Password</Text>
@@ -247,20 +251,34 @@ const Signup = (props) => {
         </View>
 
         <View style={Styles.stepContainer} key="3">
-          <TouchableOpacity
-            onPress={() => ref.current.setPage(2)}
-            style={{ paddingRight: WP(2) }}
-          >
+          <TouchableOpacity onPress={() => ref.current.setPage(2)}>
             <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
           </TouchableOpacity>
           <Text style={Styles.titleTxt}>Phone Number?</Text>
-          <Input
+          <PhoneInput
+            ref={phoneRef}
+            initialCountry={"us"}
+            initialValue=""
+            onChangePhoneNumber={onPhoneInputChange}
+            autoFormat={true}
+            textProps={{
+              placeholder: "Enter a phone number...",
+              borderWidth: 0,
+              borderRadius: 10,
+              height: 45,
+              width: "100%",
+              backgroundColor: "rgba(247,247,247,1)",
+              color: "#000",
+              padding: 10,
+            }}
+          />
+          {/* <Input
             value={phone}
             setValue={setPhone}
             placeTxt={"Enter your phone number"}
             keyboard={"phone-pad"}
             type={"telephoneNumber"}
-          />
+          /> */}
           <Text style={{ ...Styles.infoTxt }}>
             Don't worry. We won't bother you, but this will be helpful in case
             you get locked out of your account!
@@ -273,10 +291,7 @@ const Signup = (props) => {
         </View>
 
         <View style={Styles.stepContainer} key="4">
-          <TouchableOpacity
-            onPress={() => ref.current.setPage(3)}
-            style={{ paddingRight: WP(2) }}
-          >
+          <TouchableOpacity onPress={() => ref.current.setPage(3)}>
             <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
           </TouchableOpacity>
           <Text style={Styles.titleTxt}>Where Are You Located?</Text>
@@ -305,10 +320,7 @@ const Signup = (props) => {
         </View>
 
         <View style={Styles.stepContainer} key="5">
-          <TouchableOpacity
-            onPress={() => ref.current.setPage(4)}
-            style={{ paddingRight: WP(2) }}
-          >
+          <TouchableOpacity onPress={() => ref.current.setPage(4)}>
             <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
           </TouchableOpacity>
           <Text style={Styles.titleTxt}>What Is Your Gender?</Text>
@@ -339,10 +351,7 @@ const Signup = (props) => {
         </View>
 
         <View style={Styles.stepContainer} key="6">
-          <TouchableOpacity
-            onPress={() => ref.current.setPage(5)}
-            style={{ paddingRight: WP(2) }}
-          >
+          <TouchableOpacity onPress={() => ref.current.setPage(5)}>
             <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
           </TouchableOpacity>
           <Text style={Styles.titleTxt}>What Are You Interested In?</Text>
@@ -374,10 +383,7 @@ const Signup = (props) => {
           key="7"
         >
           <View>
-            <TouchableOpacity
-              onPress={() => ref.current.setPage(6)}
-              style={{ paddingRight: WP(2) }}
-            >
+            <TouchableOpacity onPress={() => ref.current.setPage(6)}>
               <Ionicons name="chevron-back" size={27} color={"#2b47fc"} />
             </TouchableOpacity>
             <Text style={Styles.titleTxt}>Profile Photo</Text>

@@ -18,6 +18,7 @@ import { createShimmerPlaceholder } from "react-native-shimmer-placeholder";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { API } from "../../services/api.services";
 import { useSelector } from "react-redux";
+import { WebView } from "react-native-webview";
 
 const Post = ({ selectedPost, loading, props, onPress, handleDelete }) => {
   const [video, setVideo] = useState("");
@@ -161,7 +162,7 @@ const Post = ({ selectedPost, loading, props, onPress, handleDelete }) => {
               }}
             />
           ) : (
-            <YoutubePlayer height={WP(50)} videoId={video} />
+            <YoutubePlayer height={250} videoId={video} />
           )}
           <Text style={Styles.description}>{selectedPost.description}</Text>
         </View>

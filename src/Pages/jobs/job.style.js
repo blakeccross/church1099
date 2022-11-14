@@ -7,7 +7,6 @@ import { GlobalStyles } from "../../global/global.styles";
 export const JobStyle = StyleSheet.create({
   container: {
     ...GlobalStyles.container,
-    backgroundColor: "white",
   },
   HeaderTxt: {
     color: "black",

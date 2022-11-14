@@ -55,21 +55,17 @@ const EditProfile = (props) => {
   const updateProfile = async () => {
     if (img !== prevImg) {
       let imageName = Date.now().toString();
-      await firebaseServices.updateProfileImage(
-        imageName,
-        img,
-        async (image) => {
-          let obj = {
-            Name: name,
-            ["Profile Photo"]: image,
-            Bio: bio,
-            Gender: gender,
-            ["Phone Number"]: phone,
-            Location: loc,
-          };
-          await API.editProfile(obj);
-        }
-      );
+      await firebaseServices.uploadImage(imageName, img, async (image) => {
+        let obj = {
+          Name: name,
+          ["Profile Photo"]: image,
+          Bio: bio,
+          Gender: gender,
+          ["Phone Number"]: phone,
+          Location: loc,
+        };
+        await API.editProfile(obj);
+      });
     } else {
       let obj = {
         Name: name,

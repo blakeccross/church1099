@@ -25,6 +25,7 @@ const signup = async (url, props) => {
       "Content-Type": "application/json",
     },
   };
+  console.log(url);
   await axios(config)
     .then(async (res) => {
       response = res?.data;
@@ -174,7 +175,7 @@ const getNotifications = async () => {
 };
 const PostJob = async (
   title,
-  church,
+  org,
   location,
   position,
   emp,
@@ -183,7 +184,7 @@ const PostJob = async (
   props
 ) => {
   const token = await AsyncStorage.getItem("token");
-  let url = `${base_url}postJob?title=${title}&church=${church}&location=${location}&position=${position}&emp=${emp}&description=${description}&remote=${isRemote}`;
+  let url = `${base_url}postJob?title=${title}&org=${org.id}&location=${location}&position=${position}&emp=${emp}&description=${description}&remote=${isRemote}`;
   let response = [];
   const config = {
     method: "POST",
@@ -195,6 +196,7 @@ const PostJob = async (
     },
     data: {},
   };
+  console.log(url);
   await axios(config)
     .then(async (res) => {
       AlertService.show("Posted!", "Successfully Posted");
@@ -932,6 +934,32 @@ const getUserData = async (userId) => {
     })
     .catch((error) => {
       console.log(error);
+      AlertService.show("Error", "Sorry something went wrong. Try again later");
+    });
+  return response;
+};
+const createOrg = async (image, name, phone, website, location, navigation) => {
+  const token = await AsyncStorage.getItem("token");
+  let response = [];
+  let url = `${base_url}create_organization?logo=${image}&name=${name}&phone=${phone}&website=${website}&location=${location}`;
+  const config = {
+    method: "POST",
+    url: url,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    data: {},
+  };
+  await axios(config)
+    .then((res) => {
+      response = res;
+      navigation.navigate("CreateJob");
+    })
+    .catch((error) => {
+      console.log(error);
+      AlertService.show("Error", "Sorry something went wrong. Try again later");
     });
   return response;
 };
@@ -975,4 +1003,5 @@ export const API = {
   deleteNotification,
   deleteConversation,
   userListForChat,
+  createOrg,
 };
