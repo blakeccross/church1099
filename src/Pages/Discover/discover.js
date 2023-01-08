@@ -26,13 +26,21 @@ const Discover = (props) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getData();
+    //getPosts();
+    getUsers();
   }, []);
 
-  const getData = async () => {
+  const getPosts = async () => {
     let userId = "";
     let res = await API.portfolio(userId);
     setPosts(res);
+    setLoading(false);
+  };
+
+  const getUsers = async () => {
+    let query = "blake";
+    let res = await API.getUserList(query);
+    console.log(res);
     setLoading(false);
   };
 
@@ -44,7 +52,7 @@ const Discover = (props) => {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    getData().then(() => setRefreshing(false));
+    getPosts().then(() => setRefreshing(false));
   }, []);
 
   const renderPort = (item, index) => {
@@ -96,6 +104,18 @@ const Discover = (props) => {
           <ActivityIndicator color={"black"} size="small" />
         </View>
       ) : (
+        // <FlashList
+        //   refreshControl={
+        //     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        //   }
+        //   estimatedItemSize={100}
+        //   data={posts}
+        //   windowSize={2}
+        //   numColumns={3}
+        //   keyExtractor={(item) => item.id}
+        //   contentContainerStyle={Styles.grid}
+        //   renderItem={({ item, index }) => renderPort(item, index)}
+        // />
         <FlashList
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

@@ -120,6 +120,7 @@ const getJobs = async () => {
   };
   await axios(config)
     .then(async (res) => {
+      console.log(res.data);
       response = res.data.jobs;
     })
     .catch((err) => {

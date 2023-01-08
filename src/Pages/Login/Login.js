@@ -60,6 +60,7 @@ const Login = (props) => {
       AlertService.show("Missing", "Please provide all required data!");
     }
   };
+
   return (
     <SafeAreaView style={{ ...Styles.container }}>
       <KeyboardAvoidingView
